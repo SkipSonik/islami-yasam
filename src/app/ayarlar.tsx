@@ -111,7 +111,7 @@ export default function AyarlarScreen() {
         </View>
       </Card>
 
-      <Text style={st.footer}>İslami Yaşam · sürüm 0.1</Text>
+      <Text style={st.footer}>İslami Yaşam · sürüm 0.1.1</Text>
     </Screen>
   );
 }

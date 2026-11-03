@@ -2,13 +2,14 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Haptics from 'expo-haptics';
 import * as Location from 'expo-location';
 import { useIsFocused } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Btn, Card, Screen } from '@/components/ui';
 import { C, S } from '@/constants/theme';
 import { useAppState } from '@/lib/app-state';
 import { qiblaDirection } from '@/lib/prayer';
+import { useCompass } from '@/lib/use-compass';
 
 const SIZE = 280;
 
@@ -18,39 +19,19 @@ export default function KibleScreen() {
   const { place } = settings;
   const qibla = qiblaDirection(place.lat, place.lng);
 
-  const [heading, setHeading] = useState<number | null>(null);
-  const [accuracy, setAccuracy] = useState(3);
   const [perm, setPerm] = useState<'unknown' | 'granted' | 'denied'>('unknown');
   const wasAligned = useRef(false);
 
   useEffect(() => {
     if (!focused) return;
-    let sub: Location.LocationSubscription | null = null;
-    let cancelled = false;
-    (async () => {
-      const p = await Location.requestForegroundPermissionsAsync();
-      if (cancelled) return;
-      if (p.status !== 'granted') {
-        setPerm('denied');
-        return;
-      }
-      setPerm('granted');
-      sub = await Location.watchHeadingAsync((h) => {
-        const v = h.trueHeading >= 0 ? h.trueHeading : h.magHeading;
-        setHeading(v);
-        setAccuracy(h.accuracy);
-      });
-      if (cancelled) sub.remove();
-    })();
-    return () => {
-      cancelled = true;
-      sub?.remove();
-    };
+    Location.requestForegroundPermissionsAsync().then((p) => setPerm(p.status === 'granted' ? 'granted' : 'denied'));
   }, [focused]);
+
+  const { heading, accuracy, tilted } = useCompass(focused && perm === 'granted');
 
   // Telefonun baktığı yön ile kıble arasındaki fark (-180..180)
   const diff = heading == null ? null : ((qibla - heading + 540) % 360) - 180;
-  const aligned = diff != null && Math.abs(diff) < 4;
+  const aligned = diff != null && Math.abs(diff) < 4 && !tilted;
 
   useEffect(() => {
     if (aligned && !wasAligned.current) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -67,7 +48,7 @@ export default function KibleScreen() {
             Pusulanın çalışması için konum izni gerekli. İzin verdikten sonra kıble açısı bulunduğun yere göre
             hesaplanır.
           </Text>
-          <Btn label="İzin ver" icon="location" onPress={() => refreshLocation().then(() => setPerm('unknown'))} />
+          <Btn label="İzin ver" icon="location" onPress={() => refreshLocation().then((r) => setPerm(r === 'denied' ? 'denied' : 'granted'))} />
         </Card>
       </Screen>
     );
@@ -79,32 +60,20 @@ export default function KibleScreen() {
         <Ionicons name="caret-down" size={28} color={aligned ? C.accent : C.text} style={{ marginBottom: -S.md }} />
         <View style={[st.dial, aligned && { borderColor: C.accent }]}>
           <View style={[StyleSheet.absoluteFill, { transform: [{ rotate: `${-(heading ?? 0)}deg` }] }]}>
-            {Array.from({ length: 72 }, (_, i) => (
-              <View key={i} style={[st.tickWrap, { transform: [{ rotate: `${i * 5}deg` }] }]}>
-                <View style={[st.tick, i % 6 === 0 && st.tickMajor]} />
-              </View>
-            ))}
-            {(['K', 'D', 'G', 'B'] as const).map((l, i) => (
-              <View key={l} style={[st.tickWrap, { transform: [{ rotate: `${i * 90}deg` }] }]}>
-                <Text style={[st.cardinal, l === 'K' && { color: C.danger }]}>{l}</Text>
-              </View>
-            ))}
-            <View style={[st.tickWrap, { transform: [{ rotate: `${qibla}deg` }] }]}>
-              <View style={st.needle} />
-              <View style={st.kaaba}>
-                <Ionicons name="cube" size={22} color={C.gold} />
-              </View>
-            </View>
+            <DialFace qibla={qibla} />
           </View>
           <View style={st.hub} />
         </View>
 
         <View style={{ alignItems: 'center', gap: 4 }}>
+          {tilted ? <Text style={st.tiltWarn}>Telefonu yere paralel, düz tut</Text> : null}
           <Text style={[st.big, aligned && { color: C.accent }]}>
             {heading == null ? 'Pusula bekleniyor…' : aligned ? 'Kıble yönündesin' : turnText(diff!)}
           </Text>
           <Text style={st.text}>
-            Kıble açısı: {Math.round(qibla)}° · {place.name}
+            Kıble açısı: {Math.round(qibla)}° · Telefonun yönü: {heading == null ? '–' : `${Math.round(heading)}°`}
+          </Text>
+          <Text style={st.text}>{place.name}
           </Text>
         </View>
 
@@ -122,6 +91,31 @@ export default function KibleScreen() {
     </Screen>
   );
 }
+
+// Kadran yüzü: çentikler, yön harfleri ve Kâbe işareti. Sadece kıble açısı
+// değişince yeniden çizilir; dönme işi dış katmanda yapılır.
+const DialFace = memo(function DialFace({ qibla }: { qibla: number }) {
+  return (
+    <>
+      {Array.from({ length: 72 }, (_, i) => (
+        <View key={i} style={[st.tickWrap, { transform: [{ rotate: `${i * 5}deg` }] }]}>
+          <View style={[st.tick, i % 6 === 0 && st.tickMajor]} />
+        </View>
+      ))}
+      {(['K', 'D', 'G', 'B'] as const).map((l, i) => (
+        <View key={l} style={[st.tickWrap, { transform: [{ rotate: `${i * 90}deg` }] }]}>
+          <Text style={[st.cardinal, l === 'K' && { color: C.danger }]}>{l}</Text>
+        </View>
+      ))}
+      <View style={[st.tickWrap, { transform: [{ rotate: `${qibla}deg` }] }]}>
+        <View style={st.needle} />
+        <View style={st.kaaba}>
+          <Ionicons name="cube" size={22} color={C.gold} />
+        </View>
+      </View>
+    </>
+  );
+});
 
 function turnText(diff: number) {
   const deg = Math.round(Math.abs(diff));
@@ -159,5 +153,6 @@ const st = StyleSheet.create({
   title: { color: C.text, fontSize: 18, fontWeight: '700' },
   text: { color: C.textDim, fontSize: 14, textAlign: 'center', lineHeight: 20 },
   warn: { color: C.gold, fontSize: 13, lineHeight: 19 },
+  tiltWarn: { color: C.gold, fontSize: 14, fontWeight: '700' },
   hint: { color: C.textMute, fontSize: 12, textAlign: 'center', lineHeight: 18, paddingHorizontal: S.lg },
 });
