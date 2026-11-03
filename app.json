@@ -1,36 +1,58 @@
 {
   "expo": {
-    "name": "islami-yasam",
+    "name": "İslami Yaşam",
     "slug": "islami-yasam",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0B3B2E",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "bundleIdentifier": "com.skipsonik.islamiyasam",
+      "supportsTablet": false
     },
     "android": {
+      "package": "com.skipsonik.islamiyasam",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B3B2E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "server",
+      "output": "single",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Namaz vakitlerini ve kıble yönünü bulunduğun yere göre hesaplamak için konumun kullanılır."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#3DDC97"
+        }
+      ],
+      [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#0B3B2E",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 120
         }
       ]
     ],

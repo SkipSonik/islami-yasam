@@ -1,18 +1,45 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { C } from '@/constants/theme';
+import { AppStateProvider, useAppState } from '@/lib/app-state';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+const theme = {
+  ...DarkTheme,
+  colors: { ...DarkTheme.colors, background: C.bg, card: C.bgDeep, primary: C.accent, text: C.text },
+};
+
+function Root() {
+  const { ready } = useAppState();
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: C.bg } }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="kuran/[id]" />
+      <Stack.Screen name="zikirmatik" />
+      <Stack.Screen name="kaza" />
+      <Stack.Screen name="ayarlar" />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider value={theme}>
+        <AppStateProvider>
+          <StatusBar style="light" />
+          <Root />
+        </AppStateProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

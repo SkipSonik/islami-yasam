@@ -1,0 +1,66 @@
+name: Android APK
+
+# main dalına her gönderimde APK derlenir ve "Releases" sayfasına konur.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-apk
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Bağımlılıkları kur
+        run: npm ci
+
+      - name: Tip kontrolü
+        run: npx tsc --noEmit
+
+      - name: Android projesini oluştur
+        run: npx expo prebuild --platform android --no-install --clean
+
+      - name: APK derle
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+
+      - name: APK'yı adlandır
+        run: |
+          VERSION=$(node -p "require('./app.json').expo.version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          cp android/app/build/outputs/apk/release/app-release.apk "islami-yasam-$VERSION-build${{ github.run_number }}.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: islami-yasam-apk
+          path: islami-yasam-*.apk
+
+      - name: Release oluştur
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}-build${{ github.run_number }}
+          name: İslami Yaşam ${{ env.VERSION }} (derleme ${{ github.run_number }})
+          body: Telefondan bu sayfayı açıp aşağıdaki .apk dosyasını indirip kurabilirsin.
+          prerelease: true
+          files: islami-yasam-*.apk

@@ -1,0 +1,164 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { router } from 'expo-router';
+import type { ComponentProps, ReactNode } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { C, R, S } from '@/constants/theme';
+
+export type IconName = ComponentProps<typeof Ionicons>['name'];
+
+export function Screen({
+  children,
+  title,
+  back,
+  scroll = true,
+  right,
+}: {
+  children: ReactNode;
+  title?: string;
+  back?: boolean;
+  scroll?: boolean;
+  right?: ReactNode;
+}) {
+  const insets = useSafeAreaInsets();
+  const header = title ? (
+    <View style={styles.header}>
+      {back ? (
+        <Pressable hitSlop={12} onPress={() => router.back()} style={styles.headerBtn}>
+          <Ionicons name="arrow-back" size={22} color={C.text} />
+        </Pressable>
+      ) : null}
+      <Text style={[styles.headerTitle, back && { textAlign: 'center' }]} numberOfLines={1}>
+        {title}
+      </Text>
+      {back ? <View style={styles.headerBtn}>{right}</View> : right}
+    </View>
+  ) : null;
+
+  return (
+    <View style={[styles.root, { paddingTop: insets.top }]}>
+      {header}
+      {scroll ? (
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          {children}
+        </ScrollView>
+      ) : (
+        <View style={[styles.content, { flex: 1 }]}>{children}</View>
+      )}
+    </View>
+  );
+}
+
+export function Card({ children, style }: { children: ReactNode; style?: ViewStyle }) {
+  return <View style={[styles.card, style]}>{children}</View>;
+}
+
+export function SectionTitle({ icon, children }: { icon?: IconName; children: ReactNode }) {
+  return (
+    <View style={styles.sectionTitle}>
+      {icon ? <Ionicons name={icon} size={18} color={C.accent} /> : null}
+      <Text style={styles.sectionText}>{children}</Text>
+    </View>
+  );
+}
+
+export function ListRow({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  right,
+}: {
+  icon?: IconName;
+  title: string;
+  subtitle?: string;
+  onPress?: () => void;
+  right?: ReactNode;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      style={({ pressed }) => [styles.row, pressed && { backgroundColor: C.cardSoft }]}>
+      {icon ? (
+        <View style={styles.rowIcon}>
+          <Ionicons name={icon} size={20} color={C.accent} />
+        </View>
+      ) : null}
+      <View style={{ flex: 1 }}>
+        <Text style={styles.rowTitle}>{title}</Text>
+        {subtitle ? <Text style={styles.rowSub}>{subtitle}</Text> : null}
+      </View>
+      {right ?? (onPress ? <Ionicons name="chevron-forward" size={18} color={C.textMute} /> : null)}
+    </Pressable>
+  );
+}
+
+export function Btn({
+  label,
+  onPress,
+  kind = 'primary',
+  icon,
+}: {
+  label: string;
+  onPress: () => void;
+  kind?: 'primary' | 'ghost' | 'danger';
+  icon?: IconName;
+}) {
+  const bg = kind === 'primary' ? C.accent : kind === 'danger' ? '#4A2A2A' : C.cardSoft;
+  const fg = kind === 'primary' ? C.bgDeep : kind === 'danger' ? C.danger : C.text;
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [styles.btn, { backgroundColor: bg, opacity: pressed ? 0.8 : 1 }]}>
+      {icon ? <Ionicons name={icon} size={18} color={fg} /> : null}
+      <Text style={[styles.btnText, { color: fg }]}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: C.bg },
+  content: { padding: S.lg, paddingBottom: 40, gap: S.lg },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: S.lg,
+    paddingVertical: S.md,
+    gap: S.md,
+  },
+  headerBtn: { width: 32, alignItems: 'center' },
+  headerTitle: { flex: 1, color: C.text, fontSize: 22, fontWeight: '700' },
+  card: { backgroundColor: C.card, borderRadius: R.lg, padding: S.lg, gap: S.md },
+  sectionTitle: { flexDirection: 'row', alignItems: 'center', gap: S.sm },
+  sectionText: { color: C.text, fontSize: 17, fontWeight: '700' },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: S.md,
+    paddingVertical: S.md,
+    paddingHorizontal: S.md,
+    borderRadius: R.md,
+    backgroundColor: C.card,
+  },
+  rowIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: C.cardSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rowTitle: { color: C.text, fontSize: 16, fontWeight: '600' },
+  rowSub: { color: C.textDim, fontSize: 13, marginTop: 2 },
+  btn: {
+    flexDirection: 'row',
+    gap: S.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: R.md,
+  },
+  btnText: { fontSize: 16, fontWeight: '700' },
+});
