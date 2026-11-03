@@ -1,8 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ColorValue } from 'react-native';
-import { Tabs } from 'expo-router/js-tabs';
+import { BottomTabBar, Tabs } from 'expo-router/js-tabs';
+import { View } from 'react-native';
 
 import type { IconName } from '@/components/ui';
+import { MiniPlayer } from '@/components/mini-player';
 import { C } from '@/constants/theme';
 
 const icon =
@@ -14,6 +16,12 @@ const icon =
 export default function TabsLayout() {
   return (
     <Tabs
+      tabBar={(props) => (
+        <View style={{ backgroundColor: C.bg }}>
+          <MiniPlayer />
+          <BottomTabBar {...props} />
+        </View>
+      )}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: C.accent,

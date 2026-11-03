@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { C } from '@/constants/theme';
 import { AppStateProvider, useAppState } from '@/lib/app-state';
+import { QuranPlayerProvider } from '@/lib/quran-player';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,8 +37,10 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ThemeProvider value={theme}>
         <AppStateProvider>
-          <StatusBar style="light" />
-          <Root />
+          <QuranPlayerProvider>
+            <StatusBar style="light" />
+            <Root />
+          </QuranPlayerProvider>
         </AppStateProvider>
       </ThemeProvider>
     </SafeAreaProvider>

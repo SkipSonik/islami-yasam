@@ -30,7 +30,7 @@ export default function AraclarScreen() {
 
       <Text style={st.soon}>
         Sıradaki sürümde: Yakındaki camiler, Esmaül Hüsna, dini günler ve kandiller, abdest ve namaz rehberi,
-        sesli Kur'an dinleme, ezan sesi ve ana ekran widget'ı.
+        ezan sesi ve ana ekran widget'ı.
       </Text>
     </Screen>
   );

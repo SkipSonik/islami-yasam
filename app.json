@@ -2,7 +2,7 @@
   "expo": {
     "name": "İslami Yaşam",
     "slug": "islami-yasam",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.skipsonik.islamiyasam",
-      "versionCode": 2,
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#0B3B2E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -45,6 +45,14 @@
         "expo-notifications",
         {
           "color": "#3DDC97"
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": true
         }
       ],
       [
