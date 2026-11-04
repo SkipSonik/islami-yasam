@@ -1,3 +1,4 @@
+import { AmiriQuran_400Regular, useFonts } from '@expo-google-fonts/amiri-quran';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -17,9 +18,12 @@ const theme = {
 
 function Root() {
   const { ready } = useAppState();
+  // Kur'an metni için Amiri Quran fontu (SIL Açık Font Lisansı).
+  const [fontsLoaded, fontError] = useFonts({ AmiriQuran_400Regular });
+  const fontsDone = fontsLoaded || fontError != null;
   useEffect(() => {
-    if (ready) SplashScreen.hideAsync();
-  }, [ready]);
+    if (ready && fontsDone) SplashScreen.hideAsync();
+  }, [ready, fontsDone]);
 
   return (
     <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: C.bg } }}>
@@ -29,6 +33,7 @@ function Root() {
       <Stack.Screen name="kaza" />
       <Stack.Screen name="ayarlar" />
       <Stack.Screen name="camiler" />
+      <Stack.Screen name="mushaf" />
     </Stack>
   );
 }

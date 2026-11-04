@@ -6,15 +6,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { C, R, S } from '@/constants/theme';
 import { normalizeTr, SURAHS } from '@/data/surahs';
+import { juzOf, pageOf } from '@/lib/mushaf';
 import { isSurahCached } from '@/lib/quran';
+import { loadValue } from '@/lib/storage';
 
 export default function KuranScreen() {
   const insets = useSafeAreaInsets();
   const [q, setQ] = useState('');
   const [, setTick] = useState(0);
+  const [lastPage, setLastPage] = useState<number | null>(null);
 
-  // Sayfaya her dönüşte "indirildi" işaretlerini tazele.
-  useFocusEffect(useCallback(() => setTick((t) => t + 1), []));
+  // Sayfaya her dönüşte "indirildi" işaretlerini ve son okunan sayfayı tazele.
+  useFocusEffect(
+    useCallback(() => {
+      setTick((t) => t + 1);
+      loadValue<number | null>('mushaf-son-sayfa', null).then(setLastPage);
+    }, []),
+  );
 
   const list = useMemo(() => {
     const n = normalizeTr(q.trim());
@@ -26,6 +34,22 @@ export default function KuranScreen() {
     <View style={[st.root, { paddingTop: insets.top }]}>
       <View style={st.head}>
         <Text style={st.title}>Kur'an-ı Kerim</Text>
+        <Pressable
+          onPress={() => router.push(lastPage ? `/mushaf?sayfa=${lastPage}` : '/mushaf?sayfa=1')}
+          style={({ pressed }) => [st.mushafCard, pressed && { opacity: 0.85 }]}>
+          <View style={st.mushafIcon}>
+            <Ionicons name="book" size={24} color={C.bgDeep} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={st.mushafTitle}>Mushaf ile oku</Text>
+            <Text style={st.mushafSub}>
+              {lastPage
+                ? `Kaldığın yer: ${lastPage}. sayfa, ${juzOf(lastPage)}. cüz`
+                : 'Medine mushafı düzeni, okunan ayet yeşil'}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color={C.gold} />
+        </Pressable>
         <Text style={st.sub}>Açtığın sureler telefona kaydedilir, sonra internetsiz okunur.</Text>
         <View style={st.search}>
           <Ionicons name="search" size={18} color={C.textMute} />
@@ -52,7 +76,9 @@ export default function KuranScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <Text style={st.name}>{item.name}</Text>
-              <Text style={st.meta}>{item.ayahs} ayet</Text>
+              <Text style={st.meta}>
+                {item.ayahs} ayet · {pageOf(item.number)}. sayfa
+              </Text>
             </View>
             {isSurahCached(item.number) ? (
               <Ionicons name="checkmark-circle" size={18} color={C.accent} />
@@ -100,5 +126,25 @@ const st = StyleSheet.create({
   },
   numText: { color: C.gold, fontWeight: '700', transform: [{ rotate: '-45deg' }] },
   name: { color: C.text, fontSize: 16, fontWeight: '600' },
+  mushafCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: S.md,
+    backgroundColor: C.cardActive,
+    borderRadius: R.md,
+    padding: S.md,
+    borderWidth: 1,
+    borderColor: C.gold,
+  },
+  mushafIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: C.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mushafTitle: { color: C.text, fontSize: 16, fontWeight: '800' },
+  mushafSub: { color: C.textDim, fontSize: 12.5, marginTop: 2 },
   meta: { color: C.textDim, fontSize: 12, marginTop: 2 },
 });

@@ -1,36 +1,60 @@
 import { Directory, File, Paths } from 'expo-file-system';
 
-// Kaynak: api.alquran.cloud — Osmanlı hattıyla Arapça metin + Diyanet meali.
+// Kaynak: api.alquran.cloud — Osmanlı hattıyla Arapça metin (Tanzil) + Diyanet meali.
 const API = 'https://api.alquran.cloud/v1';
 const EDITIONS = 'quran-uthmani,tr.diyanet';
 
 export type Ayah = { n: number; ar: string; tr: string };
 export type Surah = { number: number; ayahs: Ayah[] };
 
-const dir = () => {
-  const d = new Directory(Paths.document, 'kuran');
-  if (!d.exists) d.create({ intermediates: true, idempotent: true });
-  return d;
-};
+// Bellekte de tut: mushaf sayfaları aynı sureyi tekrar tekrar ister.
+const memory = new Map<number, Surah>();
+const inflight = new Map<number, Promise<Surah>>();
 
-const fileFor = (n: number) => new File(dir(), `sure-${n}.json`);
+function fileFor(n: number): File | null {
+  try {
+    const d = new Directory(Paths.document, 'kuran');
+    if (!d.exists) d.create({ intermediates: true, idempotent: true });
+    return new File(d, `sure-${n}.json`);
+  } catch {
+    return null; // dosya sistemi yoksa (ör. web) önbelleksiz çalış
+  }
+}
 
 export function isSurahCached(n: number) {
+  if (memory.has(n)) return true;
   try {
-    return fileFor(n).exists;
+    return fileFor(n)?.exists ?? false;
   } catch {
     return false;
   }
 }
 
-// Önce telefondaki kopyaya bakar, yoksa indirir ve kaydeder.
-export async function getSurah(n: number): Promise<Surah> {
+// Önce bellekteki/telefondaki kopyaya bakar, yoksa indirir ve kaydeder.
+export function getSurah(n: number): Promise<Surah> {
+  const m = memory.get(n);
+  if (m) return Promise.resolve(m);
+  let p = inflight.get(n);
+  if (!p) {
+    p = loadSurah(n).finally(() => inflight.delete(n));
+    inflight.set(n, p);
+  }
+  return p;
+}
+
+async function loadSurah(n: number): Promise<Surah> {
   const f = fileFor(n);
-  if (f.exists) {
+  if (f?.exists) {
     try {
-      return JSON.parse(await f.text()) as Surah;
+      const s = clean(JSON.parse(await f.text()) as Surah);
+      memory.set(n, s);
+      return s;
     } catch {
-      f.delete();
+      try {
+        f.delete();
+      } catch {
+        // yok say
+      }
     }
   }
   const res = await fetch(`${API}/surah/${n}/editions/${EDITIONS}`);
@@ -38,28 +62,41 @@ export async function getSurah(n: number): Promise<Surah> {
   const json = await res.json();
   const [arEd, trEd] = json.data as { ayahs: { numberInSurah: number; text: string }[] }[];
 
-  const ayahs: Ayah[] = arEd.ayahs.map((a, i) => ({
-    n: a.numberInSurah,
-    ar: i === 0 ? stripBasmala(n, a.text) : a.text,
-    tr: trEd.ayahs[i]?.text ?? '',
-  }));
-  const surah: Surah = { number: n, ayahs };
-  try {
-    if (f.exists) f.delete();
-    f.create();
-    await f.write(JSON.stringify(surah));
-  } catch {
-    // kaydedemezsek yine de göster
+  const surah = clean({
+    number: n,
+    ayahs: arEd.ayahs.map((a, i) => ({ n: a.numberInSurah, ar: a.text, tr: trEd.ayahs[i]?.text ?? '' })),
+  });
+  memory.set(n, surah);
+  if (f) {
+    try {
+      if (f.exists) f.delete();
+      f.create();
+      await f.write(JSON.stringify(surah));
+    } catch {
+      // kaydedemezsek yine de göster
+    }
   }
   return surah;
 }
 
-// Kaynak metinde Fatiha ve Tevbe dışındaki surelerin ilk ayetinin başında
-// besmele yer alır; besmeleyi ayrı başlık olarak gösterdiğimiz için ayetten çıkarırız.
-function stripBasmala(n: number, text: string) {
-  if (n === 1 || n === 9) return text;
-  const words = text.trim().split(/\s+/);
-  if (words.length > 4 && words[0].startsWith('بِسْمِ')) return words.slice(4).join(' ');
+// Metni düzeltir: görünmez BOM karakteri ve (Fatiha/Tevbe dışında) ilk ayetin
+// başındaki besmele çıkarılır; besmele ayrı başlık olarak gösteriliyor.
+// Eski sürümün önbelleğe aldığı dosyalar da okunurken düzelir.
+function clean(s: Surah): Surah {
+  const ayahs = s.ayahs.map((a, i) => {
+    let ar = a.ar.replace(/﻿/g, '').trim();
+    if (i === 0 && s.number !== 1 && s.number !== 9) ar = stripBasmala(ar);
+    return { ...a, ar };
+  });
+  return { ...s, ayahs };
+}
+
+function stripBasmala(text: string) {
+  const words = text.split(/\s+/);
+  // "بِسْمِ" bazı surelerde şeddeli yazılır ("بِّسْمِ"), bu yüzden kökten bak.
+  if (words.length > 4 && /^بِ?ّ?ِ?سْمِ$/.test(words[0]) && words[1] === 'ٱللَّهِ') {
+    return words.slice(4).join(' ');
+  }
   return text;
 }
 

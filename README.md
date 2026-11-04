@@ -28,5 +28,9 @@ Kod `src/` altında: ekranlar `src/app/`, hesaplama ve veri `src/lib/`, sabit ve
 
 ## Kaynaklar
 
+- Mushaf sayfa/satır düzeni: [quran-qcf4](https://github.com/MohamadHajjRabee/quran-qcf4) paketinin JSON verisi (MIT). `scripts/build-mushaf-layout.mjs` ile `src/data/mushaf-layout.json` dosyasına dönüştürülür. Paketteki Kral Fahd fontları ticari kullanıma izinli olmadığı için **kullanılmaz**.
+- Kur'an fontu: [Amiri Quran](https://github.com/aliftype/amiri) (SIL Open Font License 1.1)
+- Ayet ayet ses: cdn.islamic.network (alquran.cloud)
+
 - Namaz vakti hesabı: [adhan-js](https://github.com/batoulapps/adhan-js) (Türkiye yöntemi)
 - Kur'an metni ve meal: [alquran.cloud](https://alquran.cloud) — `quran-uthmani`, `tr.diyanet`

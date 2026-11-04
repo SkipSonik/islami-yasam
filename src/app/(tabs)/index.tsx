@@ -113,7 +113,7 @@ function DailyAyah({ date }: { date: Date }) {
     <Card>
       <SectionTitle icon="book-outline">Günün Ayeti</SectionTitle>
       {ayah ? (
-        <Pressable onPress={() => router.push(`/kuran/${surahNo}`)} style={{ gap: S.md }}>
+        <Pressable onPress={() => router.push(`/mushaf?sure=${surahNo}&ayet=${ayahNo}`)} style={{ gap: S.md }}>
           <Text style={st.ar}>{ayah.ar}</Text>
           <Text style={st.tr}>{ayah.tr}</Text>
           <Text style={st.ref}>

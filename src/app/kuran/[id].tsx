@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -51,12 +51,17 @@ export default function SurahScreen() {
   };
 
   const headerPlay = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+      <Pressable hitSlop={10} onPress={() => router.push(`/mushaf?sure=${n}`)}>
+        <Ionicons name="book-outline" size={22} color={C.text} />
+      </Pressable>
     <Pressable
       hitSlop={10}
       onPress={() => (isThis ? player.toggle() : player.playSurah(n, 1))}
       style={st.headerPlay}>
       <Ionicons name={isThis && player.playing ? 'pause' : 'play'} size={18} color={C.bgDeep} />
     </Pressable>
+    </View>
   );
 
   return (

@@ -30,7 +30,7 @@ function ayahUrl(reciter: ReciterId, global: number) {
 }
 
 // Çalma sırası: [besmele?, 1. ayet, 2. ayet, ...]. index -> ayet numarası.
-type Queue = { surah: number; reciter: ReciterId; withBasmala: boolean; index: number };
+type Queue = { surah: number; reciter: ReciterId; withBasmala: boolean; index: number; continuous: boolean };
 
 function queueAyah(q: Queue) {
   return q.withBasmala ? q.index : q.index + 1; // 0 = besmele
@@ -51,7 +51,9 @@ type Ctx = {
   buffering: boolean;
   reciter: ReciterId;
   setReciter: (r: ReciterId) => void;
-  playSurah: (surah: number, fromAyah?: number) => void;
+  /** continuous: sure bitince sonraki sureye geç (mushaf okuması) */
+  playSurah: (surah: number, fromAyah?: number, continuous?: boolean) => void;
+  continuous: boolean;
   toggle: () => void;
   next: () => void;
   previous: () => void;
@@ -101,16 +103,38 @@ export function QuranPlayerProvider({ children }: { children: ReactNode }) {
     }
   }, [player]);
 
+  const lockScreen = useCallback(
+    (n: number, rec: ReciterId) => {
+      try {
+        player.setActiveForLockScreen(true, {
+          title: `${SURAHS[n - 1].name} Suresi`,
+          artist: RECITERS.find((r) => r.id === rec)?.name,
+          albumTitle: 'İslami Yaşam',
+        });
+      } catch {
+        // kilit ekranı kontrolleri desteklenmiyorsa sorun değil
+      }
+    },
+    [player],
+  );
+
   const step = useCallback(
     (delta: number) => {
       const q = queueRef.current;
       if (!q) return;
       const index = q.index + delta;
       if (index < 0) return load({ ...q, index: 0 });
-      if (index >= queueLength(q)) return stop();
+      if (index >= queueLength(q)) {
+        if (q.continuous && q.surah < 114) {
+          const next = q.surah + 1;
+          lockScreen(next, q.reciter);
+          return load({ ...q, surah: next, withBasmala: next !== 9, index: 0 });
+        }
+        return stop();
+      }
       load({ ...q, index });
     },
-    [load, stop],
+    [load, stop, lockScreen],
   );
 
   // Bir ayet bitince sıradakine geç. Dinleyici doğrudan oyuncuya bağlı,
@@ -123,7 +147,7 @@ export function QuranPlayerProvider({ children }: { children: ReactNode }) {
   }, [player, step]);
 
   const playSurah = useCallback(
-    async (n: number, fromAyah = 1, rec: ReciterId = reciter) => {
+    async (n: number, fromAyah = 1, rec: ReciterId = reciter, continuous = false) => {
       try {
         await setAudioModeAsync({
           playsInSilentMode: true,
@@ -136,18 +160,10 @@ export function QuranPlayerProvider({ children }: { children: ReactNode }) {
       const withBasmala = n !== 1 && n !== 9;
       // Ortadan başlatılırsa besmeleyi atla
       const index = fromAyah > 1 ? fromAyah - 1 + (withBasmala ? 1 : 0) : 0;
-      load({ surah: n, reciter: rec, withBasmala, index });
-      try {
-        player.setActiveForLockScreen(true, {
-          title: `${SURAHS[n - 1].name} Suresi`,
-          artist: RECITERS.find((r) => r.id === rec)?.name,
-          albumTitle: 'İslami Yaşam',
-        });
-      } catch {
-        // kilit ekranı kontrolleri desteklenmiyorsa sorun değil
-      }
+      load({ surah: n, reciter: rec, withBasmala, index, continuous });
+      lockScreen(n, rec);
     },
-    [player, reciter, load],
+    [reciter, load, lockScreen],
   );
 
   const surah = queue?.surah ?? null;
@@ -158,7 +174,7 @@ export function QuranPlayerProvider({ children }: { children: ReactNode }) {
       setReciterState(r);
       saveJSON('kari-v1', r);
       // Çalarken kâri değişirse aynı ayetten yeni sesle devam et
-      if (surah != null && ayah != null) playSurah(surah, Math.max(1, ayah), r);
+      if (surah != null && ayah != null) playSurah(surah, Math.max(1, ayah), r, queueRef.current?.continuous);
     },
     [surah, ayah, playSurah],
   );
@@ -171,13 +187,14 @@ export function QuranPlayerProvider({ children }: { children: ReactNode }) {
       buffering: status.isBuffering,
       reciter,
       setReciter,
-      playSurah: (n, from) => playSurah(n, from),
+      playSurah: (n, from, cont) => playSurah(n, from, undefined, cont),
+      continuous: queue?.continuous ?? false,
       toggle: () => (status.playing ? player.pause() : player.play()),
       next: () => step(1),
       previous: () => step(-1),
       stop,
     }),
-    [surah, ayah, status.playing, status.isBuffering, reciter, setReciter, playSurah, player, step, stop],
+    [surah, ayah, queue?.continuous, status.playing, status.isBuffering, reciter, setReciter, playSurah, player, step, stop],
   );
 
   return <PlayerCtx.Provider value={value}>{children}</PlayerCtx.Provider>;

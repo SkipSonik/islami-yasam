@@ -128,7 +128,7 @@ export const styles = StyleSheet.create({
     paddingVertical: S.md,
     gap: S.md,
   },
-  headerBtn: { width: 32, alignItems: 'center' },
+  headerBtn: { minWidth: 32, alignItems: 'center' },
   headerTitle: { flex: 1, color: C.text, fontSize: 22, fontWeight: '700' },
   card: { backgroundColor: C.card, borderRadius: R.lg, padding: S.lg, gap: S.md },
   sectionTitle: { flexDirection: 'row', alignItems: 'center', gap: S.sm },
