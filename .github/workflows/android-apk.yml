@@ -102,7 +102,10 @@ jobs:
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://esma" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > esma.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://zekat" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > zekat.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://hatim" com.skipsonik.islamiyasam; sleep 8; adb exec-out screencap -p > hatim.png || true
-            adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://kabe" com.skipsonik.islamiyasam; sleep 15; adb exec-out screencap -p > kabe.png || true
+            adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://camiler" com.skipsonik.islamiyasam; sleep 45; adb exec-out screencap -p > camiler.png || true
+            echo "=== CAMİLER EKRANI ==="; adb shell uiautomator dump /sdcard/u.xml > /dev/null && adb shell cat /sdcard/u.xml | grep -o 'text="[^"]*"' | head -30 || true
+            adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://kabe" com.skipsonik.islamiyasam; sleep 25; adb exec-out screencap -p > kabe.png || true
+            echo "=== KABE EKRANI ==="; adb shell uiautomator dump /sdcard/u.xml > /dev/null && adb shell cat /sdcard/u.xml | grep -o -E '(text|content-desc)="[^"]+"' | head -40 || true
             echo "=== UYGULAMA SÜRECİ (ekranlar sonrası) ==="; adb shell pidof com.skipsonik.islamiyasam || echo "UYGULAMA ÇALIŞMIYOR (çöktü)"
             echo "=== HATA KAYDI ==="; adb logcat -d -v brief | grep -E "AndroidRuntime|FATAL|ReactNativeJS|islamiyasam|DEBUG  :|libc   :" | head -250
             adb shell pidof com.skipsonik.islamiyasam > /dev/null

@@ -1,3 +1,5 @@
+import Constants from 'expo-constants';
+
 import { currentLang, t as tr } from '@/i18n';
 
 import { loadValue, saveJSON } from './storage';
@@ -12,6 +14,13 @@ const SERVERS = [
   'https://overpass.kumi.systems/api/interpreter',
 ];
 const TIMEOUT_MS = 60000;
+const UA = 'IslamiYasam/1.0 (+https://mix.gen.tr)';
+
+// Kendi ara sunucumuz: bölgeleri veritabanında önbelleğe alır, tekrar eden aramalar anında döner.
+const PROXY: string = (
+  (Constants.expoConfig?.extra as { hatimApi?: string } | undefined)?.hatimApi ??
+  'https://mix.gen.tr/islamiyasam/hatim/api.php'
+).replace(/api\.php$/, 'camiler.php');
 
 export type Mosque = {
   id: string;
@@ -52,7 +61,7 @@ function overpass(q: string): Promise<OsmElement[]> {
     SERVERS.forEach((url, i) => {
       fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json', 'User-Agent': UA },
         body: `data=${encodeURIComponent(q)}`,
         signal: ctrls[i].signal,
       })
@@ -138,12 +147,51 @@ function dedupe(list: Mosque[]) {
   return out;
 }
 
+type ProxyItem = { id: string; lat: number; lng: number; n: Record<string, string>; a: string };
+
+async function viaProxy(lat: number, lng: number, radius: number): Promise<OsmElement[]> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 120000);
+  try {
+    const res = await fetch(`${PROXY}?lat=${lat.toFixed(5)}&lng=${lng.toFixed(5)}&r=${radius}`, {
+      signal: ctrl.signal,
+      headers: { Accept: 'application/json' },
+    });
+    const json = await res.json();
+    if (!json?.ok || !Array.isArray(json.elements)) throw new Error(json?.error ?? `HTTP ${res.status}`);
+    // Overpass biçimine çevir ki aynı işleme yolundan geçsin
+    return (json.elements as ProxyItem[]).map((m) => {
+      const tags: Record<string, string> = { religion: 'muslim' };
+      if (m.n?._) tags.name = m.n._;
+      for (const [k, v] of Object.entries(m.n ?? {})) if (k !== '_') tags[`name:${k}`] = v;
+      if (m.a) tags['addr:suburb'] = m.a;
+      return { type: m.id[0], id: Number(m.id.slice(1)), lat: m.lat, lon: m.lng, tags };
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** İlk başarılı sonucu döndürür; hepsi başarısız olursa son hatayı fırlatır. */
+function firstSuccess<T>(tasks: Promise<T>[]): Promise<T> {
+  return new Promise((resolve, reject) => {
+    let failed = 0;
+    tasks.forEach((p) =>
+      p.then(resolve, (e) => {
+        if (++failed === tasks.length) reject(e);
+      }),
+    );
+  });
+}
+
 export async function findNearbyMosques(lat: number, lng: number): Promise<Mosque[]> {
-  // Tek sorgu 3 km; çok az sonuç çıkarsa (kırsal bölge) 10 km'ye genişlet.
+  // Önce 3 km; çok az sonuç çıkarsa (kırsal bölge) 10 km'ye genişlet.
+  // Kendi sunucumuz ve Overpass'ın kendisi aynı anda sorulur, hangisi önce gelirse.
   const toList = (els: OsmElement[]) =>
     dedupe(els.map((e) => toMosque(e, lat, lng)).filter((m): m is Mosque => m != null));
-  let list = toList(await overpass(query(lat, lng, 3000)));
-  if (list.length < 3) list = toList(await overpass(query(lat, lng, 10000)));
+  const search = (radius: number) => firstSuccess([viaProxy(lat, lng, radius), overpass(query(lat, lng, radius))]);
+  let list = toList(await search(3000));
+  if (list.length < 3) list = toList(await search(10000));
   const result = list.slice(0, 40);
   saveJSON('camiler-son', { lat, lng, at: Date.now(), list: result });
   return result;

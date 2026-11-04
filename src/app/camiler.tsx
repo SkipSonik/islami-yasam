@@ -48,11 +48,19 @@ export default function CamilerScreen() {
     try {
       const perm = await Location.getForegroundPermissionsAsync();
       if (perm.granted) {
+        // Kapalı alanda GPS uzun süre konum bulamayabilir; 12 sn'den fazla bekleme.
         const pos =
-          (await Location.getLastKnownPositionAsync({ maxAge: 2 * 60 * 1000, requiredAccuracy: 200 })) ??
-          (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
-        lat = pos.coords.latitude;
-        lng = pos.coords.longitude;
+          (await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000, requiredAccuracy: 500 })) ??
+          (await Promise.race([
+            Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+            new Promise<null>((r) => setTimeout(() => r(null), 12000)),
+          ]));
+        if (pos) {
+          lat = pos.coords.latitude;
+          lng = pos.coords.longitude;
+        } else {
+          setNote({ key: 'mosques.noFix' });
+        }
       } else {
         setNote({ key: 'mosques.noPerm', place: settings.place.name });
       }
