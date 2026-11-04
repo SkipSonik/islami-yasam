@@ -64,3 +64,43 @@ jobs:
           body: Telefondan bu sayfayı açıp aşağıdaki .apk dosyasını indirip kurabilirsin.
           prerelease: true
           files: islami-yasam-*.apk
+
+  # Derlenen APK'yı gerçek bir Android emülatöründe açıp çökme olup olmadığını kontrol eder.
+  # Hata kaydı (logcat) bu adımın çıktısında, ekran görüntüsü "duman-testi" dosyasında görünür.
+  smoke:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: islami-yasam-apk
+
+      - name: KVM'yi etkinleştir
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Emülatörde aç
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            adb install -r -g islami-yasam-*.apk
+            adb logcat -c
+            adb shell monkey -p com.skipsonik.islamiyasam -c android.intent.category.LAUNCHER 1
+            sleep 30
+            adb exec-out screencap -p > acilis.png || true
+            echo "=== UYGULAMA SÜRECİ ==="; adb shell pidof com.skipsonik.islamiyasam || echo "UYGULAMA ÇALIŞMIYOR (çöktü)"
+            echo "=== HATA KAYDI ==="; adb logcat -d -v brief | grep -E "AndroidRuntime|FATAL|ReactNativeJS|ReactNative|Expo|islamiyasam|DEBUG  :|libc   :|SecurityException|Exception" | head -250
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: duman-testi
+          path: acilis.png
