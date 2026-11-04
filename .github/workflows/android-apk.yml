@@ -97,7 +97,8 @@ jobs:
             sleep 30
             adb exec-out screencap -p > acilis.png || true
             echo "=== UYGULAMA SÜRECİ ==="; adb shell pidof com.skipsonik.islamiyasam || echo "UYGULAMA ÇALIŞMIYOR (çöktü)"
-            echo "=== HATA KAYDI ==="; adb logcat -d -v brief | grep -E "AndroidRuntime|FATAL|ReactNativeJS|ReactNative|Expo|islamiyasam|DEBUG  :|libc   :|SecurityException|Exception" | head -250
+            echo "=== HATA KAYDI ==="; adb logcat -d -v brief | grep -E "AndroidRuntime|FATAL|ReactNativeJS|islamiyasam|DEBUG  :|libc   :" | head -250
+            adb shell pidof com.skipsonik.islamiyasam > /dev/null
 
       - uses: actions/upload-artifact@v4
         if: always()
