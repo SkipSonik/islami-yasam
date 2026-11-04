@@ -14,6 +14,8 @@ Türkçe, English, العربية, Deutsch, Français, Русский, Bahasa In
 - **Kur'an-ı Kerim:** 114 sure, Arapça metin + Diyanet meali, açılan sureler internetsiz okunur
 - **Kıble pusulası:** konuma göre kıble açısı, hizalanınca titreşim
 - **Zikirmatik** ve **kaza namazı takibi**
+- **Hatim:** kişisel hatim takibi ve kodla katılınan **ortak hatim** (Kur'an kardeşliği). Sunucu `server/hatim/` (PHP + MySQL)
+- **Dini günler ve kandiller**, **imsakiye**, **Esmaül Hüsna**, **Zekatmatik**, **Kâbe canlı yayın**
 - **Ayarlar:** konum, bildirim tercihleri, Hicri tarih düzeltmesi
 
 ## APK nasıl alınır
@@ -36,5 +38,10 @@ Kod `src/` altında: ekranlar `src/app/`, hesaplama ve veri `src/lib/`, sabit ve
 - Kur'an fontu: [Amiri Quran](https://github.com/aliftype/amiri) (SIL Open Font License 1.1)
 - Ayet ayet ses: cdn.islamic.network (alquran.cloud)
 
+- Hicri takvim: ay başları `scripts/build-hijri-table.mjs` ile 2016 İstanbul Hicri Takvim Birliği Kongresi ölçütüne göre astronomik olarak hesaplanır (Meeus algoritmaları); Diyanet'in 2025–2026 tarihleriyle birebir doğrulandı.
 - Namaz vakti hesabı: [adhan-js](https://github.com/batoulapps/adhan-js) (Türkiye yöntemi)
 - Kur'an metni ve meal: [alquran.cloud](https://alquran.cloud) — `quran-uthmani`, `tr.diyanet`
+
+## Ortak hatim sunucusu
+
+`server/hatim/api.php` tek dosyalık bir PHP API'sidir. Kurulum: klasörü sunucuya yükle, `config.sample.php` dosyasını `config.php` adıyla kopyalayıp veritabanı bilgilerini yaz. Tablolar ilk istekte kendiliğinden oluşur. `config.php` git'e gönderilmez. Uygulamanın kullandığı adres `app.json` → `extra.hatimApi`.

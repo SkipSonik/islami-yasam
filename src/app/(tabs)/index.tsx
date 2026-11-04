@@ -8,12 +8,13 @@ import { Card, Screen, SectionTitle } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
 import { ayahForDate } from '@/data/daily-ayahs';
 import { surahName } from '@/data/surahs';
-import { formatDateLong } from '@/i18n';
+import { formatDateLong, type StringKey } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import { startOfDay } from '@/lib/dates';
 import { formatHijri } from '@/lib/hijri';
 import { fmtTime, getCurrentPrayer, getDayTimes, getNextPrayer, PRAYER_KEYS } from '@/lib/prayer';
 import { getAyah, type Ayah } from '@/lib/quran';
+import { upcomingReligiousDays, whenLabel } from '@/lib/religious-days';
 import { useNow } from '@/lib/use-now';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -40,6 +41,10 @@ export default function HomeScreen() {
   const progress = span > 0 ? 1 - left / span : 0;
 
   const gregorian = formatDateLong(now, lang);
+  const nextDay = useMemo(
+    () => upcomingReligiousDays(new Date(dayKey), hijriOffset, 2)[0],
+    [dayKey, hijriOffset],
+  );
 
   return (
     <Screen>
@@ -58,6 +63,17 @@ export default function HomeScreen() {
           <Ionicons name="moon-outline" size={15} color={C.gold} />
           <Text style={[st.meta, { color: C.gold }]}>{formatHijri(now, hijriOffset, lang)}</Text>
         </View>
+        {nextDay ? (
+          <Pressable style={st.metaRow} onPress={() => router.push('/dini-gunler')}>
+            <Ionicons name="star-outline" size={15} color={C.accent} />
+            <Text style={[st.meta, { color: C.accent }]}>
+              {t('rd.upcoming', {
+                name: t(`rd.${nextDay.key}` as StringKey),
+                when: whenLabel(nextDay, new Date(dayKey), t),
+              })}
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
 
       <ReliabilityBanner />

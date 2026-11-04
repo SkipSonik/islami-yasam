@@ -1,0 +1,5 @@
+# config.php ve kurulum işaretine dışarıdan erişilmesin
+<FilesMatch "^(config\.php|config\.sample\.php|\.installed)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes

@@ -2,7 +2,7 @@
   "expo": {
     "name": "İslami Yaşam",
     "slug": "islami-yasam",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.skipsonik.islamiyasam",
-      "versionCode": 11,
+      "versionCode": 12,
       "adaptiveIcon": {
         "backgroundColor": "#0B3B2E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -79,6 +79,9 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "hatimApi": "https://mix.gen.tr/islamiyasam/hatim/api.php"
     }
   }
 }

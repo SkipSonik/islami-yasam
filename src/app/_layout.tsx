@@ -58,6 +58,13 @@ function Root() {
       <Stack.Screen name="ayarlar" />
       <Stack.Screen name="camiler" />
       <Stack.Screen name="mushaf" />
+      <Stack.Screen name="dini-gunler" />
+      <Stack.Screen name="imsakiye" />
+      <Stack.Screen name="esma" />
+      <Stack.Screen name="zekat" />
+      <Stack.Screen name="hatim" />
+      <Stack.Screen name="ortak-hatim/[kod]" />
+      <Stack.Screen name="kabe" />
     </Stack>
   );
 }
