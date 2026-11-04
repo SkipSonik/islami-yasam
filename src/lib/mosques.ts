@@ -1,12 +1,17 @@
+import { currentLang, t as tr } from '@/i18n';
+
 import { loadValue, saveJSON } from './storage';
 
 // Yakındaki camiler: OpenStreetMap verisi, Overpass API üzerinden (ücretsiz, anahtar gerekmez).
-// Ana sunucu yoğunsa sıradaki yedeğe geçilir.
+// Ücretsiz sunucular yoğunken 20-40 sn'de cevap verebiliyor; bu yüzden hepsine aynı anda
+// sorulur ve ilk gelen başarılı cevap kullanılır.
 const SERVERS = [
   'https://overpass-api.de/api/interpreter',
-  'https://overpass.private.coffee/api/interpreter',
   'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
 ];
+const TIMEOUT_MS = 60000;
 
 export type Mosque = {
   id: string;
@@ -28,42 +33,52 @@ type OsmElement = {
 };
 
 function query(lat: number, lng: number, radius: number) {
-  return `[out:json][timeout:20];
-(
-  nwr["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat},${lng});
-  nwr["building"="mosque"](around:${radius},${lat},${lng});
-);
-out center tags 150;`;
+  return `[out:json][timeout:50];nwr["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${lat.toFixed(5)},${lng.toFixed(5)});out center tags 120;`;
 }
 
-async function fetchWithTimeout(url: string, body: string, ms: number) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), ms);
-  try {
-    return await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
-      body: `data=${encodeURIComponent(body)}`,
-      signal: ctrl.signal,
+// Tüm sunuculara aynı anda sorar; ilk başarılı cevabı döndürür, diğerlerini iptal eder.
+function overpass(q: string): Promise<OsmElement[]> {
+  return new Promise((resolve, reject) => {
+    const ctrls = SERVERS.map(() => new AbortController());
+    let failed = 0;
+    let done = false;
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      ctrls.forEach((c) => c.abort());
+      reject(new Error('Zaman aşımı'));
+    }, TIMEOUT_MS);
+
+    SERVERS.forEach((url, i) => {
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+        body: `data=${encodeURIComponent(q)}`,
+        signal: ctrls[i].signal,
+      })
+        .then(async (res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const json = await res.json();
+          if (!Array.isArray(json?.elements)) throw new Error('Geçersiz cevap');
+          return json.elements as OsmElement[];
+        })
+        .then((els) => {
+          if (done) return;
+          done = true;
+          clearTimeout(timer);
+          ctrls.forEach((c, j) => j !== i && c.abort());
+          resolve(els);
+        })
+        .catch((e) => {
+          failed++;
+          if (!done && failed === SERVERS.length) {
+            done = true;
+            clearTimeout(timer);
+            reject(e);
+          }
+        });
     });
-  } finally {
-    clearTimeout(t);
-  }
-}
-
-async function overpass(q: string): Promise<OsmElement[]> {
-  let lastErr: unknown = null;
-  for (const url of SERVERS) {
-    try {
-      const res = await fetchWithTimeout(url, q, 20000);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-      return (json.elements ?? []) as OsmElement[];
-    } catch (e) {
-      lastErr = e;
-    }
-  }
-  throw lastErr ?? new Error('Sunucuya ulaşılamadı');
+  });
 }
 
 const toRad = (d: number) => (d * Math.PI) / 180;
@@ -84,10 +99,6 @@ function bearingDeg(lat1: number, lng1: number, lat2: number, lng2: number) {
   return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
 }
 
-const DIRS = ['kuzey', 'kuzeydoğu', 'doğu', 'güneydoğu', 'güney', 'güneybatı', 'batı', 'kuzeybatı'];
-export function directionName(bearing: number) {
-  return DIRS[Math.round(bearing / 45) % 8];
-}
 
 function toMosque(e: OsmElement, lat: number, lng: number): Mosque | null {
   const p = e.center ?? (e.lat != null && e.lon != null ? { lat: e.lat, lon: e.lon } : null);
@@ -95,7 +106,8 @@ function toMosque(e: OsmElement, lat: number, lng: number): Mosque | null {
   const t = e.tags ?? {};
   // Cami olmayan ibadet yerlerini (ör. kilise binası etiketi yanlışsa) ele
   if (t.religion && t.religion !== 'muslim') return null;
-  const name = t['name:tr'] || t.name || (t.building === 'mosque' || t.religion === 'muslim' ? 'Cami' : '');
+  const lang = currentLang();
+  const name = t[`name:${lang}`] || t.name || t['name:en'] || (t.religion === 'muslim' ? tr('mosques.defaultName') : '');
   if (!name) return null;
   const street = [t['addr:street'], t['addr:housenumber']].filter(Boolean).join(' ');
   const area = t['addr:neighbourhood'] || t['addr:suburb'] || t['addr:district'];
@@ -116,7 +128,8 @@ function dedupe(list: Mosque[]) {
   for (const m of list.sort((a, b) => a.distance - b.distance)) {
     const dup = out.find((o) => distanceM(o.lat, o.lng, m.lat, m.lng) < 60);
     if (dup) {
-      if (dup.name === 'Cami' && m.name !== 'Cami') dup.name = m.name;
+      const generic = tr('mosques.defaultName');
+      if (dup.name === generic && m.name !== generic) dup.name = m.name;
       if (!dup.address && m.address) dup.address = m.address;
       continue;
     }
@@ -126,13 +139,11 @@ function dedupe(list: Mosque[]) {
 }
 
 export async function findNearbyMosques(lat: number, lng: number): Promise<Mosque[]> {
-  let list: Mosque[] = [];
-  // Önce 2 km; az sonuç çıkarsa 6 km'ye genişlet.
-  for (const radius of [2000, 6000]) {
-    const els = await overpass(query(lat, lng, radius));
-    list = dedupe(els.map((e) => toMosque(e, lat, lng)).filter((m): m is Mosque => m != null));
-    if (list.length >= 5) break;
-  }
+  // Tek sorgu 3 km; çok az sonuç çıkarsa (kırsal bölge) 10 km'ye genişlet.
+  const toList = (els: OsmElement[]) =>
+    dedupe(els.map((e) => toMosque(e, lat, lng)).filter((m): m is Mosque => m != null));
+  let list = toList(await overpass(query(lat, lng, 3000)));
+  if (list.length < 3) list = toList(await overpass(query(lat, lng, 10000)));
   const result = list.slice(0, 40);
   saveJSON('camiler-son', { lat, lng, at: Date.now(), list: result });
   return result;
@@ -143,7 +154,9 @@ export async function loadCachedMosques() {
 }
 
 export function formatDistance(m: number) {
-  return m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1).replace('.', ',')} km`;
+  const comma = ['tr', 'de', 'fr', 'ru', 'id'].includes(currentLang());
+  const km = (m / 1000).toFixed(1);
+  return m < 1000 ? `${Math.round(m / 10) * 10} m` : `${comma ? km.replace('.', ',') : km} km`;
 }
 
 export function walkMinutes(m: number) {

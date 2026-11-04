@@ -1,6 +1,7 @@
 import { memo, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { t } from '@/i18n';
 import { BASMALA } from '@/lib/quran';
 import {
   arabicDigits,
@@ -94,11 +95,9 @@ export const MushafPage = memo(function MushafPage({ page, width, height, theme,
         <View style={[st.frameInner, { borderColor: theme.frameInner }]}>
           {failed ? (
             <View style={st.center}>
-              <Text style={[st.msg, { color: theme.dim }]}>
-                Bu sayfanın metni yüklenemedi. İlk açılışta internet bağlantısı gerekiyor.
-              </Text>
+              <Text style={[st.msg, { color: theme.dim }]}>{t('mushaf.pageFail')}</Text>
               <Pressable onPress={() => setAttempt((x) => x + 1)} style={[st.retry, { borderColor: theme.frame }]}>
-                <Text style={{ color: theme.headerText, fontWeight: '700' }}>Tekrar dene</Text>
+                <Text style={{ color: theme.headerText, fontWeight: '700' }}>{t('common.retry')}</Text>
               </Pressable>
             </View>
           ) : !text || !lineTexts || !measured ? (

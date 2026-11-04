@@ -1,6 +1,8 @@
 import * as SplashScreen from 'expo-splash-screen';
 import { Alert } from 'react-native';
 
+import { t } from '@/i18n';
+
 // Uygulama açılırken bir JavaScript hatası olursa, sürüm derlemesinde uygulama
 // sessizce kapanır ve kullanıcı neyin bozulduğunu göremez. Bu dosya en önce
 // yüklenir ve hatayı ekranda gösterir; böylece ekran görüntüsüyle sebep bulunur.
@@ -21,8 +23,8 @@ if (EU) {
       try {
         SplashScreen.hideAsync().catch(() => {});
         Alert.alert(
-          isFatal ? 'Uygulama açılırken hata oluştu' : 'Beklenmeyen hata',
-          `Lütfen bu ekranın görüntüsünü geliştiriciye gönder.\n\n${detail}`,
+          isFatal ? t('err.crash') : t('err.unexpected'),
+          `${t('err.screenshot')}\n\n${detail}`,
         );
       } catch {
         // uyarı gösterilemezse varsayılan davranışa bırak

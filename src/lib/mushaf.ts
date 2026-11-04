@@ -135,7 +135,7 @@ export function arabicDigits(n: number) {
 
 export type MushafTheme = {
   id: 'krem' | 'sepya' | 'gece';
-  name: string;
+  nameKey: 'mushaf.themeClassic' | 'mushaf.themeSepia' | 'mushaf.themeNight';
   bg: string;
   page: string;
   text: string;
@@ -152,7 +152,7 @@ export type MushafTheme = {
 export const MUSHAF_THEMES: MushafTheme[] = [
   {
     id: 'krem',
-    name: 'Klasik',
+    nameKey: 'mushaf.themeClassic',
     bg: '#E9DFC8',
     page: '#FBF5E6',
     text: '#1E1A12',
@@ -167,7 +167,7 @@ export const MUSHAF_THEMES: MushafTheme[] = [
   },
   {
     id: 'sepya',
-    name: 'Sepya',
+    nameKey: 'mushaf.themeSepia',
     bg: '#D9C49C',
     page: '#F0DFBC',
     text: '#33240F',
@@ -182,7 +182,7 @@ export const MUSHAF_THEMES: MushafTheme[] = [
   },
   {
     id: 'gece',
-    name: 'Gece',
+    nameKey: 'mushaf.themeNight',
     bg: '#072A21',
     page: '#0D3A2D',
     text: '#EFE8D6',

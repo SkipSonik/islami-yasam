@@ -17,7 +17,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MiniPlayer } from '@/components/mini-player';
 import { MushafPage, QURAN_FONT } from '@/components/mushaf-page';
 import { R, S } from '@/constants/theme';
-import { SURAHS } from '@/data/surahs';
+import { surahName as nameOf } from '@/data/surahs';
+import { MEAL_EDITIONS } from '@/i18n';
+import { useAppState, useT } from '@/lib/app-state';
 import {
   firstAyahOnPage,
   juzOf,
@@ -41,6 +43,8 @@ export default function MushafScreen() {
   const insets = useSafeAreaInsets();
   const { width, height } = useWindowDimensions();
   const player = useQuranPlayer();
+  const { lang } = useAppState();
+  const tr = useT();
 
   const startPage = useMemo(() => {
     if (params.sure) return pageOf(Number(params.sure), Number(params.ayet) || 1);
@@ -99,12 +103,12 @@ export default function MushafScreen() {
   };
 
   const firstOnPage = page ? firstAyahOnPage(page) : null;
-  const surahName = firstOnPage ? SURAHS[firstOnPage.surah - 1].name : '';
+  const surahName = firstOnPage ? nameOf(firstOnPage.surah, lang) : '';
   // Sayfada başlayan bir sure varsa onun adını göster
   const headerSurah = (() => {
     if (!page) return surahName;
     const h = pageLayout(page).l.find((l) => 'h' in l) as { h: number } | undefined;
-    return h ? SURAHS[h.h - 1].name : surahName;
+    return h ? nameOf(h.h, lang) : surahName;
   })();
 
   const playingHere = player.surah != null && player.playing && hlPage === page;
@@ -119,15 +123,15 @@ export default function MushafScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={[st.title, { color: theme.headerText }]} numberOfLines={1}>
-            {headerSurah} Suresi
+            {tr('quran.surahTitle', { name: headerSurah })}
           </Text>
           <Text style={[st.sub, { color: theme.dim }]}>
-            Sayfa {page} · {juzOf(page)}. cüz
+            {tr('mushaf.pageInfo', { page, juz: juzOf(page) })}
           </Text>
         </View>
         {!follow && player.surah != null ? (
           <Pressable hitSlop={8} onPress={() => setFollow(true)} style={[st.chip, { borderColor: theme.frame }]}>
-            <Text style={{ color: theme.headerText, fontSize: 12, fontWeight: '700' }}>Takip et</Text>
+            <Text style={{ color: theme.headerText, fontSize: 12, fontWeight: '700' }}>{tr('mushaf.follow')}</Text>
           </Pressable>
         ) : null}
         <Pressable hitSlop={10} onPress={() => setShowThemes(true)}>
@@ -175,14 +179,16 @@ export default function MushafScreen() {
             {selected ? (
               <>
                 <Text style={[st.sheetTitle, { color: theme.headerText }]}>
-                  {SURAHS[selected.surah - 1].name} Suresi, {selected.ayah}. ayet
+                  {tr('home.ayahRef', { surah: nameOf(selected.surah, lang), ayah: selected.ayah })}
                 </Text>
                 <ScrollView style={{ maxHeight: height * 0.45 }} contentContainerStyle={{ gap: S.md }}>
                   <Text style={[st.sheetAr, { color: theme.text, fontFamily: QURAN_FONT }]}>{selected.words}</Text>
                   <Text style={[st.sheetTr, { color: theme.text }]}>
-                    {selected.meal || 'Meal yüklenemedi.'}
+                    {selected.meal || tr('mushaf.mealFail')}
                   </Text>
-                  <Text style={[st.src, { color: theme.dim }]}>Meal: Diyanet İşleri Başkanlığı</Text>
+                  <Text style={[st.src, { color: theme.dim }]}>
+                    {tr('quran.mealSource', { source: MEAL_EDITIONS[lang].source })}
+                  </Text>
                 </ScrollView>
                 <View style={st.sheetBtns}>
                   <Pressable
@@ -193,12 +199,12 @@ export default function MushafScreen() {
                       setSelected(null);
                     }}>
                     <Ionicons name="play" size={18} color="#fff" />
-                    <Text style={st.sheetBtnText}>Buradan dinle</Text>
+                    <Text style={st.sheetBtnText}>{tr('mushaf.playFromHere')}</Text>
                   </Pressable>
                   <Pressable
                     style={[st.sheetBtn, { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: theme.frame }]}
                     onPress={() => setSelected(null)}>
-                    <Text style={[st.sheetBtnText, { color: theme.headerText }]}>Kapat</Text>
+                    <Text style={[st.sheetBtnText, { color: theme.headerText }]}>{tr('common.close')}</Text>
                   </Pressable>
                 </View>
               </>
@@ -211,7 +217,7 @@ export default function MushafScreen() {
       <Modal visible={showThemes} transparent animationType="fade" onRequestClose={() => setShowThemes(false)}>
         <Pressable style={st.backdrop} onPress={() => setShowThemes(false)}>
           <View style={[st.sheet, { backgroundColor: theme.page, borderColor: theme.frame }]}>
-            <Text style={[st.sheetTitle, { color: theme.headerText }]}>Sayfa teması</Text>
+            <Text style={[st.sheetTitle, { color: theme.headerText }]}>{tr('mushaf.theme')}</Text>
             <View style={{ flexDirection: 'row', gap: S.md }}>
               {MUSHAF_THEMES.map((t) => (
                 <Pressable
@@ -227,7 +233,7 @@ export default function MushafScreen() {
                     t.id === theme.id && { borderWidth: 3 },
                   ]}>
                   <Text style={{ fontFamily: QURAN_FONT, fontSize: 22, color: t.text }}>بِسْمِ ٱللَّهِ</Text>
-                  <Text style={{ color: t.headerText, fontWeight: '700', marginTop: 4 }}>{t.name}</Text>
+                  <Text style={{ color: t.headerText, fontWeight: '700', marginTop: 4 }}>{tr(t.nameKey)}</Text>
                 </Pressable>
               ))}
             </View>

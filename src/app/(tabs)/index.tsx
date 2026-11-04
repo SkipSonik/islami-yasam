@@ -7,27 +7,29 @@ import { ReliabilityBanner } from '@/components/reliability-card';
 import { Card, Screen, SectionTitle } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
 import { ayahForDate } from '@/data/daily-ayahs';
-import { SURAHS } from '@/data/surahs';
-import { useAppState } from '@/lib/app-state';
-import { formatLong, startOfDay } from '@/lib/dates';
+import { surahName } from '@/data/surahs';
+import { formatDateLong } from '@/i18n';
+import { useAppState, useT } from '@/lib/app-state';
+import { startOfDay } from '@/lib/dates';
 import { formatHijri } from '@/lib/hijri';
-import { fmtTime, getCurrentPrayer, getDayTimes, getNextPrayer, PRAYERS } from '@/lib/prayer';
+import { fmtTime, getCurrentPrayer, getDayTimes, getNextPrayer, PRAYER_KEYS } from '@/lib/prayer';
 import { getAyah, type Ayah } from '@/lib/quran';
 import { useNow } from '@/lib/use-now';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
 export default function HomeScreen() {
-  const { settings } = useAppState();
+  const { settings, lang, calc } = useAppState();
+  const t = useT();
   const { place, hijriOffset } = settings;
   const now = useNow(1000);
 
   const dayKey = startOfDay(now).getTime();
   const times = useMemo(
-    () => getDayTimes(place.lat, place.lng, new Date(dayKey)),
-    [place.lat, place.lng, dayKey],
+    () => getDayTimes(place.lat, place.lng, new Date(dayKey), calc),
+    [place.lat, place.lng, dayKey, calc],
   );
-  const next = getNextPrayer(place.lat, place.lng, now);
+  const next = getNextPrayer(place.lat, place.lng, now, calc);
   const current = getCurrentPrayer(times, now);
 
   const left = Math.max(0, next.time.getTime() - now.getTime());
@@ -37,16 +39,16 @@ export default function HomeScreen() {
   const span = next.time.getTime() - next.prevTime.getTime();
   const progress = span > 0 ? 1 - left / span : 0;
 
-  const gregorian = formatLong(now);
+  const gregorian = formatDateLong(now, lang);
 
   return (
     <Screen>
       <View style={{ gap: 6 }}>
-        <Text style={st.appTitle}>İslami Yaşam</Text>
+        <Text style={st.appTitle}>{t('app.name')}</Text>
         <Pressable style={st.metaRow} onPress={() => router.push('/ayarlar')}>
           <Ionicons name="location-outline" size={15} color={C.textDim} />
           <Text style={st.meta}>{place.name}</Text>
-          {!place.auto ? <Text style={st.metaHint}>(değiştir)</Text> : null}
+          {!place.auto ? <Text style={st.metaHint}>{t('home.change')}</Text> : null}
         </Pressable>
         <View style={st.metaRow}>
           <Ionicons name="calendar-outline" size={15} color={C.textDim} />
@@ -54,14 +56,14 @@ export default function HomeScreen() {
         </View>
         <View style={st.metaRow}>
           <Ionicons name="moon-outline" size={15} color={C.gold} />
-          <Text style={[st.meta, { color: C.gold }]}>{formatHijri(now, hijriOffset)}</Text>
+          <Text style={[st.meta, { color: C.gold }]}>{formatHijri(now, hijriOffset, lang)}</Text>
         </View>
       </View>
 
       <ReliabilityBanner />
 
       <Card style={{ backgroundColor: C.cardActive, alignItems: 'center' }}>
-        <Text style={st.countLabel}>{next.label} vaktine kalan süre</Text>
+        <Text style={st.countLabel}>{t('home.timeLeft', { prayer: t(`prayer.${next.key}`) })}</Text>
         <Text style={st.count}>
           {pad(h)}:{pad(m)}:{pad(s)}
         </Text>
@@ -69,12 +71,14 @@ export default function HomeScreen() {
           <View style={[st.progressFill, { width: `${Math.min(100, progress * 100)}%` }]} />
         </View>
         <View style={st.grid}>
-          {PRAYERS.map((p) => {
-            const active = p.key === current;
+          {PRAYER_KEYS.map((key) => {
+            const active = key === current;
             return (
-              <View key={p.key} style={[st.cell, active && st.cellActive]}>
-                <Text style={[st.cellLabel, active && { color: C.bgDeep }]}>{p.label}</Text>
-                <Text style={[st.cellTime, active && { color: C.bgDeep }]}>{fmtTime(times[p.key])}</Text>
+              <View key={key} style={[st.cell, active && st.cellActive]}>
+                <Text style={[st.cellLabel, active && { color: C.bgDeep }]} numberOfLines={1} adjustsFontSizeToFit>
+                  {t(`prayer.${key}`)}
+                </Text>
+                <Text style={[st.cellTime, active && { color: C.bgDeep }]}>{fmtTime(times[key])}</Text>
               </View>
             );
           })}
@@ -84,9 +88,9 @@ export default function HomeScreen() {
       <DailyAyah date={now} />
 
       <View style={st.quick}>
-        <QuickBtn icon="ellipse-outline" label="Zikirmatik" onPress={() => router.push('/zikirmatik')} />
-        <QuickBtn icon="list-outline" label="Kaza Takibi" onPress={() => router.push('/kaza')} />
-        <QuickBtn icon="location-outline" label="Camiler" onPress={() => router.push('/camiler')} />
+        <QuickBtn icon="ellipse-outline" label={t('home.quickZikir')} onPress={() => router.push('/zikirmatik')} />
+        <QuickBtn icon="list-outline" label={t('home.quickKaza')} onPress={() => router.push('/kaza')} />
+        <QuickBtn icon="location-outline" label={t('home.quickMosques')} onPress={() => router.push('/camiler')} />
       </View>
     </Screen>
   );
@@ -96,6 +100,8 @@ function DailyAyah({ date }: { date: Date }) {
   const [surahNo, ayahNo] = ayahForDate(date);
   const [ayah, setAyah] = useState<Ayah | null>(null);
   const [failed, setFailed] = useState(false);
+  const { lang } = useAppState();
+  const t = useT();
 
   useEffect(() => {
     let alive = true;
@@ -106,22 +112,19 @@ function DailyAyah({ date }: { date: Date }) {
     return () => {
       alive = false;
     };
-  }, [surahNo, ayahNo]);
+  }, [surahNo, ayahNo, lang]);
 
-  const surahName = SURAHS[surahNo - 1]?.name;
   return (
     <Card>
-      <SectionTitle icon="book-outline">Günün Ayeti</SectionTitle>
+      <SectionTitle icon="book-outline">{t('home.dailyAyah')}</SectionTitle>
       {ayah ? (
         <Pressable onPress={() => router.push(`/mushaf?sure=${surahNo}&ayet=${ayahNo}`)} style={{ gap: S.md }}>
           <Text style={st.ar}>{ayah.ar}</Text>
           <Text style={st.tr}>{ayah.tr}</Text>
-          <Text style={st.ref}>
-            {surahName} Suresi, {ayahNo}. ayet
-          </Text>
+          <Text style={st.ref}>{t('home.ayahRef', { surah: surahName(surahNo, lang), ayah: ayahNo })}</Text>
         </Pressable>
       ) : failed ? (
-        <Text style={st.tr}>Ayeti yüklemek için internet bağlantısı gerekiyor.</Text>
+        <Text style={st.tr}>{t('home.ayahNeedsNet')}</Text>
       ) : (
         <ActivityIndicator color={C.accent} />
       )}

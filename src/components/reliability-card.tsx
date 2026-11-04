@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { C, R, S } from '@/constants/theme';
-import { useAppState } from '@/lib/app-state';
+import { useAppState, useT } from '@/lib/app-state';
 import {
   ensureNotificationPermission,
   isReliable,
@@ -17,14 +17,13 @@ import { Card, SectionTitle } from './ui';
 // Ana sayfada: ayarlar eksikse kısa bir uyarı şeridi.
 export function ReliabilityBanner() {
   const { reliability, settings } = useAppState();
+  const t = useT();
   const anyOn = Object.values(settings.notify.enabled).some(Boolean);
   if (Platform.OS !== 'android' || !reliability || !anyOn || isReliable(reliability)) return null;
   return (
     <Pressable style={st.banner} onPress={() => router.push('/ayarlar')}>
       <Ionicons name="warning-outline" size={20} color={C.gold} />
-      <Text style={st.bannerText}>
-        Uygulama kapalıyken vakit bildirimleri gelmeyebilir. Düzeltmek için dokun.
-      </Text>
+      <Text style={st.bannerText}>{t('rel.banner')}</Text>
       <Ionicons name="chevron-forward" size={18} color={C.gold} />
     </Pressable>
   );
@@ -33,42 +32,40 @@ export function ReliabilityBanner() {
 // Ayarlarda: her bir gerekli izin ve düzeltme düğmesi.
 export function ReliabilityCard() {
   const { reliability, recheckReliability } = useAppState();
+  const t = useT();
   if (Platform.OS !== 'android' || !reliability) return null;
 
   return (
     <Card>
-      <SectionTitle icon="shield-checkmark-outline">Uygulama kapalıyken bildirim</SectionTitle>
-      <Text style={st.small}>
-        Vakit bildirimlerinin uygulama kapalıyken de zamanında gelmesi için aşağıdaki üç ayarın açık olması gerekir.
-      </Text>
+      <SectionTitle icon="shield-checkmark-outline">{t('rel.title')}</SectionTitle>
+      <Text style={st.small}>{t('rel.intro')}</Text>
       <Item
+        onLabel={t('common.on')}
         ok={reliability.notifications}
-        title="Bildirim izni"
-        action="İzin ver"
+        title={t('rel.notif')}
+        action={t('common.grant')}
         onPress={() => ensureNotificationPermission().then(recheckReliability)}
       />
       <Item
+        onLabel={t('common.on')}
         ok={reliability.exactAlarms}
-        title="Alarm ve hatırlatıcı izni"
-        hint="Bildirimin tam vaktinde gelmesini sağlar. Açılan ekranda İslami Yaşam'a izin ver."
-        action="Aç"
+        title={t('rel.exact')}
+        hint={t('rel.exactHint')}
+        action={t('common.open')}
         onPress={requestExactAlarms}
       />
       <Item
+        onLabel={t('common.on')}
         ok={reliability.batteryUnrestricted}
-        title="Pil kısıtlaması kapalı"
-        hint="Telefonun uygulamayı uyutup bildirimleri engellemesini önler. Çıkan soruya 'İzin ver' de."
-        action="Kaldır"
+        title={t('rel.battery')}
+        hint={t('rel.batteryHint')}
+        action={t('rel.remove')}
         onPress={requestBatteryExemption}
       />
       <View style={st.oem}>
-        <Text style={st.small}>
-          Xiaomi, Huawei, Oppo ve bazı Samsung telefonlarda ayrıca uygulama ayarlarından{' '}
-          <Text style={{ color: C.text, fontWeight: '700' }}>Otomatik başlatma</Text> açılmalı ve pil ayarı{' '}
-          <Text style={{ color: C.text, fontWeight: '700' }}>Kısıtlama yok</Text> yapılmalı.
-        </Text>
+        <Text style={st.small}>{t('rel.oem')}</Text>
         <Pressable onPress={openAppSettings} style={st.linkBtn}>
-          <Text style={st.link}>Uygulama ayarlarını aç</Text>
+          <Text style={st.link}>{t('rel.openSettings')}</Text>
         </Pressable>
       </View>
     </Card>
@@ -77,12 +74,14 @@ export function ReliabilityCard() {
 
 function Item({
   ok,
+  onLabel,
   title,
   hint,
   action,
   onPress,
 }: {
   ok: boolean;
+  onLabel: string;
   title: string;
   hint?: string;
   action: string;
@@ -96,7 +95,7 @@ function Item({
         {!ok && hint ? <Text style={st.small}>{hint}</Text> : null}
       </View>
       {ok ? (
-        <Text style={st.okText}>Açık</Text>
+        <Text style={st.okText}>{onLabel}</Text>
       ) : (
         <Pressable onPress={onPress} style={st.btn}>
           <Text style={st.btnText}>{action}</Text>

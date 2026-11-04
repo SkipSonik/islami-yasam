@@ -1,3 +1,5 @@
+import { hijriMonthName, type Lang } from '@/i18n';
+
 // Hicri tarih: tablo usulü (astronomik başlangıç) hesap.
 // Diyanet takvimi zaman zaman 1 gün farklı olabilir; ayarlardan düzeltme yapılabilir.
 
@@ -48,7 +50,8 @@ export function toHijri(date: Date, offsetDays = 0): HijriDate {
   return { day, month, year, monthName: HIJRI_MONTHS[month - 1] };
 }
 
-export function formatHijri(date: Date, offsetDays = 0) {
+export function formatHijri(date: Date, offsetDays = 0, lang?: Lang) {
   const h = toHijri(date, offsetDays);
-  return `${h.day} ${h.monthName} ${h.year}`;
+  const month = hijriMonthName(h.month, lang);
+  return lang === 'ja' ? `ヒジュラ暦${h.year}年 ${month} ${h.day}日` : `${h.day} ${month} ${h.year}`;
 }

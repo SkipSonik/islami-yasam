@@ -7,7 +7,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Btn, Card, Screen } from '@/components/ui';
 import { C, S } from '@/constants/theme';
-import { useAppState } from '@/lib/app-state';
+import { locale } from '@/i18n';
+import { useAppState, useT } from '@/lib/app-state';
 import { qiblaDirection } from '@/lib/prayer';
 import { useCompass } from '@/lib/use-compass';
 
@@ -15,7 +16,8 @@ const SIZE = 280;
 
 export default function KibleScreen() {
   const focused = useIsFocused();
-  const { settings, refreshLocation } = useAppState();
+  const { settings, refreshLocation, lang } = useAppState();
+  const t = useT();
   const { place } = settings;
   const qibla = qiblaDirection(place.lat, place.lng);
 
@@ -27,11 +29,11 @@ export default function KibleScreen() {
     Location.requestForegroundPermissionsAsync().then((p) => setPerm(p.status === 'granted' ? 'granted' : 'denied'));
   }, [focused]);
 
-  const { heading, accuracy, tilted } = useCompass(focused && perm === 'granted');
+  const { heading, accuracy, interference, faceDown } = useCompass(focused && perm === 'granted');
 
   // Telefonun baktığı yön ile kıble arasındaki fark (-180..180)
   const diff = heading == null ? null : ((qibla - heading + 540) % 360) - 180;
-  const aligned = diff != null && Math.abs(diff) < 4 && !tilted;
+  const aligned = diff != null && Math.abs(diff) < 4 && !faceDown;
 
   useEffect(() => {
     if (aligned && !wasAligned.current) Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -40,53 +42,62 @@ export default function KibleScreen() {
 
   if (perm === 'denied') {
     return (
-      <Screen title="Kıble Pusulası">
+      <Screen title={t('qibla.title')}>
         <Card style={{ alignItems: 'center' }}>
           <Ionicons name="location-outline" size={40} color={C.gold} />
-          <Text style={st.title}>Konum izni gerekiyor</Text>
-          <Text style={st.text}>
-            Pusulanın çalışması için konum izni gerekli. İzin verdikten sonra kıble açısı bulunduğun yere göre
-            hesaplanır.
-          </Text>
-          <Btn label="İzin ver" icon="location" onPress={() => refreshLocation().then((r) => setPerm(r === 'denied' ? 'denied' : 'granted'))} />
+          <Text style={st.title}>{t('qibla.needPerm')}</Text>
+          <Text style={st.text}>{t('qibla.needPermText')}</Text>
+          <Btn
+            label={t('common.grant')}
+            icon="location"
+            onPress={() => refreshLocation().then((r) => setPerm(r === 'denied' ? 'denied' : 'granted'))}
+          />
         </Card>
       </Screen>
     );
   }
 
+  const status =
+    heading == null
+      ? t('qibla.waiting')
+      : faceDown
+        ? t('qibla.faceDown')
+        : aligned
+          ? t('qibla.aligned')
+          : diff! > 0
+            ? t('qibla.turnRight', { deg: Math.round(diff!) })
+            : t('qibla.turnLeft', { deg: Math.round(-diff!) });
+
   return (
-    <Screen title="Kıble Pusulası">
+    <Screen title={t('qibla.title')}>
       <View style={{ alignItems: 'center', gap: S.lg }}>
         <Ionicons name="caret-down" size={28} color={aligned ? C.accent : C.text} style={{ marginBottom: -S.md }} />
         <View style={[st.dial, aligned && { borderColor: C.accent }]}>
           <View style={[StyleSheet.absoluteFill, { transform: [{ rotate: `${-(heading ?? 0)}deg` }] }]}>
-            <DialFace qibla={qibla} />
+            <DialFace qibla={qibla} cardinals={locale(lang).cal.cardinals} />
           </View>
           <View style={st.hub} />
         </View>
 
         <View style={{ alignItems: 'center', gap: 4 }}>
-          {tilted ? <Text style={st.tiltWarn}>Telefonu yere paralel, düz tut</Text> : null}
-          <Text style={[st.big, aligned && { color: C.accent }]}>
-            {heading == null ? 'Pusula bekleniyor…' : aligned ? 'Kıble yönündesin' : turnText(diff!)}
-          </Text>
+          <Text style={[st.big, aligned && { color: C.accent }]}>{status}</Text>
           <Text style={st.text}>
-            Kıble açısı: {Math.round(qibla)}° · Telefonun yönü: {heading == null ? '–' : `${Math.round(heading)}°`}
+            {t('qibla.angle', { q: Math.round(qibla), h: heading == null ? '–' : `${Math.round(heading)}°` })}
           </Text>
-          <Text style={st.text}>{place.name}
-          </Text>
+          <Text style={st.text}>{place.name}</Text>
         </View>
 
-        {accuracy < 2 && heading != null ? (
+        {interference && heading != null ? (
           <Card style={{ alignSelf: 'stretch' }}>
-            <Text style={st.warn}>
-              Pusula hassasiyeti düşük. Telefonu havada birkaç kez 8 çizerek döndür; metal eşyalardan ve
-              mıknatıslı kılıflardan uzak tut.
-            </Text>
+            <Text style={st.warn}>{t('qibla.interference')}</Text>
+          </Card>
+        ) : accuracy < 2 && heading != null ? (
+          <Card style={{ alignSelf: 'stretch' }}>
+            <Text style={st.warn}>{t('qibla.lowAccuracy')}</Text>
           </Card>
         ) : null}
 
-        <Text style={st.hint}>Telefonu yere paralel, düz tut. Üstteki ok kıble işaretiyle çakışınca kıbleye dönmüş olursun.</Text>
+        <Text style={st.hint}>{t('qibla.hint')}</Text>
       </View>
     </Screen>
   );
@@ -94,7 +105,7 @@ export default function KibleScreen() {
 
 // Kadran yüzü: çentikler, yön harfleri ve Kâbe işareti. Sadece kıble açısı
 // değişince yeniden çizilir; dönme işi dış katmanda yapılır.
-const DialFace = memo(function DialFace({ qibla }: { qibla: number }) {
+const DialFace = memo(function DialFace({ qibla, cardinals }: { qibla: number; cardinals: string[] }) {
   return (
     <>
       {Array.from({ length: 72 }, (_, i) => (
@@ -102,9 +113,9 @@ const DialFace = memo(function DialFace({ qibla }: { qibla: number }) {
           <View style={[st.tick, i % 6 === 0 && st.tickMajor]} />
         </View>
       ))}
-      {(['K', 'D', 'G', 'B'] as const).map((l, i) => (
-        <View key={l} style={[st.tickWrap, { transform: [{ rotate: `${i * 90}deg` }] }]}>
-          <Text style={[st.cardinal, l === 'K' && { color: C.danger }]}>{l}</Text>
+      {cardinals.map((l, i) => (
+        <View key={i} style={[st.tickWrap, { transform: [{ rotate: `${i * 90}deg` }] }]}>
+          <Text style={[st.cardinal, i === 0 && { color: C.danger }, l.length > 2 && { fontSize: 13 }]}>{l}</Text>
         </View>
       ))}
       <View style={[st.tickWrap, { transform: [{ rotate: `${qibla}deg` }] }]}>
@@ -117,10 +128,6 @@ const DialFace = memo(function DialFace({ qibla }: { qibla: number }) {
   );
 });
 
-function turnText(diff: number) {
-  const deg = Math.round(Math.abs(diff));
-  return diff > 0 ? `${deg}° sağa dön` : `${deg}° sola dön`;
-}
 
 const st = StyleSheet.create({
   dial: {

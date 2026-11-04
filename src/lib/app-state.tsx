@@ -1,9 +1,13 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { AppState as RNAppState } from 'react-native';
 
-import { DEFAULT_PLACE, locateDevice, type Place } from './location';
+import { deviceLang, setCurrentLang, translate, type Lang, type Params, type StringKey } from '@/i18n';
+
 import { registerBackgroundRefresh } from './background';
+import { resolveCalc } from './calc';
+import { DEFAULT_PLACE, locateDevice, type Place } from './location';
 import { checkReliability, rescheduleAll, type NotifySettings, type Reliability } from './notifications';
+import type { CalcConfig, MethodKey } from './prayer';
 import { loadJSON, saveJSON } from './storage';
 
 export type Settings = {
@@ -11,6 +15,8 @@ export type Settings = {
   hasLocated: boolean; // en az bir kez konum denendi mi
   notify: NotifySettings;
   hijriOffset: number; // -2..+2 gün
+  lang: Lang | null; // null: henüz seçilmedi → cihaz dili
+  method: MethodKey | 'auto';
 };
 
 const DEFAULTS: Settings = {
@@ -21,16 +27,20 @@ const DEFAULTS: Settings = {
     remindBefore: 0,
   },
   hijriOffset: 0,
+  lang: null,
+  method: 'auto',
 };
 
-const KEY = 'settings-v1';
+export const SETTINGS_KEY = 'settings-v1';
 
 type Ctx = {
   ready: boolean;
   settings: Settings;
+  lang: Lang;
+  calc: CalcConfig;
   update: (patch: Partial<Settings>) => void;
   refreshLocation: () => Promise<'ok' | 'denied' | 'failed'>;
-  notifyStatus: string | null;
+  notifyStatus: StringKey | null;
   reliability: Reliability | null;
   recheckReliability: () => void;
 };
@@ -40,13 +50,23 @@ const AppState = createContext<Ctx | null>(null);
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [settings, setSettings] = useState<Settings>(DEFAULTS);
-  const [notifyStatus, setNotifyStatus] = useState<string | null>(null);
+  const [notifyStatus, setNotifyStatus] = useState<StringKey | null>(null);
   const [reliability, setReliability] = useState<Reliability | null>(null);
   const [tick, setTick] = useState(0); // izin ekranından dönünce yeniden planlamak için
 
+  const lang: Lang = settings.lang ?? deviceLang();
+  setCurrentLang(lang); // bildirim gibi bileşen dışı metinler için
+
   useEffect(() => {
-    loadJSON<Settings>(KEY, DEFAULTS).then((s) => {
-      setSettings({ ...DEFAULTS, ...s, notify: { ...DEFAULTS.notify, ...s.notify } });
+    loadJSON<Settings>(SETTINGS_KEY, DEFAULTS).then((s) => {
+      const merged = { ...DEFAULTS, ...s, notify: { ...DEFAULTS.notify, ...s.notify } };
+      // Dil hiç seçilmediyse cihaz dilini kalıcı yap (arka plan görevi de aynı dili kullansın)
+      if (!merged.lang) {
+        merged.lang = deviceLang();
+        saveJSON(SETTINGS_KEY, merged);
+      }
+      setCurrentLang(merged.lang);
+      setSettings(merged);
       setReady(true);
     });
   }, []);
@@ -54,7 +74,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const update = useCallback((patch: Partial<Settings>) => {
     setSettings((prev) => {
       const next = { ...prev, ...patch };
-      saveJSON(KEY, next);
+      saveJSON(SETTINGS_KEY, next);
       return next;
     });
   }, []);
@@ -69,10 +89,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return r.error;
   }, [update]);
 
-  // İlk açılışta otomatik konum dene.
+  // İlk açılışta otomatik konum dene; eski sürümden kalan konumun ülkesi yoksa sessizce tamamla.
   useEffect(() => {
-    if (ready && !settings.hasLocated) refreshLocation();
-  }, [ready, settings.hasLocated, refreshLocation]);
+    if (!ready) return;
+    if (!settings.hasLocated) refreshLocation();
+    else if (settings.place.auto && settings.place.country === undefined) refreshLocation();
+  }, [ready, settings.hasLocated, settings.place.auto, settings.place.country, refreshLocation]);
 
   const recheckReliability = useCallback(() => {
     checkReliability()
@@ -88,28 +110,33 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     const sub = RNAppState.addEventListener('change', (st) => {
       if (st === 'active') {
         recheckReliability();
-        setTick((t) => t + 1);
+        setTick((x) => x + 1);
       }
     });
     return () => sub.remove();
   }, [recheckReliability]);
 
-  // Konum veya bildirim ayarı değişince bildirimleri yeniden planla.
+  const calc = useMemo(
+    () => resolveCalc(settings),
+    [settings.method, settings.place, settings.lang], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  // Konum, yöntem, dil veya bildirim ayarı değişince bildirimleri yeniden planla.
   const { place, notify } = settings;
   useEffect(() => {
     if (!ready) return;
     // İzin penceresi yalnızca ilk planlamada açılır, her ön plana dönüşte değil.
-    rescheduleAll(place.lat, place.lng, notify, tick === 0)
+    rescheduleAll(place.lat, place.lng, notify, tick === 0, calc)
       .then((n) => {
-        setNotifyStatus(n < 0 ? 'Bildirim izni verilmedi' : null);
+        setNotifyStatus(n < 0 ? 'notif.denied' : null);
         recheckReliability();
       })
-      .catch(() => setNotifyStatus('Bildirimler kurulamadı'));
-  }, [ready, place.lat, place.lng, notify, tick, recheckReliability]);
+      .catch(() => setNotifyStatus('notif.failed'));
+  }, [ready, place.lat, place.lng, notify, tick, calc, lang, recheckReliability]);
 
   return (
     <AppState.Provider
-      value={{ ready, settings, update, refreshLocation, notifyStatus, reliability, recheckReliability }}>
+      value={{ ready, settings, lang, calc, update, refreshLocation, notifyStatus, reliability, recheckReliability }}>
       {children}
     </AppState.Provider>
   );
@@ -119,4 +146,10 @@ export function useAppState() {
   const c = useContext(AppState);
   if (!c) throw new Error('AppStateProvider eksik');
   return c;
+}
+
+/** Seçili dilde çeviri */
+export function useT() {
+  const { lang } = useAppState();
+  return useCallback((key: StringKey, params?: Params) => translate(lang, key, params), [lang]);
 }

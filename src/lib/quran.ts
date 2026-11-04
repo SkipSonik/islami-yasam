@@ -1,30 +1,34 @@
 import { Directory, File, Paths } from 'expo-file-system';
 
-// Kaynak: api.alquran.cloud — Osmanlı hattıyla Arapça metin (Tanzil) + Diyanet meali.
+import { currentLang, MEAL_EDITIONS } from '@/i18n';
+
+// Kaynak: api.alquran.cloud — Osmanlı hattıyla Arapça metin (Tanzil) + seçili dilin meali.
 const API = 'https://api.alquran.cloud/v1';
-const EDITIONS = 'quran-uthmani,tr.diyanet';
+const mealEdition = () => MEAL_EDITIONS[currentLang()]?.id ?? 'tr.diyanet';
 
 export type Ayah = { n: number; ar: string; tr: string };
 export type Surah = { number: number; ayahs: Ayah[] };
 
 // Bellekte de tut: mushaf sayfaları aynı sureyi tekrar tekrar ister.
-const memory = new Map<number, Surah>();
-const inflight = new Map<number, Promise<Surah>>();
+const memory = new Map<string, Surah>();
+const inflight = new Map<string, Promise<Surah>>();
 
-function fileFor(n: number): File | null {
+function fileFor(n: number, edition: string): File | null {
   try {
     const d = new Directory(Paths.document, 'kuran');
     if (!d.exists) d.create({ intermediates: true, idempotent: true });
-    return new File(d, `sure-${n}.json`);
+    // Diyanet meali önceki sürümlerdeki dosya adını korur (eski önbellek boşa gitmesin)
+    return new File(d, edition === 'tr.diyanet' ? `sure-${n}.json` : `sure-${n}-${edition}.json`);
   } catch {
     return null; // dosya sistemi yoksa (ör. web) önbelleksiz çalış
   }
 }
 
 export function isSurahCached(n: number) {
-  if (memory.has(n)) return true;
+  const ed = mealEdition();
+  if (memory.has(`${n}:${ed}`)) return true;
   try {
-    return fileFor(n)?.exists ?? false;
+    return fileFor(n, ed)?.exists ?? false;
   } catch {
     return false;
   }
@@ -32,22 +36,24 @@ export function isSurahCached(n: number) {
 
 // Önce bellekteki/telefondaki kopyaya bakar, yoksa indirir ve kaydeder.
 export function getSurah(n: number): Promise<Surah> {
-  const m = memory.get(n);
+  const ed = mealEdition();
+  const key = `${n}:${ed}`;
+  const m = memory.get(key);
   if (m) return Promise.resolve(m);
-  let p = inflight.get(n);
+  let p = inflight.get(key);
   if (!p) {
-    p = loadSurah(n).finally(() => inflight.delete(n));
-    inflight.set(n, p);
+    p = loadSurah(n, ed, key).finally(() => inflight.delete(key));
+    inflight.set(key, p);
   }
   return p;
 }
 
-async function loadSurah(n: number): Promise<Surah> {
-  const f = fileFor(n);
+async function loadSurah(n: number, edition: string, key: string): Promise<Surah> {
+  const f = fileFor(n, edition);
   if (f?.exists) {
     try {
       const s = clean(JSON.parse(await f.text()) as Surah);
-      memory.set(n, s);
+      memory.set(key, s);
       return s;
     } catch {
       try {
@@ -57,7 +63,7 @@ async function loadSurah(n: number): Promise<Surah> {
       }
     }
   }
-  const res = await fetch(`${API}/surah/${n}/editions/${EDITIONS}`);
+  const res = await fetch(`${API}/surah/${n}/editions/quran-uthmani,${edition}`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const json = await res.json();
   const [arEd, trEd] = json.data as { ayahs: { numberInSurah: number; text: string }[] }[];
@@ -66,7 +72,7 @@ async function loadSurah(n: number): Promise<Surah> {
     number: n,
     ayahs: arEd.ayahs.map((a, i) => ({ n: a.numberInSurah, ar: a.text, tr: trEd.ayahs[i]?.text ?? '' })),
   });
-  memory.set(n, surah);
+  memory.set(key, surah);
   if (f) {
     try {
       if (f.exists) f.delete();

@@ -4,6 +4,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Btn, Screen } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
+import { useT } from '@/lib/app-state';
 import { loadJSON, saveJSON } from '@/lib/storage';
 
 const TARGETS = [33, 99, 100, 0]; // 0 = sınırsız
@@ -13,6 +14,7 @@ type State = { count: number; target: number; rounds: number; total: number };
 
 export default function ZikirmatikScreen() {
   const [s, setS] = useState<State>({ count: 0, target: 33, rounds: 0, total: 0 });
+  const tr = useT();
 
   useEffect(() => {
     loadJSON<State>(KEY, s).then(setS);
@@ -36,13 +38,13 @@ export default function ZikirmatikScreen() {
   };
 
   const reset = () =>
-    Alert.alert('Sıfırla', 'Sayaç ve tur sayısı sıfırlansın mı?', [
-      { text: 'Vazgeç', style: 'cancel' },
-      { text: 'Sıfırla', style: 'destructive', onPress: () => set({ ...s, count: 0, rounds: 0, total: 0 }) },
+    Alert.alert(tr('zikir.reset'), tr('zikir.resetAsk'), [
+      { text: tr('common.cancel'), style: 'cancel' },
+      { text: tr('zikir.reset'), style: 'destructive', onPress: () => set({ ...s, count: 0, rounds: 0, total: 0 }) },
     ]);
 
   return (
-    <Screen title="Zikirmatik" back scroll={false}>
+    <Screen title={tr('zikir.title')} back scroll={false}>
       <View style={st.targets}>
         {TARGETS.map((t) => (
           <Pressable
@@ -57,15 +59,15 @@ export default function ZikirmatikScreen() {
       <Pressable onPress={tap} style={({ pressed }) => [st.pad, pressed && { transform: [{ scale: 0.98 }] }]}>
         <Text style={st.count}>{s.count}</Text>
         {s.target > 0 ? <Text style={st.of}>/ {s.target}</Text> : null}
-        <Text style={st.tapHint}>Saymak için dokun</Text>
+        <Text style={st.tapHint}>{tr('zikir.tap')}</Text>
       </Pressable>
 
       <View style={st.stats}>
-        <Stat label="Tur" value={s.rounds} />
-        <Stat label="Toplam" value={s.total} />
+        <Stat label={tr('zikir.rounds')} value={s.rounds} />
+        <Stat label={tr('zikir.total')} value={s.total} />
       </View>
 
-      <Btn label="Sıfırla" kind="danger" icon="refresh" onPress={reset} />
+      <Btn label={tr('zikir.reset')} kind="danger" icon="refresh" onPress={reset} />
     </Screen>
   );
 }

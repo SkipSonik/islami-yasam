@@ -3,15 +3,17 @@ import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { C, R, S } from '@/constants/theme';
-import { SURAHS } from '@/data/surahs';
-import { RECITERS, useQuranPlayer } from '@/lib/quran-player';
+import { surahName } from '@/data/surahs';
+import { useAppState, useT } from '@/lib/app-state';
+import { reciterName, useQuranPlayer } from '@/lib/quran-player';
 
 // Kur'an çalarken ekranın altında duran küçük çalar.
 export function MiniPlayer({ hideLink }: { hideLink?: boolean }) {
   const p = useQuranPlayer();
+  const { lang } = useAppState();
+  const t = useT();
   if (p.surah == null) return null;
-  const meta = SURAHS[p.surah - 1];
-  const reciter = RECITERS.find((r) => r.id === p.reciter)?.name;
+  const reciter = reciterName(p.reciter, lang);
 
   return (
     <View style={st.wrap}>
@@ -20,7 +22,7 @@ export function MiniPlayer({ hideLink }: { hideLink?: boolean }) {
         disabled={hideLink}
         onPress={() => router.push(`/kuran/${p.surah}`)}>
         <Text style={st.title} numberOfLines={1}>
-          {meta.name} · {p.ayah === 0 ? 'Besmele' : `${p.ayah}. ayet`}
+          {surahName(p.surah, lang)} · {p.ayah === 0 ? t('quran.basmala') : t('quran.ayahN', { n: p.ayah ?? 1 })}
         </Text>
         <Text style={st.sub} numberOfLines={1}>
           {reciter}

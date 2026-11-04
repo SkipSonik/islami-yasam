@@ -6,9 +6,11 @@ import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, View }
 import { MiniPlayer } from '@/components/mini-player';
 import { Btn, Screen } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
-import { SURAHS } from '@/data/surahs';
+import { surahName, SURAHS } from '@/data/surahs';
+import { MEAL_EDITIONS } from '@/i18n';
+import { useAppState, useT } from '@/lib/app-state';
 import { BASMALA, getSurah, type Ayah, type Surah } from '@/lib/quran';
-import { RECITERS, useQuranPlayer } from '@/lib/quran-player';
+import { reciterName, RECITERS, useQuranPlayer } from '@/lib/quran-player';
 import { loadValue, saveJSON } from '@/lib/storage';
 
 type Mode = 'ikisi' | 'arapca' | 'meal';
@@ -17,6 +19,9 @@ export default function SurahScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const n = Math.min(114, Math.max(1, Number(id) || 1));
   const meta = SURAHS[n - 1];
+  const { lang } = useAppState();
+  const t = useT();
+  const name = surahName(n, lang);
   const player = useQuranPlayer();
   const isThis = player.surah === n;
   const currentAyah = isThis ? player.ayah : null;
@@ -32,7 +37,7 @@ export default function SurahScreen() {
     setError(false);
     setSurah(null);
     getSurah(n).then(setSurah).catch(() => setError(true));
-  }, [n]);
+  }, [n, lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(load, [load]);
   useEffect(() => {
@@ -65,13 +70,13 @@ export default function SurahScreen() {
   );
 
   return (
-    <Screen title={`${meta.name} Suresi`} back scroll={false} right={headerPlay}>
+    <Screen title={t('quran.surahTitle', { name })} back scroll={false} right={headerPlay}>
       <View style={st.toggle}>
         {(
           [
-            ['ikisi', 'Arapça + Meal'],
-            ['arapca', 'Arapça'],
-            ['meal', 'Meal'],
+            ['ikisi', t('quran.modeBoth')],
+            ['arapca', t('quran.modeArabic')],
+            ['meal', t('quran.modeMeal')],
           ] as [Mode, string][]
         ).map(([k, label]) => (
           <Pressable key={k} onPress={() => pick(k)} style={[st.tBtn, mode === k && st.tBtnOn]}>
@@ -83,15 +88,15 @@ export default function SurahScreen() {
       <Pressable style={st.reciterRow} onPress={() => setPickReciter(true)}>
         <Ionicons name="mic-outline" size={16} color={C.accent} />
         <Text style={st.reciterText} numberOfLines={1}>
-          Kâri: {RECITERS.find((r) => r.id === player.reciter)?.name}
+          {t('quran.reciter', { name: reciterName(player.reciter, lang) })}
         </Text>
         <Ionicons name="chevron-down" size={16} color={C.textMute} />
       </Pressable>
 
       {error ? (
         <View style={st.center}>
-          <Text style={st.msg}>Sure yüklenemedi. İlk açılışta internet bağlantısı gerekiyor.</Text>
-          <Btn label="Tekrar dene" icon="refresh" onPress={load} />
+          <Text style={st.msg}>{t('quran.loadFail')}</Text>
+          <Btn label={t('common.retry')} icon="refresh" onPress={load} />
         </View>
       ) : !surah ? (
         <View style={st.center}>
@@ -110,8 +115,8 @@ export default function SurahScreen() {
           }}
           ListHeaderComponent={
             <View style={st.banner}>
-              <Text style={st.bannerName}>{meta.name}</Text>
-              <Text style={st.bannerMeta}>{meta.ayahs} ayet</Text>
+              <Text style={st.bannerName}>{name}</Text>
+              <Text style={st.bannerMeta}>{t('quran.ayahCount', { n: meta.ayahs })}</Text>
               {n !== 1 && n !== 9 && mode !== 'meal' ? (
                 <Text style={[st.basmala, currentAyah === 0 && { color: C.accent }]}>{BASMALA}</Text>
               ) : null}
@@ -140,7 +145,7 @@ export default function SurahScreen() {
               </View>
             );
           }}
-          ListFooterComponent={<Text style={st.src}>Meal: Diyanet İşleri Başkanlığı</Text>}
+          ListFooterComponent={<Text style={st.src}>{t('quran.mealSource', { source: MEAL_EDITIONS[lang].source })}</Text>}
         />
       )}
 
@@ -151,7 +156,7 @@ export default function SurahScreen() {
       <Modal visible={pickReciter} transparent animationType="fade" onRequestClose={() => setPickReciter(false)}>
         <Pressable style={st.backdrop} onPress={() => setPickReciter(false)}>
           <View style={st.sheet}>
-            <Text style={st.sheetTitle}>Kâri seç</Text>
+            <Text style={st.sheetTitle}>{t('quran.pickReciter')}</Text>
             {RECITERS.map((r) => (
               <Pressable
                 key={r.id}
@@ -160,7 +165,7 @@ export default function SurahScreen() {
                   player.setReciter(r.id);
                   setPickReciter(false);
                 }}>
-                <Text style={st.sheetText}>{r.name}</Text>
+                <Text style={st.sheetText}>{reciterName(r.id, lang)}</Text>
                 {player.reciter === r.id ? <Ionicons name="checkmark" size={20} color={C.accent} /> : null}
               </Pressable>
             ))}

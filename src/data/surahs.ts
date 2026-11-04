@@ -1,3 +1,6 @@
+import { SURAH_NAMES_LATIN } from './surah-names-latin';
+import layout from './mushaf-layout.json';
+
 // 114 surenin Türkçe adları ve ayet sayıları (Hafs rivayeti, toplam 6236).
 const NAMES = [
   'Fatiha', 'Bakara', 'Âl-i İmrân', 'Nisâ', 'Mâide', 'En\'âm', 'A\'râf', 'Enfâl', 'Tevbe', 'Yûnus',
@@ -22,6 +25,13 @@ const AYAH_COUNTS = [
   29, 19, 36, 25, 22, 17, 19, 26, 30, 20, 15, 21, 11, 8, 8, 19, 5, 8, 8, 11,
   11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6,
 ];
+
+/** Sure adı seçili dile göre: Türkçe adlar, Arapçada Arapça, diğerlerinde Latin harfli. */
+export function surahName(n: number, lang: string) {
+  if (lang === 'tr') return SURAHS[n - 1]?.name ?? String(n);
+  if (lang === 'ar' || lang === 'ur') return (layout as { names: string[] }).names[n - 1] ?? String(n);
+  return SURAH_NAMES_LATIN[n - 1] ?? String(n);
+}
 
 export type SurahMeta = { number: number; name: string; ayahs: number };
 

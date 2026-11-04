@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import type { IconName } from '@/components/ui';
 import { MiniPlayer } from '@/components/mini-player';
 import { C } from '@/constants/theme';
+import { useT } from '@/lib/app-state';
 
 const icon =
   (name: IconName, active: IconName) =>
@@ -14,6 +15,7 @@ const icon =
   );
 
 export default function TabsLayout() {
+  const t = useT();
   return (
     <Tabs
       tabBar={(props) => (
@@ -29,11 +31,11 @@ export default function TabsLayout() {
         tabBarStyle: { backgroundColor: C.bgDeep, borderTopColor: C.border },
         tabBarLabelStyle: { fontSize: 11 },
       }}>
-      <Tabs.Screen name="index" options={{ title: 'Ana Sayfa', tabBarIcon: icon('home-outline', 'home') }} />
-      <Tabs.Screen name="vakitler" options={{ title: 'Vakitler', tabBarIcon: icon('time-outline', 'time') }} />
-      <Tabs.Screen name="kuran" options={{ title: 'Kur\'an', tabBarIcon: icon('book-outline', 'book') }} />
-      <Tabs.Screen name="kible" options={{ title: 'Kıble', tabBarIcon: icon('compass-outline', 'compass') }} />
-      <Tabs.Screen name="araclar" options={{ title: 'Araçlar', tabBarIcon: icon('grid-outline', 'grid') }} />
+      <Tabs.Screen name="index" options={{ title: t('tab.home'), tabBarIcon: icon('home-outline', 'home') }} />
+      <Tabs.Screen name="vakitler" options={{ title: t('tab.times'), tabBarIcon: icon('time-outline', 'time') }} />
+      <Tabs.Screen name="kuran" options={{ title: t('tab.quran'), tabBarIcon: icon('book-outline', 'book') }} />
+      <Tabs.Screen name="kible" options={{ title: t('tab.qibla'), tabBarIcon: icon('compass-outline', 'compass') }} />
+      <Tabs.Screen name="araclar" options={{ title: t('tab.tools'), tabBarIcon: icon('grid-outline', 'grid') }} />
     </Tabs>
   );
 }

@@ -5,15 +5,16 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Card, Screen } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
+import { useT } from '@/lib/app-state';
 import { loadJSON, saveJSON } from '@/lib/storage';
 
 const ITEMS = [
-  { key: 'sabah', label: 'Sabah' },
-  { key: 'ogle', label: 'Öğle' },
-  { key: 'ikindi', label: 'İkindi' },
-  { key: 'aksam', label: 'Akşam' },
-  { key: 'yatsi', label: 'Yatsı' },
-  { key: 'vitir', label: 'Vitir' },
+  { key: 'sabah' },
+  { key: 'ogle' },
+  { key: 'ikindi' },
+  { key: 'aksam' },
+  { key: 'yatsi' },
+  { key: 'vitir' },
 ] as const;
 
 type Key = (typeof ITEMS)[number]['key'];
@@ -23,6 +24,7 @@ const KEY = 'kaza-v1';
 
 export default function KazaScreen() {
   const [c, setC] = useState<Counts>(ZERO);
+  const t = useT();
 
   useEffect(() => {
     loadJSON<Counts>(KEY, ZERO).then(setC);
@@ -37,16 +39,16 @@ export default function KazaScreen() {
   const total = Object.values(c).reduce((a, b) => a + b, 0);
 
   return (
-    <Screen title="Kaza Takibi" back>
+    <Screen title={t('kaza.title')} back>
       <Card style={{ backgroundColor: C.cardActive, alignItems: 'center' }}>
-        <Text style={st.totalLabel}>Toplam kaza borcu</Text>
+        <Text style={st.totalLabel}>{t('kaza.total')}</Text>
         <Text style={st.total}>{total}</Text>
-        <Text style={st.hint}>Sayıya dokunarak doğrudan yazabilir, kıldıkça "−" ile düşebilirsin.</Text>
+        <Text style={st.hint}>{t('kaza.hint')}</Text>
       </Card>
 
       {ITEMS.map((it) => (
         <View key={it.key} style={st.row}>
-          <Text style={st.label}>{it.label}</Text>
+          <Text style={st.label}>{t(`kaza.${it.key}`)}</Text>
           <Pressable
             style={st.btn}
             onPress={() => {

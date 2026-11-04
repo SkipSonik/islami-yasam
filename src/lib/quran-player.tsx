@@ -1,19 +1,25 @@
 import { createAudioPlayer, setAudioModeAsync, useAudioPlayerStatus, type AudioPlayer } from 'expo-audio';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
-import { SURAHS } from '@/data/surahs';
+import { surahName, SURAHS } from '@/data/surahs';
+import { currentLang, t } from '@/i18n';
 import { loadValue, saveJSON } from './storage';
 
 // Ayet ayet ses kayıtları: cdn.islamic.network (alquran.cloud).
 // Dosya adı Kur'an genelindeki ayet sırasıdır (1..6236).
 export const RECITERS = [
-  { id: 'ar.alafasy', name: 'Mişari Raşid el-Afasi', bitrate: 128 },
-  { id: 'ar.abdulbasitmurattal', name: 'Abdülbasit Abdüssamed', bitrate: 192 },
-  { id: 'ar.husary', name: 'Mahmud Halil el-Husari', bitrate: 128 },
-  { id: 'ar.minshawi', name: 'Muhammed Sıddık el-Minşavi', bitrate: 128 },
-  { id: 'ar.abdurrahmaansudais', name: 'Abdurrahman es-Sudeys', bitrate: 192 },
-  { id: 'ar.mahermuaiqly', name: 'Mahir el-Muaykılî', bitrate: 128 },
+  { id: 'ar.alafasy', bitrate: 128, tr: 'Mişari Raşid el-Afasi', latin: 'Mishary Rashid Alafasy', ar: 'مشاري راشد العفاسي' },
+  { id: 'ar.abdulbasitmurattal', bitrate: 192, tr: 'Abdülbasit Abdüssamed', latin: 'Abdul Basit Abdus Samad', ar: 'عبد الباسط عبد الصمد' },
+  { id: 'ar.husary', bitrate: 128, tr: 'Mahmud Halil el-Husari', latin: 'Mahmoud Khalil Al-Husary', ar: 'محمود خليل الحصري' },
+  { id: 'ar.minshawi', bitrate: 128, tr: 'Muhammed Sıddık el-Minşavi', latin: 'Mohamed Siddiq Al-Minshawi', ar: 'محمد صديق المنشاوي' },
+  { id: 'ar.abdurrahmaansudais', bitrate: 192, tr: 'Abdurrahman es-Sudeys', latin: 'Abdul Rahman Al-Sudais', ar: 'عبد الرحمن السديس' },
+  { id: 'ar.mahermuaiqly', bitrate: 128, tr: 'Mahir el-Muaykılî', latin: 'Maher Al-Muaiqly', ar: 'ماهر المعيقلي' },
 ] as const;
+
+export function reciterName(id: string, lang: string) {
+  const r = RECITERS.find((x) => x.id === id) ?? RECITERS[0];
+  return lang === 'tr' ? r.tr : lang === 'ar' || lang === 'ur' ? r.ar : r.latin;
+}
 
 export type ReciterId = (typeof RECITERS)[number]['id'];
 
@@ -107,8 +113,8 @@ export function QuranPlayerProvider({ children }: { children: ReactNode }) {
     (n: number, rec: ReciterId) => {
       try {
         player.setActiveForLockScreen(true, {
-          title: `${SURAHS[n - 1].name} Suresi`,
-          artist: RECITERS.find((r) => r.id === rec)?.name,
+          title: t('quran.surahTitle', { name: surahName(n, currentLang()) }),
+          artist: reciterName(rec, currentLang()),
           albumTitle: 'İslami Yaşam',
         });
       } catch {

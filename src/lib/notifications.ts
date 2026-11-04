@@ -4,7 +4,9 @@ import * as IntentLauncher from 'expo-intent-launcher';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import { getDayTimes, PRAYERS, type PrayerKey } from './prayer';
+import { t } from '@/i18n';
+
+import { getDayTimes, PRAYER_KEYS, type CalcConfig, type PrayerKey } from './prayer';
 
 const CHANNEL = 'namaz-vakitleri';
 const DAYS_AHEAD = 7;
@@ -21,7 +23,7 @@ Notifications.setNotificationHandler({
 async function ensureChannel() {
   if (Platform.OS !== 'android') return;
   await Notifications.setNotificationChannelAsync(CHANNEL, {
-    name: 'Namaz vakitleri',
+    name: t('notif.channel'),
     importance: Notifications.AndroidImportance.HIGH,
     sound: 'default',
     vibrationPattern: [0, 300, 200, 300],
@@ -55,7 +57,13 @@ async function canUseExactAlarms() {
 // Tüm planlı bildirimleri silip önümüzdeki günler için yeniden kurar.
 // Uygulama açılınca, ayar değişince ve arka plan görevinde çağrılır.
 // Çalışırken izin istemez (arka planda izin penceresi açılamaz).
-export async function rescheduleAll(lat: number, lng: number, s: NotifySettings, askPermission = true) {
+export async function rescheduleAll(
+  lat: number,
+  lng: number,
+  s: NotifySettings,
+  askPermission = true,
+  cfg?: CalcConfig,
+) {
   await Notifications.cancelAllScheduledNotificationsAsync();
   const anyOn = Object.values(s.enabled).some(Boolean);
   if (!anyOn) return 0;
@@ -76,19 +84,25 @@ export async function rescheduleAll(lat: number, lng: number, s: NotifySettings,
   for (let i = 0; i < DAYS_AHEAD; i++) {
     const d = new Date();
     d.setDate(d.getDate() + i);
-    const times = getDayTimes(lat, lng, d);
-    for (const p of PRAYERS) {
-      if (!s.enabled[p.key]) continue;
-      const t = times[p.key].getTime();
+    const times = getDayTimes(lat, lng, d, cfg);
+    for (const key of PRAYER_KEYS) {
+      if (!s.enabled[key]) continue;
+      const at = times[key].getTime();
+      const prayer = t(`prayer.${key}`);
 
-      if (t > now) {
-        await schedule(t, `${p.label} vakti`, vaktiMetni(p.key), delivery);
+      if (at > now) {
+        await schedule(at, t('notif.entered', { prayer }), bodyText(key), delivery);
         count++;
       }
       if (s.remindBefore > 0) {
-        const r = t - s.remindBefore * 60 * 1000;
+        const r = at - s.remindBefore * 60 * 1000;
         if (r > now) {
-          await schedule(r, `${p.label} vaktine ${s.remindBefore} dakika`, `${p.label} vakti yaklaşıyor.`, delivery);
+          await schedule(
+            r,
+            t('notif.remindTitle', { prayer, n: s.remindBefore }),
+            t('notif.remindBody', { prayer }),
+            delivery,
+          );
           count++;
         }
       }
@@ -97,10 +111,10 @@ export async function rescheduleAll(lat: number, lng: number, s: NotifySettings,
   return count;
 }
 
-function vaktiMetni(k: PrayerKey) {
-  if (k === 'imsak') return 'İmsak vakti girdi.';
-  if (k === 'gunes') return 'Güneş doğdu, sabah namazının vakti çıktı.';
-  return 'Namaz vakti girdi.';
+function bodyText(k: PrayerKey) {
+  if (k === 'imsak') return t('notif.bodyImsak');
+  if (k === 'gunes') return t('notif.bodySun');
+  return t('notif.bodyPrayer');
 }
 
 function schedule(time: number, title: string, body: string, delivery: 'alarmClock' | 'bestEffort') {

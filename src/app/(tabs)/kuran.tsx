@@ -5,13 +5,16 @@ import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { C, R, S } from '@/constants/theme';
-import { normalizeTr, SURAHS } from '@/data/surahs';
+import { normalizeTr, surahName, SURAHS } from '@/data/surahs';
+import { useAppState, useT } from '@/lib/app-state';
 import { juzOf, pageOf } from '@/lib/mushaf';
 import { isSurahCached } from '@/lib/quran';
 import { loadValue } from '@/lib/storage';
 
 export default function KuranScreen() {
   const insets = useSafeAreaInsets();
+  const { lang } = useAppState();
+  const t = useT();
   const [q, setQ] = useState('');
   const [, setTick] = useState(0);
   const [lastPage, setLastPage] = useState<number | null>(null);
@@ -27,13 +30,18 @@ export default function KuranScreen() {
   const list = useMemo(() => {
     const n = normalizeTr(q.trim());
     if (!n) return SURAHS;
-    return SURAHS.filter((s) => normalizeTr(s.name).includes(n) || String(s.number) === n);
-  }, [q]);
+    return SURAHS.filter(
+      (s) =>
+        normalizeTr(s.name).includes(n) ||
+        normalizeTr(surahName(s.number, lang)).includes(n) ||
+        String(s.number) === n,
+    );
+  }, [q, lang]);
 
   return (
     <View style={[st.root, { paddingTop: insets.top }]}>
       <View style={st.head}>
-        <Text style={st.title}>Kur'an-ı Kerim</Text>
+        <Text style={st.title}>{t('quran.title')}</Text>
         <Pressable
           onPress={() => router.push(lastPage ? `/mushaf?sayfa=${lastPage}` : '/mushaf?sayfa=1')}
           style={({ pressed }) => [st.mushafCard, pressed && { opacity: 0.85 }]}>
@@ -41,22 +49,22 @@ export default function KuranScreen() {
             <Ionicons name="book" size={24} color={C.bgDeep} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={st.mushafTitle}>Mushaf ile oku</Text>
+            <Text style={st.mushafTitle}>{t('quran.mushaf')}</Text>
             <Text style={st.mushafSub}>
               {lastPage
-                ? `Kaldığın yer: ${lastPage}. sayfa, ${juzOf(lastPage)}. cüz`
-                : 'Medine mushafı düzeni, okunan ayet yeşil'}
+                ? t('quran.mushafResume', { page: lastPage, juz: juzOf(lastPage) })
+                : t('quran.mushafHint')}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={C.gold} />
         </Pressable>
-        <Text style={st.sub}>Açtığın sureler telefona kaydedilir, sonra internetsiz okunur.</Text>
+        <Text style={st.sub}>{t('quran.offlineNote')}</Text>
         <View style={st.search}>
           <Ionicons name="search" size={18} color={C.textMute} />
           <TextInput
             value={q}
             onChangeText={setQ}
-            placeholder="Sure ara (ad veya numara)"
+            placeholder={t('quran.search')}
             placeholderTextColor={C.textMute}
             style={st.input}
           />
@@ -75,10 +83,8 @@ export default function KuranScreen() {
               <Text style={st.numText}>{item.number}</Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={st.name}>{item.name}</Text>
-              <Text style={st.meta}>
-                {item.ayahs} ayet · {pageOf(item.number)}. sayfa
-              </Text>
+              <Text style={st.name}>{surahName(item.number, lang)}</Text>
+              <Text style={st.meta}>{t('quran.ayahsPage', { n: item.ayahs, page: pageOf(item.number) })}</Text>
             </View>
             {isSurahCached(item.number) ? (
               <Ionicons name="checkmark-circle" size={18} color={C.accent} />

@@ -3,41 +3,40 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { ListRow, Screen } from '@/components/ui';
 import { C, S } from '@/constants/theme';
+import { useT } from '@/lib/app-state';
 
 export default function AraclarScreen() {
+  const t = useT();
   return (
-    <Screen title="Araçlar">
+    <Screen title={t('tools.title')}>
       <View style={{ gap: S.sm }}>
         <ListRow
           icon="location-outline"
-          title="Yakındaki Camiler"
-          subtitle="En yakın camiler, uzaklık ve yol tarifi"
+          title={t('tools.mosques')}
+          subtitle={t('tools.mosquesSub')}
           onPress={() => router.push('/camiler')}
         />
         <ListRow
           icon="ellipse-outline"
-          title="Zikirmatik"
-          subtitle="Dijital tesbih, hedef sayılı"
+          title={t('tools.zikir')}
+          subtitle={t('tools.zikirSub')}
           onPress={() => router.push('/zikirmatik')}
         />
         <ListRow
           icon="list-outline"
-          title="Kaza Namazı Takibi"
-          subtitle="Borç namazlarını say, kıldıkça düş"
+          title={t('tools.kaza')}
+          subtitle={t('tools.kazaSub')}
           onPress={() => router.push('/kaza')}
         />
         <ListRow
           icon="settings-outline"
-          title="Ayarlar"
-          subtitle="Konum, bildirimler, Hicri tarih düzeltmesi"
+          title={t('tools.settings')}
+          subtitle={t('tools.settingsSub')}
           onPress={() => router.push('/ayarlar')}
         />
       </View>
 
-      <Text style={st.soon}>
-        Sıradaki sürümde: Esmaül Hüsna, dini günler ve kandiller, abdest ve namaz rehberi,
-        ezan sesi ve ana ekran widget'ı.
-      </Text>
+      <Text style={st.soon}>{t('tools.soon')}</Text>
     </Screen>
   );
 }

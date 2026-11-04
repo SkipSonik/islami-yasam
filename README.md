@@ -2,6 +2,10 @@
 
 Namaz vakitleri, Kur'an-ı Kerim, kıble pusulası ve günlük ibadet araçları sunan Android uygulaması (Expo / React Native).
 
+## Diller
+
+Türkçe, English, العربية, Deutsch, Français, Русский, Bahasa Indonesia, اردو, 日本語. Metinler `src/i18n/locales/` altında; yeni metin önce `tr.ts`'e eklenir, eksik çeviri TypeScript tarafından yakalanır. Kur'an meali ve namaz vakti hesaplama yöntemi dile/ülkeye göre otomatik seçilir.
+
 ## Özellikler (v0.1)
 
 - **Ana sayfa:** sıradaki vakte geri sayım, günün vakitleri, Miladi + Hicri tarih, günün ayeti
