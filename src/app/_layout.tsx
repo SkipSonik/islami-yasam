@@ -28,6 +28,7 @@ function Root() {
       <Stack.Screen name="zikirmatik" />
       <Stack.Screen name="kaza" />
       <Stack.Screen name="ayarlar" />
+      <Stack.Screen name="camiler" />
     </Stack>
   );
 }

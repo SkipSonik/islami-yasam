@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 
+import { ReliabilityCard } from '@/components/reliability-card';
 import { Btn, Card, Screen, SectionTitle } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
 import { useAppState } from '@/lib/app-state';
@@ -61,6 +62,8 @@ export default function AyarlarScreen() {
         {locMsg ? <Text style={st.small}>{locMsg}</Text> : null}
       </Card>
 
+      <ReliabilityCard />
+
       <Card>
         <SectionTitle icon="notifications-outline">Vakit bildirimleri</SectionTitle>
         {PRAYERS.map((p) => (
@@ -111,7 +114,7 @@ export default function AyarlarScreen() {
         </View>
       </Card>
 
-      <Text style={st.footer}>İslami Yaşam · sürüm 0.2.1</Text>
+      <Text style={st.footer}>İslami Yaşam · sürüm 0.3.0</Text>
     </Screen>
   );
 }

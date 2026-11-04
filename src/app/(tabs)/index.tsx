@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { ReliabilityBanner } from '@/components/reliability-card';
 import { Card, Screen, SectionTitle } from '@/components/ui';
 import { C, R, S } from '@/constants/theme';
 import { ayahForDate } from '@/data/daily-ayahs';
@@ -57,6 +58,8 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      <ReliabilityBanner />
+
       <Card style={{ backgroundColor: C.cardActive, alignItems: 'center' }}>
         <Text style={st.countLabel}>{next.label} vaktine kalan süre</Text>
         <Text style={st.count}>
@@ -83,7 +86,7 @@ export default function HomeScreen() {
       <View style={st.quick}>
         <QuickBtn icon="ellipse-outline" label="Zikirmatik" onPress={() => router.push('/zikirmatik')} />
         <QuickBtn icon="list-outline" label="Kaza Takibi" onPress={() => router.push('/kaza')} />
-        <QuickBtn icon="compass-outline" label="Kıble" onPress={() => router.navigate('/kible')} />
+        <QuickBtn icon="location-outline" label="Camiler" onPress={() => router.push('/camiler')} />
       </View>
     </Screen>
   );

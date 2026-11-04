@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { AppState as RNAppState } from 'react-native';
 
 import { DEFAULT_PLACE, locateDevice, type Place } from './location';
-import { rescheduleAll, type NotifySettings } from './notifications';
+import { registerBackgroundRefresh } from './background';
+import { checkReliability, rescheduleAll, type NotifySettings, type Reliability } from './notifications';
 import { loadJSON, saveJSON } from './storage';
 
 export type Settings = {
@@ -29,6 +31,8 @@ type Ctx = {
   update: (patch: Partial<Settings>) => void;
   refreshLocation: () => Promise<'ok' | 'denied' | 'failed'>;
   notifyStatus: string | null;
+  reliability: Reliability | null;
+  recheckReliability: () => void;
 };
 
 const AppState = createContext<Ctx | null>(null);
@@ -37,6 +41,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [settings, setSettings] = useState<Settings>(DEFAULTS);
   const [notifyStatus, setNotifyStatus] = useState<string | null>(null);
+  const [reliability, setReliability] = useState<Reliability | null>(null);
+  const [tick, setTick] = useState(0); // izin ekranından dönünce yeniden planlamak için
 
   useEffect(() => {
     loadJSON<Settings>(KEY, DEFAULTS).then((s) => {
@@ -68,17 +74,42 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     if (ready && !settings.hasLocated) refreshLocation();
   }, [ready, settings.hasLocated, refreshLocation]);
 
+  const recheckReliability = useCallback(() => {
+    checkReliability()
+      .then(setReliability)
+      .catch(() => {});
+  }, []);
+
+  // Uygulama ön plana her döndüğünde (ör. ayarlardan izin verip geri gelince)
+  // izinleri yeniden kontrol et ve bildirimleri tazele.
+  useEffect(() => {
+    registerBackgroundRefresh();
+    recheckReliability();
+    const sub = RNAppState.addEventListener('change', (st) => {
+      if (st === 'active') {
+        recheckReliability();
+        setTick((t) => t + 1);
+      }
+    });
+    return () => sub.remove();
+  }, [recheckReliability]);
+
   // Konum veya bildirim ayarı değişince bildirimleri yeniden planla.
   const { place, notify } = settings;
   useEffect(() => {
     if (!ready) return;
-    rescheduleAll(place.lat, place.lng, notify)
-      .then((n) => setNotifyStatus(n < 0 ? 'Bildirim izni verilmedi' : null))
+    // İzin penceresi yalnızca ilk planlamada açılır, her ön plana dönüşte değil.
+    rescheduleAll(place.lat, place.lng, notify, tick === 0)
+      .then((n) => {
+        setNotifyStatus(n < 0 ? 'Bildirim izni verilmedi' : null);
+        recheckReliability();
+      })
       .catch(() => setNotifyStatus('Bildirimler kurulamadı'));
-  }, [ready, place.lat, place.lng, notify]);
+  }, [ready, place.lat, place.lng, notify, tick, recheckReliability]);
 
   return (
-    <AppState.Provider value={{ ready, settings, update, refreshLocation, notifyStatus }}>
+    <AppState.Provider
+      value={{ ready, settings, update, refreshLocation, notifyStatus, reliability, recheckReliability }}>
       {children}
     </AppState.Provider>
   );
