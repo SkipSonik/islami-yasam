@@ -5,7 +5,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 
 import { ReliabilityBanner } from '@/components/reliability-card';
 import { Card, Screen, SectionTitle } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { ayahForDate } from '@/data/daily-ayahs';
 import { surahName } from '@/data/surahs';
 import { formatDateLong, type StringKey } from '@/i18n';
@@ -20,6 +20,8 @@ import { useNow } from '@/lib/use-now';
 const pad = (n: number) => String(n).padStart(2, '0');
 
 export default function HomeScreen() {
+  const C = useColors();
+  const st = useSt();
   const { settings, lang, calc } = useAppState();
   const t = useT();
   const { place, hijriOffset } = settings;
@@ -91,10 +93,10 @@ export default function HomeScreen() {
             const active = key === current;
             return (
               <View key={key} style={[st.cell, active && st.cellActive]}>
-                <Text style={[st.cellLabel, active && { color: C.bgDeep }]} numberOfLines={1} adjustsFontSizeToFit>
+                <Text style={[st.cellLabel, active && { color: C.onAccent }]} numberOfLines={1} adjustsFontSizeToFit>
                   {t(`prayer.${key}`)}
                 </Text>
-                <Text style={[st.cellTime, active && { color: C.bgDeep }]}>{fmtTime(times[key])}</Text>
+                <Text style={[st.cellTime, active && { color: C.onAccent }]}>{fmtTime(times[key])}</Text>
               </View>
             );
           })}
@@ -113,6 +115,8 @@ export default function HomeScreen() {
 }
 
 function DailyAyah({ date }: { date: Date }) {
+  const C = useColors();
+  const st = useSt();
   const [surahNo, ayahNo] = ayahForDate(date);
   const [ayah, setAyah] = useState<Ayah | null>(null);
   const [failed, setFailed] = useState(false);
@@ -149,6 +153,8 @@ function DailyAyah({ date }: { date: Date }) {
 }
 
 function QuickBtn({ icon, label, onPress }: { icon: any; label: string; onPress: () => void }) {
+  const C = useColors();
+  const st = useSt();
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [st.quickBtn, pressed && { opacity: 0.7 }]}>
       <Ionicons name={icon} size={22} color={C.accent} />
@@ -157,7 +163,7 @@ function QuickBtn({ icon, label, onPress }: { icon: any; label: string; onPress:
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   appTitle: { color: C.text, fontSize: 28, fontWeight: '800' },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   meta: { color: C.textDim, fontSize: 14 },
@@ -191,4 +197,4 @@ const st = StyleSheet.create({
     gap: 6,
   },
   quickLabel: { color: C.text, fontSize: 13, fontWeight: '600' },
-});
+}));

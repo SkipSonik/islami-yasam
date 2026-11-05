@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Btn, Screen } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { useT } from '@/lib/app-state';
 import { loadJSON, saveJSON } from '@/lib/storage';
 
@@ -13,6 +13,8 @@ const KEY = 'zikirmatik-v1';
 type State = { count: number; target: number; rounds: number; total: number };
 
 export default function ZikirmatikScreen() {
+  const C = useColors();
+  const st = useSt();
   const [s, setS] = useState<State>({ count: 0, target: 33, rounds: 0, total: 0 });
   const tr = useT();
 
@@ -51,7 +53,7 @@ export default function ZikirmatikScreen() {
             key={t}
             onPress={() => set({ ...s, target: t, count: 0 })}
             style={[st.chip, s.target === t && st.chipOn]}>
-            <Text style={[st.chipText, s.target === t && { color: C.bgDeep }]}>{t === 0 ? '∞' : t}</Text>
+            <Text style={[st.chipText, s.target === t && { color: C.onAccent }]}>{t === 0 ? '∞' : t}</Text>
           </Pressable>
         ))}
       </View>
@@ -73,6 +75,7 @@ export default function ZikirmatikScreen() {
 }
 
 function Stat({ label, value }: { label: string; value: number }) {
+  const st = useSt();
   return (
     <View style={st.stat}>
       <Text style={st.statVal}>{value}</Text>
@@ -81,7 +84,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   targets: { flexDirection: 'row', gap: S.sm, justifyContent: 'center' },
   chip: { paddingHorizontal: 18, paddingVertical: 8, borderRadius: 20, backgroundColor: C.card },
   chipOn: { backgroundColor: C.accent },
@@ -101,4 +104,4 @@ const st = StyleSheet.create({
   stat: { flex: 1, backgroundColor: C.card, borderRadius: R.md, padding: S.md, alignItems: 'center' },
   statVal: { color: C.gold, fontSize: 22, fontWeight: '800' },
   statLabel: { color: C.textDim, fontSize: 12 },
-});
+}));

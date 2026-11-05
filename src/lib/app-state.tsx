@@ -1,3 +1,4 @@
+import { DEFAULT_THEME, type ThemeId } from '@/constants/theme';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { AppState as RNAppState } from 'react-native';
 
@@ -17,6 +18,7 @@ export type Settings = {
   hijriOffset: number; // -2..+2 gün
   lang: Lang | null; // null: henüz seçilmedi → cihaz dili
   method: MethodKey | 'auto';
+  theme: ThemeId;
 };
 
 const DEFAULTS: Settings = {
@@ -29,6 +31,7 @@ const DEFAULTS: Settings = {
   hijriOffset: 0,
   lang: null,
   method: 'auto',
+  theme: DEFAULT_THEME,
 };
 
 export const SETTINGS_KEY = 'settings-v1';

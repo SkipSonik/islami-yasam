@@ -6,7 +6,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Btn, Card, Screen } from '@/components/ui';
-import { C, S } from '@/constants/theme';
+import { S, useColors, makeStyles } from '@/constants/theme';
 import { locale } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import { qiblaDirection } from '@/lib/prayer';
@@ -15,6 +15,8 @@ import { useCompass } from '@/lib/use-compass';
 const SIZE = 280;
 
 export default function KibleScreen() {
+  const C = useColors();
+  const st = useSt();
   const focused = useIsFocused();
   const { settings, refreshLocation, lang } = useAppState();
   const t = useT();
@@ -106,6 +108,8 @@ export default function KibleScreen() {
 // Kadran yüzü: çentikler, yön harfleri ve Kâbe işareti. Sadece kıble açısı
 // değişince yeniden çizilir; dönme işi dış katmanda yapılır.
 const DialFace = memo(function DialFace({ qibla, cardinals }: { qibla: number; cardinals: string[] }) {
+  const C = useColors();
+  const st = useSt();
   return (
     <>
       {Array.from({ length: 72 }, (_, i) => (
@@ -129,7 +133,7 @@ const DialFace = memo(function DialFace({ qibla, cardinals }: { qibla: number; c
 });
 
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   dial: {
     width: SIZE,
     height: SIZE,
@@ -162,4 +166,4 @@ const st = StyleSheet.create({
   warn: { color: C.gold, fontSize: 13, lineHeight: 19 },
   tiltWarn: { color: C.gold, fontSize: 14, fontWeight: '700' },
   hint: { color: C.textMute, fontSize: 12, textAlign: 'center', lineHeight: 18, paddingHorizontal: S.lg },
-});
+}));

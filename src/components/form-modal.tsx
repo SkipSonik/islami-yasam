@@ -1,7 +1,7 @@
 import { KeyboardAvoidingView, Modal, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Btn } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 
 export type FormField = {
   key: string;
@@ -33,6 +33,8 @@ export function FormModal({
   onSubmit: () => void;
   onClose: () => void;
 }) {
+  const C = useColors();
+  const st = useSt();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={st.backdrop}>
@@ -60,7 +62,7 @@ export function FormModal({
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', padding: S.xl },
   card: { backgroundColor: C.card, borderRadius: R.lg, padding: S.lg, gap: S.md },
   title: { color: C.text, fontSize: 18, fontWeight: '800' },
@@ -73,4 +75,4 @@ const st = StyleSheet.create({
     fontSize: 15,
   },
   error: { color: C.danger, fontSize: 13.5 },
-});
+}));

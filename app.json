@@ -2,7 +2,7 @@
   "expo": {
     "name": "İslami Yaşam",
     "slug": "islami-yasam",
-    "version": "0.6.1",
+    "version": "0.7.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.skipsonik.islamiyasam",
-      "versionCode": 13,
+      "versionCode": 14,
       "adaptiveIcon": {
         "backgroundColor": "#0B3B2E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -47,7 +47,18 @@
       [
         "expo-notifications",
         {
-          "color": "#3DDC97"
+          "color": "#3DDC97",
+          "sounds": [
+            "./assets/sounds/zil.wav",
+            "./assets/sounds/can.wav",
+            "./assets/sounds/kristal.wav",
+            "./assets/sounds/allah.mp3",
+            "./assets/sounds/allah2.mp3",
+            "./assets/sounds/besmele.mp3",
+            "./assets/sounds/besmele2.mp3",
+            "./assets/sounds/tekbir.mp3",
+            "./assets/sounds/tekbir2.mp3"
+          ]
         }
       ],
       [

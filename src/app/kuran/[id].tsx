@@ -5,7 +5,7 @@ import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, View }
 
 import { MiniPlayer } from '@/components/mini-player';
 import { Btn, Screen } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { surahName, SURAHS } from '@/data/surahs';
 import { MEAL_EDITIONS } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
@@ -16,6 +16,8 @@ import { loadValue, saveJSON } from '@/lib/storage';
 type Mode = 'ikisi' | 'arapca' | 'meal';
 
 export default function SurahScreen() {
+  const C = useColors();
+  const st = useSt();
   const { id } = useLocalSearchParams<{ id: string }>();
   const n = Math.min(114, Math.max(1, Number(id) || 1));
   const meta = SURAHS[n - 1];
@@ -64,7 +66,7 @@ export default function SurahScreen() {
       hitSlop={10}
       onPress={() => (isThis ? player.toggle() : player.playSurah(n, 1))}
       style={st.headerPlay}>
-      <Ionicons name={isThis && player.playing ? 'pause' : 'play'} size={18} color={C.bgDeep} />
+      <Ionicons name={isThis && player.playing ? 'pause' : 'play'} size={18} color={C.onAccent} />
     </Pressable>
     </View>
   );
@@ -80,7 +82,7 @@ export default function SurahScreen() {
           ] as [Mode, string][]
         ).map(([k, label]) => (
           <Pressable key={k} onPress={() => pick(k)} style={[st.tBtn, mode === k && st.tBtnOn]}>
-            <Text style={[st.tText, mode === k && { color: C.bgDeep }]}>{label}</Text>
+            <Text style={[st.tText, mode === k && { color: C.onAccent }]}>{label}</Text>
           </Pressable>
         ))}
       </View>
@@ -128,7 +130,7 @@ export default function SurahScreen() {
               <View style={[st.ayah, active && st.ayahActive]}>
                 <View style={st.ayahTop}>
                   <View style={[st.badge, active && { backgroundColor: C.accent }]}>
-                    <Text style={[st.badgeText, active && { color: C.bgDeep }]}>{item.n}</Text>
+                    <Text style={[st.badgeText, active && { color: C.onAccent }]}>{item.n}</Text>
                   </View>
                   <Pressable
                     hitSlop={10}
@@ -176,7 +178,7 @@ export default function SurahScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   headerPlay: {
     width: 32,
     height: 32,
@@ -247,4 +249,4 @@ const st = StyleSheet.create({
     borderBottomColor: C.border,
   },
   sheetText: { color: C.text, fontSize: 16 },
-});
+}));

@@ -3,7 +3,7 @@ import { ActivityIndicator, Linking, Pressable, StyleSheet, Text, View } from 'r
 import { WebView } from 'react-native-webview';
 
 import { Btn, Screen } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { useT } from '@/lib/app-state';
 
 // Suudi Arabistan resmî yayınları (Kur'an kanalı: Mescid-i Haram, Sünnet kanalı: Mescid-i Nebevî)
@@ -48,6 +48,8 @@ events:{onReady:function(e){ready=true;e.target.playVideo()},onError:function(e)
 type Mode = 'loading' | 'embed' | 'page';
 
 export default function KabeScreen() {
+  const C = useColors();
+  const st = useSt();
   const t = useT();
   const [which, setWhich] = useState<Key>('mecca');
   const [videoId, setVideoId] = useState<string | null>(null);
@@ -75,7 +77,7 @@ export default function KabeScreen() {
       <View style={st.tabs}>
         {(Object.keys(STREAMS) as Key[]).map((k) => (
           <Pressable key={k} onPress={() => setWhich(k)} style={[st.tab, which === k && st.tabOn]}>
-            <Text style={[st.tabText, which === k && { color: C.bgDeep }]}>{t(`kabe.${k}`)}</Text>
+            <Text style={[st.tabText, which === k && { color: C.onAccent }]}>{t(`kabe.${k}`)}</Text>
           </Pressable>
         ))}
       </View>
@@ -131,7 +133,7 @@ export default function KabeScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   tabs: { flexDirection: 'row', gap: S.sm },
   tab: { flex: 1, paddingVertical: 10, borderRadius: R.md, backgroundColor: C.card, alignItems: 'center' },
   tabOn: { backgroundColor: C.accent },
@@ -139,4 +141,4 @@ const st = StyleSheet.create({
   player: { width: '100%', aspectRatio: 16 / 9, borderRadius: R.md, overflow: 'hidden', backgroundColor: '#000' },
   playerTall: { aspectRatio: undefined, flex: 1, minHeight: 260 },
   note: { color: C.textMute, fontSize: 12.5, lineHeight: 19 },
-});
+}));

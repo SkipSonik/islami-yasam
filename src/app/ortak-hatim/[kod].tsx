@@ -6,7 +6,7 @@ import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, Share,
 
 import { JuzGrid, type JuzCell } from '@/components/juz-grid';
 import { Btn, Card, Screen } from '@/components/ui';
-import { C, S } from '@/constants/theme';
+import { S, useColors, makeStyles } from '@/constants/theme';
 import { useT } from '@/lib/app-state';
 import {
   errorKey,
@@ -23,6 +23,8 @@ import {
 import { juzStartPage } from '@/lib/mushaf';
 
 export default function OrtakHatimScreen() {
+  const C = useColors();
+  const st = useSt();
   const t = useT();
   const { kod } = useLocalSearchParams<{ kod: string }>();
   const code = normalizeCode(String(kod ?? ''));
@@ -174,7 +176,7 @@ export default function OrtakHatimScreen() {
             {error ? <Text style={st.error}>{error}</Text> : null}
 
             <View style={st.legend}>
-              <Legend color={C.bgDeep} label={t('hatim.free')} />
+              <Legend color={C.onAccent} label={t('hatim.free')} />
               <Legend color={C.gold} label={t('hatim.yours')} />
               <Legend color={C.cardActive} label={t('hatim.reading')} />
               <Legend color={C.accent} label={t('hatim.done')} />
@@ -190,6 +192,7 @@ export default function OrtakHatimScreen() {
 }
 
 function Legend({ color, label }: { color: string; label: string }) {
+  const C = useColors();
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
       <View style={{ width: 14, height: 14, borderRadius: 4, backgroundColor: color, borderWidth: 1, borderColor: C.border }} />
@@ -198,7 +201,7 @@ function Legend({ color, label }: { color: string; label: string }) {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   niyet: { color: C.gold, fontSize: 15, fontStyle: 'italic', lineHeight: 21 },
   metaRow: { flexDirection: 'row', justifyContent: 'space-between' },
   meta: { color: C.textDim, fontSize: 13.5 },
@@ -206,4 +209,4 @@ const st = StyleSheet.create({
   stats: { color: C.text, fontSize: 14, fontWeight: '600' },
   error: { color: C.danger, fontSize: 14, textAlign: 'center' },
   legend: { flexDirection: 'row', justifyContent: 'space-around', flexWrap: 'wrap', gap: S.sm },
-});
+}));

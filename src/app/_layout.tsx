@@ -1,13 +1,13 @@
 import '@/lib/crash-guard';
 import { AmiriQuran_400Regular, useFonts } from '@expo-google-fonts/amiri-quran';
-import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useMemo, type ReactNode } from 'react';
 import { Pressable, ScrollView, Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { C } from '@/constants/theme';
+import { THEMES, ThemeContext, useColors } from '@/constants/theme';
 import { t } from '@/i18n';
 import { AppStateProvider, useAppState } from '@/lib/app-state';
 import { QuranPlayerProvider } from '@/lib/quran-player';
@@ -16,6 +16,7 @@ SplashScreen.preventAutoHideAsync();
 
 // Ekran çizilirken oluşan hatayı uygulamayı kapatmadan göster.
 export function ErrorBoundary({ error, retry }: { error: Error; retry: () => Promise<void> }) {
+  const C = useColors();
   useEffect(() => {
     SplashScreen.hideAsync().catch(() => {});
   }, []);
@@ -29,18 +30,35 @@ export function ErrorBoundary({ error, retry }: { error: Error; retry: () => Pro
         {String(error.stack ?? '').slice(0, 1500)}
       </Text>
       <Pressable onPress={retry} style={{ backgroundColor: C.accent, padding: 14, borderRadius: 12, alignItems: 'center' }}>
-        <Text style={{ color: C.bgDeep, fontWeight: '800' }}>{t('common.retry')}</Text>
+        <Text style={{ color: C.onAccent, fontWeight: '800' }}>{t('common.retry')}</Text>
       </Pressable>
     </ScrollView>
   );
 }
 
-const theme = {
-  ...DarkTheme,
-  colors: { ...DarkTheme.colors, background: C.bg, card: C.bgDeep, primary: C.accent, text: C.text },
-};
+// Seçili temayı hem uygulamaya hem gezinme çubuklarına uygular.
+function Themed({ children }: { children: ReactNode }) {
+  const { settings } = useAppState();
+  const C = THEMES[settings.theme] ?? THEMES.zumrut;
+  const nav = useMemo(() => {
+    const base = C.dark ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: { ...base.colors, background: C.bg, card: C.bgDeep, primary: C.accent, text: C.text, border: C.border },
+    };
+  }, [C]);
+  return (
+    <ThemeContext.Provider value={C}>
+      <ThemeProvider value={nav}>
+        <StatusBar style={C.dark ? 'light' : 'dark'} />
+        {children}
+      </ThemeProvider>
+    </ThemeContext.Provider>
+  );
+}
 
 function Root() {
+  const C = useColors();
   const { ready } = useAppState();
   // Kur'an metni için Amiri Quran fontu (SIL Açık Font Lisansı).
   const [fontsLoaded, fontError] = useFonts({ AmiriQuran_400Regular });
@@ -65,6 +83,7 @@ function Root() {
       <Stack.Screen name="hatim" />
       <Stack.Screen name="ortak-hatim/[kod]" />
       <Stack.Screen name="kabe" />
+      <Stack.Screen name="rehber" />
     </Stack>
   );
 }
@@ -72,14 +91,13 @@ function Root() {
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <ThemeProvider value={theme}>
-        <AppStateProvider>
+      <AppStateProvider>
+        <Themed>
           <QuranPlayerProvider>
-            <StatusBar style="light" />
             <Root />
           </QuranPlayerProvider>
-        </AppStateProvider>
-      </ThemeProvider>
+        </Themed>
+      </AppStateProvider>
     </SafeAreaProvider>
   );
 }

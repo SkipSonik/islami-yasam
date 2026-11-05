@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { C, R } from '@/constants/theme';
+import { R, useColors, makeStyles } from '@/constants/theme';
 
 export type JuzCell = { state: 'free' | 'taken' | 'mine' | 'done'; caption?: string };
 
@@ -15,6 +15,8 @@ export function JuzGrid({
   onPress: (juz: number) => void;
   onLongPress?: (juz: number) => void;
 }) {
+  const C = useColors();
+  const st = useSt();
   return (
     <View style={st.grid}>
       {[0, 1, 2, 3, 4, 5].map((row) => (
@@ -24,7 +26,7 @@ export function JuzGrid({
         const juz = i + 1;
         const bg =
           c.state === 'done' ? C.accent : c.state === 'mine' ? C.gold : c.state === 'taken' ? C.cardActive : C.bgDeep;
-        const fg = c.state === 'done' || c.state === 'mine' ? C.bgDeep : C.text;
+        const fg = c.state === 'done' || c.state === 'mine' ? C.onAccent : C.text;
         return (
           <Pressable
             key={juz}
@@ -49,7 +51,7 @@ export function JuzGrid({
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   grid: { gap: 6 },
   row: { flexDirection: 'row', gap: 6 },
   cell: {
@@ -63,4 +65,4 @@ const st = StyleSheet.create({
   check: { position: 'absolute', top: 3, right: 4 },
   num: { fontSize: 18, fontWeight: '800' },
   cap: { fontSize: 9.5, fontWeight: '600', marginTop: 1 },
-});
+}));

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Card, Screen } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { formatDateLong, formatDateShort, weekdayShort } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import { startOfDay } from '@/lib/dates';
@@ -14,6 +14,8 @@ import { useNow } from '@/lib/use-now';
 const pad = (n: number) => String(n).padStart(2, '0');
 
 export default function ImsakiyeScreen() {
+  const C = useColors();
+  const st = useSt();
   const { settings, lang, calc } = useAppState();
   const t = useT();
   const { place, hijriOffset } = settings;
@@ -101,7 +103,7 @@ export default function ImsakiyeScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   sub: { color: C.textDim, fontSize: 14, marginTop: -S.sm },
   cdLabel: { color: C.textDim, fontSize: 14 },
   cd: { color: C.accent, fontSize: 40, fontWeight: '800', fontVariant: ['tabular-nums'] },
@@ -118,4 +120,4 @@ const st = StyleSheet.create({
   num: { color: C.textDim, fontWeight: '700' },
   key: { color: C.gold, fontWeight: '700' },
   note: { color: C.textMute, fontSize: 12.5, lineHeight: 19 },
-});
+}));

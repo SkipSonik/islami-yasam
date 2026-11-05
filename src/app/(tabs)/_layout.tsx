@@ -5,7 +5,7 @@ import { View } from 'react-native';
 
 import type { IconName } from '@/components/ui';
 import { MiniPlayer } from '@/components/mini-player';
-import { C } from '@/constants/theme';
+import { useColors } from '@/constants/theme';
 import { useT } from '@/lib/app-state';
 
 const icon =
@@ -15,6 +15,7 @@ const icon =
   );
 
 export default function TabsLayout() {
+  const C = useColors();
   const t = useT();
   return (
     <Tabs

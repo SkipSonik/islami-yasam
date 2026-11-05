@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Screen } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { ESMA } from '@/data/esma';
 import { useAppState, useT } from '@/lib/app-state';
 
@@ -14,6 +14,8 @@ const fold = (s: string) =>
     .replace(/ı/g, 'i');
 
 export default function EsmaScreen() {
+  const C = useColors();
+  const st = useSt();
   const { lang } = useAppState();
   const t = useT();
   const [q, setQ] = useState('');
@@ -65,7 +67,7 @@ export default function EsmaScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   search: {
     backgroundColor: C.card,
     color: C.text,
@@ -88,4 +90,4 @@ const st = StyleSheet.create({
   name: { color: C.text, fontSize: 16, fontWeight: '700' },
   meaning: { color: C.textDim, fontSize: 13.5, lineHeight: 19 },
   ar: { color: C.gold, fontSize: 26, fontFamily: 'AmiriQuran_400Regular', maxWidth: 140, textAlign: 'right' },
-});
+}));

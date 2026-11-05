@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { normalizeTr, surahName, SURAHS } from '@/data/surahs';
 import { useAppState, useT } from '@/lib/app-state';
 import { juzOf, pageOf } from '@/lib/mushaf';
@@ -12,6 +12,8 @@ import { isSurahCached } from '@/lib/quran';
 import { loadValue } from '@/lib/storage';
 
 export default function KuranScreen() {
+  const C = useColors();
+  const st = useSt();
   const insets = useSafeAreaInsets();
   const { lang } = useAppState();
   const t = useT();
@@ -46,7 +48,7 @@ export default function KuranScreen() {
           onPress={() => router.push(lastPage ? `/mushaf?sayfa=${lastPage}` : '/mushaf?sayfa=1')}
           style={({ pressed }) => [st.mushafCard, pressed && { opacity: 0.85 }]}>
           <View style={st.mushafIcon}>
-            <Ionicons name="book" size={24} color={C.bgDeep} />
+            <Ionicons name="book" size={24} color={C.onAccent} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={st.mushafTitle}>{t('quran.mushaf')}</Text>
@@ -98,7 +100,7 @@ export default function KuranScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   root: { flex: 1, backgroundColor: C.bg },
   head: { padding: S.lg, gap: S.sm },
   title: { color: C.text, fontSize: 22, fontWeight: '700' },
@@ -153,4 +155,4 @@ const st = StyleSheet.create({
   mushafTitle: { color: C.text, fontSize: 16, fontWeight: '800' },
   mushafSub: { color: C.textDim, fontSize: 12.5, marginTop: 2 },
   meta: { color: C.textDim, fontSize: 12, marginTop: 2 },
-});
+}));

@@ -100,6 +100,8 @@ jobs:
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://dini-gunler" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > dini-gunler.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://imsakiye" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > imsakiye.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://esma" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > esma.png || true
+            adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://rehber" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > rehber.png || true
+            adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://ayarlar" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > ayarlar.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://zekat" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > zekat.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://hatim" com.skipsonik.islamiyasam; sleep 8; adb exec-out screencap -p > hatim.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://camiler" com.skipsonik.islamiyasam; sleep 45; adb exec-out screencap -p > camiler.png || true

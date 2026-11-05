@@ -7,8 +7,8 @@ import { Platform } from 'react-native';
 import { t } from '@/i18n';
 
 import { getDayTimes, PRAYER_KEYS, type CalcConfig, type PrayerKey } from './prayer';
+import { channelFor, soundDef, SOUNDS, type SoundId } from './sounds';
 
-const CHANNEL = 'namaz-vakitleri';
 const DAYS_AHEAD = 7;
 
 Notifications.setNotificationHandler({
@@ -20,17 +20,37 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function ensureChannel() {
+async function ensureChannel(sound?: SoundId) {
   if (Platform.OS !== 'android') return;
-  await Notifications.setNotificationChannelAsync(CHANNEL, {
-    name: t('notif.channel'),
+  const def = soundDef(sound);
+  const name =
+    def.id === 'varsayilan' ? t('notif.channel') : `${t('notif.channel')} · ${t(`sound.${def.id}`)}`;
+  await Notifications.setNotificationChannelAsync(channelFor(def.id), {
+    name,
     importance: Notifications.AndroidImportance.HIGH,
-    sound: 'default',
+    sound: def.id === 'sessiz' ? null : (def.file ?? 'default'),
+    enableVibrate: true,
     vibrationPattern: [0, 300, 200, 300],
     lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
     bypassDnd: false,
   });
 }
+
+/** Seçilen sesle hemen deneme bildirimi gönderir (5 sn sonra). */
+export async function sendTestNotification(sound: SoundId | undefined, title: string, body: string) {
+  await ensureChannel(sound);
+  const def = soundDef(sound);
+  await Notifications.scheduleNotificationAsync({
+    content: { title, body, sound: def.id === 'sessiz' ? false : (def.file ?? 'default') },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: 5,
+      channelId: channelFor(def.id),
+    },
+  });
+}
+
+export { SOUNDS };
 
 export async function ensureNotificationPermission() {
   await ensureChannel();
@@ -43,6 +63,7 @@ export async function ensureNotificationPermission() {
 export type NotifySettings = {
   enabled: Record<PrayerKey, boolean>;
   remindBefore: number; // dakika, 0 = kapalı
+  sound?: SoundId; // vakit girişi sesi
 };
 
 async function canUseExactAlarms() {
@@ -70,8 +91,10 @@ export async function rescheduleAll(
 
   if (askPermission) {
     if (!(await ensureNotificationPermission())) return -1;
+    await ensureChannel(s.sound);
   } else {
     await ensureChannel();
+    await ensureChannel(s.sound);
     if (!(await Notifications.getPermissionsAsync()).granted) return -1;
   }
 
@@ -91,7 +114,7 @@ export async function rescheduleAll(
       const prayer = t(`prayer.${key}`);
 
       if (at > now) {
-        await schedule(at, t('notif.entered', { prayer }), bodyText(key), delivery);
+        await schedule(at, t('notif.entered', { prayer }), bodyText(key), delivery, s.sound);
         count++;
       }
       if (s.remindBefore > 0) {
@@ -117,18 +140,26 @@ function bodyText(k: PrayerKey) {
   return t('notif.bodyPrayer');
 }
 
-function schedule(time: number, title: string, body: string, delivery: 'alarmClock' | 'bestEffort') {
+function schedule(
+  time: number,
+  title: string,
+  body: string,
+  delivery: 'alarmClock' | 'bestEffort',
+  sound?: SoundId,
+) {
+  // Hatırlatmalar varsayılan sesle, vakit girişi seçilen sesle çalar.
+  const def = soundDef(sound);
   return Notifications.scheduleNotificationAsync({
     content: {
       title,
       body,
-      sound: 'default',
+      sound: def.id === 'sessiz' ? false : (def.file ?? 'default'),
       priority: Notifications.AndroidNotificationPriority.MAX,
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DATE,
       date: time,
-      channelId: CHANNEL,
+      channelId: channelFor(def.id),
       delivery,
     },
   });

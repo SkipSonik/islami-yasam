@@ -2,13 +2,15 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { surahName } from '@/data/surahs';
 import { useAppState, useT } from '@/lib/app-state';
 import { reciterName, useQuranPlayer } from '@/lib/quran-player';
 
 // Kur'an çalarken ekranın altında duran küçük çalar.
 export function MiniPlayer({ hideLink }: { hideLink?: boolean }) {
+  const C = useColors();
+  const st = useSt();
   const p = useQuranPlayer();
   const { lang } = useAppState();
   const t = useT();
@@ -31,9 +33,9 @@ export function MiniPlayer({ hideLink }: { hideLink?: boolean }) {
       <Btn icon="play-skip-back" onPress={p.previous} />
       <Pressable onPress={p.toggle} style={st.play} hitSlop={8}>
         {p.buffering && !p.playing ? (
-          <ActivityIndicator color={C.bgDeep} />
+          <ActivityIndicator color={C.onAccent} />
         ) : (
-          <Ionicons name={p.playing ? 'pause' : 'play'} size={22} color={C.bgDeep} />
+          <Ionicons name={p.playing ? 'pause' : 'play'} size={22} color={C.onAccent} />
         )}
       </Pressable>
       <Btn icon="play-skip-forward" onPress={p.next} />
@@ -43,6 +45,8 @@ export function MiniPlayer({ hideLink }: { hideLink?: boolean }) {
 }
 
 function Btn({ icon, onPress }: { icon: any; onPress: () => void }) {
+  const C = useColors();
+  const st = useSt();
   return (
     <Pressable onPress={onPress} hitSlop={8} style={st.btn}>
       <Ionicons name={icon} size={20} color={C.text} />
@@ -50,7 +54,7 @@ function Btn({ icon, onPress }: { icon: any; onPress: () => void }) {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   wrap: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -74,4 +78,4 @@ const st = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-});
+}));

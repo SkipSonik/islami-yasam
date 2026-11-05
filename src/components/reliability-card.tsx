@@ -2,7 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { useAppState, useT } from '@/lib/app-state';
 import {
   ensureNotificationPermission,
@@ -16,6 +16,8 @@ import { Card, SectionTitle } from './ui';
 
 // Ana sayfada: ayarlar eksikse kısa bir uyarı şeridi.
 export function ReliabilityBanner() {
+  const C = useColors();
+  const st = useSt();
   const { reliability, settings } = useAppState();
   const t = useT();
   const anyOn = Object.values(settings.notify.enabled).some(Boolean);
@@ -31,6 +33,7 @@ export function ReliabilityBanner() {
 
 // Ayarlarda: her bir gerekli izin ve düzeltme düğmesi.
 export function ReliabilityCard() {
+  const st = useSt();
   const { reliability, recheckReliability } = useAppState();
   const t = useT();
   if (Platform.OS !== 'android' || !reliability) return null;
@@ -87,6 +90,8 @@ function Item({
   action: string;
   onPress: () => void;
 }) {
+  const C = useColors();
+  const st = useSt();
   return (
     <View style={st.item}>
       <Ionicons name={ok ? 'checkmark-circle' : 'alert-circle'} size={22} color={ok ? C.accent : C.gold} />
@@ -105,12 +110,12 @@ function Item({
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: S.sm,
-    backgroundColor: '#4A3B17',
+    backgroundColor: C.warnBg,
     borderRadius: R.md,
     padding: S.md,
   },
@@ -120,8 +125,8 @@ const st = StyleSheet.create({
   title: { color: C.text, fontSize: 15, fontWeight: '600' },
   okText: { color: C.accent, fontSize: 13, fontWeight: '700' },
   btn: { backgroundColor: C.accent, paddingHorizontal: 14, paddingVertical: 8, borderRadius: R.sm },
-  btnText: { color: C.bgDeep, fontWeight: '700', fontSize: 13 },
+  btnText: { color: C.onAccent, fontWeight: '700', fontSize: 13 },
   oem: { backgroundColor: C.bgDeep, borderRadius: R.sm, padding: S.md, gap: S.sm },
   linkBtn: { alignSelf: 'flex-start' },
   link: { color: C.accent, fontWeight: '700', fontSize: 13 },
-});
+}));

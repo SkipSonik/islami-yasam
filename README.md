@@ -15,6 +15,8 @@ Türkçe, English, العربية, Deutsch, Français, Русский, Bahasa In
 - **Kıble pusulası:** konuma göre kıble açısı, hizalanınca titreşim
 - **Zikirmatik** ve **kaza namazı takibi**
 - **Hatim:** kişisel hatim takibi ve kodla katılınan **ortak hatim** (Kur'an kardeşliği). Sunucu `server/hatim/` (PHP + MySQL)
+- **Abdest ve namaz rehberi** (erkek, kadın, erkek çocuk, kız çocuk; resimli, dualar, rekât tablosu)
+- **5 tema** (Zümrüt, Gece, İznik, Medine, Kâbe) ve **seçilebilir vakit sesi**
 - **Dini günler ve kandiller**, **imsakiye**, **Esmaül Hüsna**, **Zekatmatik**, **Kâbe canlı yayın**
 - **Ayarlar:** konum, bildirim tercihleri, Hicri tarih düzeltmesi
 

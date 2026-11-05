@@ -6,7 +6,7 @@ import { Alert, StyleSheet, Text, View } from 'react-native';
 import { FormModal } from '@/components/form-modal';
 import { JuzGrid } from '@/components/juz-grid';
 import { Btn, Card, ListRow, Screen, SectionTitle } from '@/components/ui';
-import { C, S } from '@/constants/theme';
+import { S, useColors, makeStyles } from '@/constants/theme';
 import { useT } from '@/lib/app-state';
 import {
   createHatim,
@@ -26,6 +26,7 @@ import {
 import { juzStartPage } from '@/lib/mushaf';
 
 export default function HatimScreen() {
+  const st = useSt();
   const t = useT();
   const [p, setP] = useState<PersonalHatim>(EMPTY_PERSONAL);
   const [joined, setJoined] = useState<JoinedHatim[]>([]);
@@ -179,7 +180,7 @@ export default function HatimScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   bar: { height: 8, backgroundColor: C.bgDeep, borderRadius: 4, overflow: 'hidden' },
   barFill: { height: 8, backgroundColor: C.accent },
   statsRow: { flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap', gap: S.sm },
@@ -187,4 +188,4 @@ const st = StyleSheet.create({
   statGold: { color: C.gold, fontSize: 14, fontWeight: '700' },
   hint: { color: C.textMute, fontSize: 12.5, lineHeight: 18 },
   empty: { color: C.textDim, fontSize: 14 },
-});
+}));

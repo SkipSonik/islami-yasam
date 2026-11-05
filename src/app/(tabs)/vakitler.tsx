@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { formatDateShort, hijriMonthName, weekdayShort } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import { addDays, startOfDay } from '@/lib/dates';
@@ -13,6 +13,7 @@ import { useNow } from '@/lib/use-now';
 const DAYS = 30;
 
 export default function VakitlerScreen() {
+  const st = useSt();
   const insets = useSafeAreaInsets();
   const { settings, lang, calc } = useAppState();
   const t = useT();
@@ -76,7 +77,7 @@ export default function VakitlerScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   root: { flex: 1, backgroundColor: C.bg },
   head: { paddingHorizontal: S.lg, paddingTop: S.md, paddingBottom: S.md, gap: 4 },
   title: { color: C.text, fontSize: 22, fontWeight: '700' },
@@ -91,7 +92,7 @@ const st = StyleSheet.create({
   headerRow: { marginHorizontal: S.md, backgroundColor: C.bgDeep },
   altRow: { backgroundColor: C.card },
   todayRow: { backgroundColor: C.accent },
-  todayText: { color: C.bgDeep, fontWeight: '700' },
+  todayText: { color: C.onAccent, fontWeight: '700' },
   hText: { color: C.textDim, fontSize: 11, fontWeight: '700' },
   dateCol: { width: 78 },
   date: { color: C.text, fontSize: 12, fontWeight: '600' },
@@ -99,4 +100,4 @@ const st = StyleSheet.create({
   cell: { flex: 1, textAlign: 'center' },
   time: { color: C.text, fontSize: 12.5, fontVariant: ['tabular-nums'] },
   note: { color: C.textMute, fontSize: 12, lineHeight: 18, marginTop: S.lg, paddingHorizontal: S.sm },
-});
+}));

@@ -4,7 +4,7 @@ import type { ComponentProps, ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 
 export type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -21,44 +21,49 @@ export function Screen({
   scroll?: boolean;
   right?: ReactNode;
 }) {
+  const C = useColors();
+  const st = useSt();
   const insets = useSafeAreaInsets();
   const header = title ? (
-    <View style={styles.header}>
+    <View style={st.header}>
       {back ? (
-        <Pressable hitSlop={12} onPress={() => router.back()} style={styles.headerBtn}>
+        <Pressable hitSlop={12} onPress={() => router.back()} style={st.headerBtn}>
           <Ionicons name="arrow-back" size={22} color={C.text} />
         </Pressable>
       ) : null}
-      <Text style={[styles.headerTitle, back && { textAlign: 'center' }]} numberOfLines={1}>
+      <Text style={[st.headerTitle, back && { textAlign: 'center' }]} numberOfLines={1}>
         {title}
       </Text>
-      {back ? <View style={styles.headerBtn}>{right}</View> : right}
+      {back ? <View style={st.headerBtn}>{right}</View> : right}
     </View>
   ) : null;
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top }]}>
+    <View style={[st.root, { paddingTop: insets.top }]}>
       {header}
       {scroll ? (
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={st.content} showsVerticalScrollIndicator={false}>
           {children}
         </ScrollView>
       ) : (
-        <View style={[styles.content, { flex: 1 }]}>{children}</View>
+        <View style={[st.content, { flex: 1 }]}>{children}</View>
       )}
     </View>
   );
 }
 
 export function Card({ children, style }: { children: ReactNode; style?: ViewStyle }) {
-  return <View style={[styles.card, style]}>{children}</View>;
+  const st = useSt();
+  return <View style={[st.card, style]}>{children}</View>;
 }
 
 export function SectionTitle({ icon, children }: { icon?: IconName; children: ReactNode }) {
+  const C = useColors();
+  const st = useSt();
   return (
-    <View style={styles.sectionTitle}>
+    <View style={st.sectionTitle}>
       {icon ? <Ionicons name={icon} size={18} color={C.accent} /> : null}
-      <Text style={styles.sectionText}>{children}</Text>
+      <Text style={st.sectionText}>{children}</Text>
     </View>
   );
 }
@@ -76,19 +81,21 @@ export function ListRow({
   onPress?: () => void;
   right?: ReactNode;
 }) {
+  const C = useColors();
+  const st = useSt();
   return (
     <Pressable
       onPress={onPress}
       disabled={!onPress}
-      style={({ pressed }) => [styles.row, pressed && { backgroundColor: C.cardSoft }]}>
+      style={({ pressed }) => [st.row, pressed && { backgroundColor: C.cardSoft }]}>
       {icon ? (
-        <View style={styles.rowIcon}>
+        <View style={st.rowIcon}>
           <Ionicons name={icon} size={20} color={C.accent} />
         </View>
       ) : null}
       <View style={{ flex: 1 }}>
-        <Text style={styles.rowTitle}>{title}</Text>
-        {subtitle ? <Text style={styles.rowSub}>{subtitle}</Text> : null}
+        <Text style={st.rowTitle}>{title}</Text>
+        {subtitle ? <Text style={st.rowSub}>{subtitle}</Text> : null}
       </View>
       {right ?? (onPress ? <Ionicons name="chevron-forward" size={18} color={C.textMute} /> : null)}
     </Pressable>
@@ -106,19 +113,21 @@ export function Btn({
   kind?: 'primary' | 'ghost' | 'danger';
   icon?: IconName;
 }) {
-  const bg = kind === 'primary' ? C.accent : kind === 'danger' ? '#4A2A2A' : C.cardSoft;
+  const C = useColors();
+  const st = useSt();
+  const bg = kind === 'primary' ? C.accent : kind === 'danger' ? C.dangerBg : C.cardSoft;
   const fg = kind === 'primary' ? C.bgDeep : kind === 'danger' ? C.danger : C.text;
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.btn, { backgroundColor: bg, opacity: pressed ? 0.8 : 1 }]}>
+      style={({ pressed }) => [st.btn, { backgroundColor: bg, opacity: pressed ? 0.8 : 1 }]}>
       {icon ? <Ionicons name={icon} size={18} color={fg} /> : null}
-      <Text style={[styles.btnText, { color: fg }]}>{label}</Text>
+      <Text style={[st.btnText, { color: fg }]}>{label}</Text>
     </Pressable>
   );
 }
 
-export const styles = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   root: { flex: 1, backgroundColor: C.bg },
   content: { padding: S.lg, paddingBottom: 40, gap: S.lg },
   header: {
@@ -161,4 +170,4 @@ export const styles = StyleSheet.create({
     borderRadius: R.md,
   },
   btnText: { fontSize: 16, fontWeight: '700' },
-});
+}));

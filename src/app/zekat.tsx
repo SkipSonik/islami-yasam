@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Btn, Card, Screen, SectionTitle } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import type { StringKey } from '@/i18n';
 import { useT } from '@/lib/app-state';
 import { loadJSON, saveJSON } from '@/lib/storage';
@@ -59,6 +59,8 @@ function money(n: number, currency: string | null) {
 }
 
 export default function ZekatScreen() {
+  const C = useColors();
+  const st = useSt();
   const t = useT();
   const [v, setV] = useState<Values>(EMPTY);
   const currency = useMemo(() => Localization.getLocales()[0]?.currencyCode ?? null, []);
@@ -129,6 +131,7 @@ export default function ZekatScreen() {
 }
 
 function Row({ label, value }: { label: string; value: string }) {
+  const st = useSt();
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: S.md }}>
       <Text style={st.label}>{label}</Text>
@@ -137,7 +140,7 @@ function Row({ label, value }: { label: string; value: string }) {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   intro: { color: C.textDim, fontSize: 14, lineHeight: 21 },
   label: { color: C.text, fontSize: 14, fontWeight: '600', flexShrink: 1 },
   hint: { color: C.textMute, fontSize: 12.5, lineHeight: 18 },
@@ -155,4 +158,4 @@ const st = StyleSheet.create({
   warn: { color: C.gold, fontSize: 14, lineHeight: 20 },
   dueLabel: { color: C.textDim, fontSize: 14 },
   due: { color: C.accent, fontSize: 32, fontWeight: '800' },
-});
+}));

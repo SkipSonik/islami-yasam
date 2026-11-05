@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Screen } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { formatDateLong, type StringKey } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import { addDays, startOfDay } from '@/lib/dates';
@@ -11,6 +11,8 @@ import { formatHijri } from '@/lib/hijri';
 import { daysUntil, upcomingReligiousDays, whenLabel } from '@/lib/religious-days';
 
 export default function DiniGunlerScreen() {
+  const C = useColors();
+  const st = useSt();
   const { settings, lang } = useAppState();
   const t = useT();
   const dayKey = startOfDay(new Date()).getTime();
@@ -45,7 +47,7 @@ export default function DiniGunlerScreen() {
               </Text>
             </View>
             <View style={[st.badge, n <= 0 && { backgroundColor: C.accent }]}>
-              <Text style={[st.badgeText, n <= 0 && { color: C.bgDeep }]}>{whenLabel(d, now, t)}</Text>
+              <Text style={[st.badgeText, n <= 0 && { color: C.onAccent }]}>{whenLabel(d, now, t)}</Text>
             </View>
           </View>
         );
@@ -55,7 +57,7 @@ export default function DiniGunlerScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -75,4 +77,4 @@ const st = StyleSheet.create({
   badge: { backgroundColor: C.cardSoft, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5, maxWidth: 110 },
   badgeText: { color: C.text, fontSize: 12, fontWeight: '700', textAlign: 'center' },
   note: { color: C.textMute, fontSize: 12.5, lineHeight: 19, marginTop: S.md },
-});
+}));

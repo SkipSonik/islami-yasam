@@ -1,21 +1,24 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
 import { useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ReliabilityCard } from '@/components/reliability-card';
+import { SoundPicker } from '@/components/sound-picker';
+import { ThemePicker } from '@/components/theme-picker';
 import { Btn, Card, Screen, SectionTitle } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { LANGUAGES, type StringKey } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import { formatHijri } from '@/lib/hijri';
-import { ensureNotificationPermission } from '@/lib/notifications';
+import { ensureNotificationPermission, sendTestNotification } from '@/lib/notifications';
 import { METHOD_KEYS, methodForCountry, PRAYER_KEYS, type MethodKey } from '@/lib/prayer';
 
 const REMIND = [0, 5, 10, 15, 30, 45];
 
 export default function AyarlarScreen() {
+  const C = useColors();
+  const st = useSt();
   const { settings, update, refreshLocation, notifyStatus, lang, calc } = useAppState();
   const t = useT();
   const { place, notify, hijriOffset } = settings;
@@ -37,14 +40,7 @@ export default function AyarlarScreen() {
       setTestMsg('settings.notifDenied');
       return;
     }
-    await Notifications.scheduleNotificationAsync({
-      content: { title: t('settings.testTitle'), body: t('settings.testBody'), sound: 'default' },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-        seconds: 5,
-        channelId: 'namaz-vakitleri',
-      },
-    });
+    await sendTestNotification(notify.sound, t('settings.testTitle'), t('settings.testBody'));
     setTestMsg('settings.testSent');
   };
 
@@ -60,6 +56,11 @@ export default function AyarlarScreen() {
           <Text style={st.value}>{langName}</Text>
           <Ionicons name="chevron-down" size={18} color={C.textMute} />
         </Pressable>
+      </Card>
+
+      <Card>
+        <SectionTitle icon="color-palette-outline">{t('settings.theme')}</SectionTitle>
+        <ThemePicker />
       </Card>
 
       <Card>
@@ -108,12 +109,15 @@ export default function AyarlarScreen() {
               key={m}
               onPress={() => update({ notify: { ...notify, remindBefore: m } })}
               style={[st.chip, notify.remindBefore === m && st.chipOn]}>
-              <Text style={[st.chipText, notify.remindBefore === m && { color: C.bgDeep }]}>
+              <Text style={[st.chipText, notify.remindBefore === m && { color: C.onAccent }]}>
                 {m === 0 ? t('common.off') : t('common.minutes', { n: m })}
               </Text>
             </Pressable>
           ))}
         </View>
+        <Text style={[st.label, { marginTop: S.sm }]}>{t('settings.sound')}</Text>
+        <SoundPicker value={notify.sound ?? 'varsayilan'} onChange={(id) => update({ notify: { ...notify, sound: id } })} />
+        <Text style={st.small}>{t('settings.soundHelp')}</Text>
         {notifyStatus ? <Text style={[st.small, { color: C.danger }]}>{t(notifyStatus)}</Text> : null}
         <Btn label={t('settings.testNotif')} kind="ghost" icon="paper-plane-outline" onPress={testNotify} />
         {testMsg ? <Text style={st.small}>{t(testMsg)}</Text> : null}
@@ -181,6 +185,8 @@ export default function AyarlarScreen() {
 }
 
 function Option({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+  const C = useColors();
+  const st = useSt();
   return (
     <Pressable style={st.option} onPress={onPress}>
       <Text style={[st.optionText, selected && { color: C.accent, fontWeight: '700' }]}>{label}</Text>
@@ -189,7 +195,7 @@ function Option({ label, selected, onPress }: { label: string; selected: boolean
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   value: { color: C.text, fontSize: 17, fontWeight: '700' },
   small: { color: C.textDim, fontSize: 13, lineHeight: 19 },
   label: { color: C.text, fontSize: 15 },
@@ -237,4 +243,4 @@ const st = StyleSheet.create({
     borderBottomColor: C.border,
   },
   optionText: { color: C.text, fontSize: 16, flex: 1 },
-});
+}));

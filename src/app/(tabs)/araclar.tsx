@@ -2,13 +2,14 @@ import { router, type Href } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { ListRow, Screen, type IconName } from '@/components/ui';
-import { C, S } from '@/constants/theme';
+import { S, useColors, makeStyles } from '@/constants/theme';
 import type { StringKey } from '@/i18n';
 import { useT } from '@/lib/app-state';
 
 type Item = { icon: IconName; title: StringKey; sub: StringKey; href: Href };
 
 const WORSHIP: Item[] = [
+  { icon: 'water-outline', title: 'tools.rehber', sub: 'tools.rehberSub', href: '/rehber' },
   { icon: 'book-outline', title: 'tools.hatim', sub: 'tools.hatimSub', href: '/hatim' },
   { icon: 'calendar-outline', title: 'tools.religious', sub: 'tools.religiousSub', href: '/dini-gunler' },
   { icon: 'moon-outline', title: 'tools.imsakiye', sub: 'tools.imsakiyeSub', href: '/imsakiye' },
@@ -25,6 +26,7 @@ const OTHER: Item[] = [
 ];
 
 export default function AraclarScreen() {
+  const st = useSt();
   const t = useT();
   const list = (items: Item[]) => (
     <View style={{ gap: S.sm }}>
@@ -44,7 +46,7 @@ export default function AraclarScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   group: { color: C.textDim, fontSize: 13, fontWeight: '700', letterSpacing: 0.6, textTransform: 'uppercase', marginBottom: -S.sm },
   soon: { color: C.textMute, fontSize: 13, lineHeight: 20 },
-});
+}));

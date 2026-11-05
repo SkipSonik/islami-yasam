@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Btn, Screen } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { directionName, type StringKey } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import {
@@ -19,6 +19,8 @@ import {
 type Status = 'loading' | 'ok' | 'error' | 'empty';
 
 export default function CamilerScreen() {
+  const C = useColors();
+  const st = useSt();
   const { settings, lang } = useAppState();
   const t = useT();
   const [list, setList] = useState<Mosque[]>([]);
@@ -147,6 +149,8 @@ export default function CamilerScreen() {
 }
 
 function MosqueRow({ m, nearest, meta }: { m: Mosque; nearest: boolean; meta: string }) {
+  const C = useColors();
+  const st = useSt();
   const openDirections = () => {
     const label = encodeURIComponent(m.name);
     const web = `https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lng}&travelmode=walking`;
@@ -175,13 +179,13 @@ function MosqueRow({ m, nearest, meta }: { m: Mosque; nearest: boolean; meta: st
         <Text style={st.meta}>{meta}</Text>
       </View>
       <View style={st.go}>
-        <Ionicons name="navigate" size={18} color={C.bgDeep} />
+        <Ionicons name="navigate" size={18} color={C.onAccent} />
       </View>
     </Pressable>
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   note: { color: C.gold, fontSize: 13 },
   updating: { color: C.textDim, fontSize: 12 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: S.lg, padding: S.xl },
@@ -218,4 +222,4 @@ const st = StyleSheet.create({
     justifyContent: 'center',
   },
   src: { color: C.textMute, fontSize: 11.5, textAlign: 'center', marginTop: S.md },
-});
+}));

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Card, Screen } from '@/components/ui';
-import { C, R, S } from '@/constants/theme';
+import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { useT } from '@/lib/app-state';
 import { loadJSON, saveJSON } from '@/lib/storage';
 
@@ -23,6 +23,8 @@ const ZERO: Counts = { sabah: 0, ogle: 0, ikindi: 0, aksam: 0, yatsi: 0, vitir: 
 const KEY = 'kaza-v1';
 
 export default function KazaScreen() {
+  const C = useColors();
+  const st = useSt();
   const [c, setC] = useState<Counts>(ZERO);
   const t = useT();
 
@@ -73,7 +75,7 @@ export default function KazaScreen() {
   );
 }
 
-const st = StyleSheet.create({
+const useSt = makeStyles((C) => ({
   totalLabel: { color: C.text, fontSize: 15, fontWeight: '600' },
   total: { color: C.text, fontSize: 48, fontWeight: '800' },
   hint: { color: C.textDim, fontSize: 12, textAlign: 'center' },
@@ -102,4 +104,4 @@ const st = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 6,
   },
-});
+}));
