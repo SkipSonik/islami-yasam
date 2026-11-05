@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       urls:
-        description: 'Boşlukla ayrılmış ad=url çiftleri'
+        description: 'Boşlukla ayrılmış dosyaadi.uzanti=url çiftleri'
         required: true
 permissions:
   contents: write
@@ -18,8 +18,7 @@ jobs:
           mkdir out && cd out
           for pair in ${{ github.event.inputs.urls }}; do
             name="${pair%%=*}"; url="${pair#*=}"
-            curl -sSfL -o "$name.png" "$url"
-            convert "$name.png" -quality 92 "$name.jpg" && rm "$name.png"
+            curl -sSfL -o "$name" "$url"
           done
           ls -la
       - name: Dala gönder
