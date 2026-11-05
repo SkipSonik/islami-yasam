@@ -1,0 +1,32 @@
+# Üretilen görselleri (Higgsfield) indirip "gorsel-kaynak" dalına koyar.
+# Geliştirme ortamı bu sunuculara doğrudan erişemediği için bu yol kullanılıyor.
+name: Görselleri indir
+on:
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: 'Boşlukla ayrılmış ad=url çiftleri'
+        required: true
+permissions:
+  contents: write
+jobs:
+  indir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: İndir ve JPEG'e çevir
+        run: |
+          mkdir out && cd out
+          for pair in ${{ github.event.inputs.urls }}; do
+            name="${pair%%=*}"; url="${pair#*=}"
+            curl -sSfL -o "$name.png" "$url"
+            convert "$name.png" -quality 92 "$name.jpg" && rm "$name.png"
+          done
+          ls -la
+      - name: Dala gönder
+        run: |
+          cd out
+          git init -q -b gorsel-kaynak
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Kaynak görseller"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" gorsel-kaynak
