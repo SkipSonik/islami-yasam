@@ -64,6 +64,7 @@ jobs:
           fi
           keytool -list -v -keystore "$KS" -storepass "$PW" | grep -E "Alias|SHA256"
           {
+            echo ""
             echo "uploadStoreFile=$KS"
             echo "uploadStorePassword=$PW"
             echo "uploadKeyAlias=upload"
