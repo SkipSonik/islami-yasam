@@ -1,0 +1,10 @@
+[
+ {"raw":"en-home","out":"en-01","theme":"zumrut","pill":"PRAYER TIMES","title":"Prayer times,<br>always with you","sub":"Accurate to the minute for your location, even offline."},
+ {"raw":"en-mushaf","out":"en-02","theme":"medine","pill":"HOLY QURAN","title":"Follow along<br>as you listen","sub":"The recited verse is highlighted in the Madinah mushaf."},
+ {"raw":"en-rehber","out":"en-03","theme":"zumrut","pill":"ILLUSTRATED GUIDE","title":"Learn wudu<br>and prayer","sub":"Step by step for men, women and children."},
+ {"raw":"en-takip","out":"en-04","theme":"gece","pill":"PRAYER TRACKER","title":"Never miss<br>a prayer","sub":"Mark your prayers, keep your streak, earn badges."},
+ {"raw":"en-hatim","out":"en-05","theme":"zumrut","pill":"GROUP KHATM","title":"Complete the Quran<br>together","sub":"Share a code, everyone takes a juz."},
+ {"raw":"en-ramazan","out":"en-06","theme":"gece","pill":"RAMADAN","title":"Ready for<br>Ramadan","sub":"Timetable, fasting calendar, suhoor and iftar alerts."},
+ {"raw":"en-dualar","out":"en-07","theme":"medine","pill":"DUAS","title":"A dua for<br>every moment","sub":"Arabic, transliteration and meaning, with sources."},
+ {"out":"en-08","theme":"kabe","pill":"5 THEMES","title":"Choose your<br>style","sub":"Emerald, Night, Iznik, Madinah and Kaaba.","fan":["en-tema-iznik","en-tema-gece","en-tema-zumrut","en-tema-kabe","en-tema-medine"]}
+]

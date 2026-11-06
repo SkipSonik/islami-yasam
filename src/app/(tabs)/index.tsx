@@ -243,7 +243,7 @@ const useSt = makeStyles((C) => ({
   cellActive: { backgroundColor: C.accent },
   cellLabel: { color: C.text, fontWeight: '700', fontSize: 14 },
   cellTime: { color: C.textDim, fontSize: 14, marginTop: 2, fontVariant: ['tabular-nums'] },
-  ar: { color: C.text, fontSize: 24, lineHeight: 44, textAlign: 'right', writingDirection: 'rtl' },
+  ar: { color: C.text, fontSize: 25, lineHeight: 50, textAlign: 'right', writingDirection: 'rtl', fontFamily: 'AmiriQuran_400Regular' },
   tr: { color: C.textDim, fontSize: 15, lineHeight: 22 },
   ref: { color: C.gold, fontSize: 13, fontWeight: '600' },
   quick: { flexDirection: 'row', gap: S.sm, marginBottom: -S.sm },

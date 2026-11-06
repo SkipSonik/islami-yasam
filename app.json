@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#0B3B2E",
+    "backgroundColor": "#0E2C26",
     "ios": {
       "bundleIdentifier": "com.skipsonik.islamiyasam",
       "supportsTablet": false
@@ -16,7 +16,7 @@
       "package": "com.skipsonik.islamiyasam",
       "versionCode": 15,
       "adaptiveIcon": {
-        "backgroundColor": "#0B3B2E",
+        "backgroundColor": "#0E2C26",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -72,9 +72,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0B3B2E",
+          "backgroundColor": "#0E2C26",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 120
+          "imageWidth": 160
         }
       ],
       "expo-background-task",

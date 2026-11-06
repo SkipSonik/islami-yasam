@@ -1,0 +1,72 @@
+[
+ {
+  "raw": "tr-home",
+  "out": "tr-01",
+  "theme": "zumrut",
+  "pill": "EZAN VAKTİ",
+  "title": "Namaz vakitleri<br>her an yanında",
+  "sub": "Bulunduğun yere göre dakikası dakikasına, internetsiz hesaplanır."
+ },
+ {
+  "raw": "tr-mushaf",
+  "out": "tr-02",
+  "theme": "medine",
+  "pill": "KUR'AN-I KERİM",
+  "title": "Dinlerken takip et",
+  "sub": "Medine mushafında okunan ayet anında vurgulanır."
+ },
+ {
+  "raw": "tr-rehber",
+  "out": "tr-03",
+  "theme": "zumrut",
+  "pill": "RESİMLİ REHBER",
+  "title": "Abdest ve namazı<br>adım adım öğren",
+  "sub": "Erkek, kadın ve çocuklar için ayrı anlatım ve dualar."
+ },
+ {
+  "raw": "tr-takip",
+  "out": "tr-04",
+  "theme": "gece",
+  "pill": "NAMAZ TAKİBİ",
+  "title": "Hiçbir vakti<br>kaçırma",
+  "sub": "Kıldığın namazları işaretle, serini koru, rozetleri topla."
+ },
+ {
+  "raw": "tr-hatim",
+  "out": "tr-05",
+  "theme": "zumrut",
+  "pill": "KUR'AN KARDEŞLİĞİ",
+  "title": "Sevdiklerinle<br>ortak hatim",
+  "sub": "Kodu paylaş, herkes bir cüz alsın, hatim birlikte tamamlansın."
+ },
+ {
+  "raw": "tr-ramazan",
+  "out": "tr-06",
+  "theme": "gece",
+  "pill": "RAMAZAN",
+  "title": "Ramazan'a hazır",
+  "sub": "İmsakiye, oruç takvimi, sahur ve iftar bildirimleri."
+ },
+ {
+  "raw": "tr-dualar",
+  "out": "tr-07",
+  "theme": "medine",
+  "pill": "DUALAR",
+  "title": "Her ana bir dua",
+  "sub": "Arapça, okunuş ve anlamıyla; kaynaklarıyla birlikte."
+ },
+ {
+  "out": "tr-08",
+  "theme": "kabe",
+  "pill": "5 FARKLI TEMA",
+  "title": "Sana uygun<br>görünümü seç",
+  "sub": "Zümrüt, Gece, İznik, Medine ve Kâbe temaları.",
+  "fan": [
+   "tr-tema-iznik",
+   "tr-tema-gece",
+   "tr-tema-zumrut",
+   "tr-tema-kabe",
+   "tr-tema-medine"
+  ]
+ }
+]
