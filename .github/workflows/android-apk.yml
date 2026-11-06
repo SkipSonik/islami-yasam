@@ -41,15 +41,44 @@ jobs:
       - name: Android projesini oluştur
         run: npx expo prebuild --platform android --no-install --clean
 
+      # Yükleme anahtarı GitHub gizli değişkenlerinde (Settings → Secrets → Actions) durur.
+      # Yoksa derleme hata ayıklama anahtarıyla imzalanır (sadece test için).
+      - name: İmza anahtarını hazırla
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_B64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.p12"
+            {
+              echo "uploadStoreFile=$RUNNER_TEMP/upload.p12"
+              echo "uploadStorePassword=$KEYSTORE_PASSWORD"
+              echo "uploadKeyAlias=upload"
+              echo "uploadKeyPassword=$KEYSTORE_PASSWORD"
+            } >> android/gradle.properties
+            echo "SIGNED=1" >> $GITHUB_ENV
+            echo "Yükleme anahtarıyla imzalanacak."
+          else
+            echo "::warning::Yükleme anahtarı yok; hata ayıklama anahtarıyla imzalanıyor (Play'e yüklenemez)."
+          fi
+
       - name: APK derle
         working-directory: android
         run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
+
+      - name: Play paketi (AAB) derle
+        if: env.SIGNED == '1'
+        working-directory: android
+        run: ./gradlew bundleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a,x86_64
 
       - name: APK'yı adlandır
         run: |
           VERSION=$(node -p "require('./app.json').expo.version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           cp android/app/build/outputs/apk/release/app-release.apk "islami-yasam-$VERSION-build${{ github.run_number }}.apk"
+          if [ -f android/app/build/outputs/bundle/release/app-release.aab ]; then
+            cp android/app/build/outputs/bundle/release/app-release.aab "islami-yasam-$VERSION-build${{ github.run_number }}.aab"
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
@@ -63,7 +92,9 @@ jobs:
           name: İslami Yaşam ${{ env.VERSION }} (derleme ${{ github.run_number }})
           body: Telefondan bu sayfayı açıp aşağıdaki .apk dosyasını indirip kurabilirsin.
           prerelease: true
-          files: islami-yasam-*.apk
+          files: |
+            islami-yasam-*.apk
+            islami-yasam-*.aab
 
   # Derlenen APK'yı gerçek bir Android emülatöründe açıp çökme olup olmadığını kontrol eder.
   # Hata kaydı (logcat) bu adımın çıktısında, ekran görüntüsü "duman-testi" dosyasında görünür.

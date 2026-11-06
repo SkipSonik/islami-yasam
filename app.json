@@ -94,7 +94,15 @@
           "delayAppMeasurementInit": true
         }
       ],
-      "expo-iap"
+      [
+        "expo-iap",
+        {
+          "android": {
+            "store": "play"
+          }
+        }
+      ],
+      "./plugins/with-release-signing"
     ],
     "experiments": {
       "typedRoutes": true,
