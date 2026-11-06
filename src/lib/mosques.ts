@@ -172,6 +172,9 @@ async function viaProxy(lat: number, lng: number, radius: number): Promise<OsmEl
   }
 }
 
+/** Gizlilik: konum dışarı gönderilmeden önce ~100 m'ye yuvarlanır */
+const round3 = (x: number) => Math.round(x * 1000) / 1000;
+
 /** İlk başarılı sonucu döndürür; hepsi başarısız olursa son hatayı fırlatır. */
 function firstSuccess<T>(tasks: Promise<T>[]): Promise<T> {
   return new Promise((resolve, reject) => {
@@ -189,7 +192,7 @@ export async function findNearbyMosques(lat: number, lng: number): Promise<Mosqu
   // Kendi sunucumuz ve Overpass'ın kendisi aynı anda sorulur, hangisi önce gelirse.
   const toList = (els: OsmElement[]) =>
     dedupe(els.map((e) => toMosque(e, lat, lng)).filter((m): m is Mosque => m != null));
-  const search = (radius: number) => firstSuccess([viaProxy(lat, lng, radius), overpass(query(lat, lng, radius))]);
+  const search = (radius: number) => firstSuccess([viaProxy(round3(lat), round3(lng), radius), overpass(query(round3(lat), round3(lng), radius))]);
   let list = toList(await search(3000));
   if (list.length < 3) list = toList(await search(10000));
   const result = list.slice(0, 40);
