@@ -49,7 +49,9 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_PASSWORD }}
         run: |
           if [ -n "$KEYSTORE_B64" ]; then
-            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.p12"
+            # Yapıştırırken araya giren boşluk/satır sonlarını temizle
+            printf '%s' "$KEYSTORE_B64" | tr -d ' \r\n\t' | base64 -di > "$RUNNER_TEMP/upload.p12"
+            keytool -list -v -keystore "$RUNNER_TEMP/upload.p12" -storepass "$KEYSTORE_PASSWORD" | grep -E "Alias|SHA256" || { echo "::error::Anahtar dosyası veya parolası hatalı"; exit 1; }
             {
               echo "uploadStoreFile=$RUNNER_TEMP/upload.p12"
               echo "uploadStorePassword=$KEYSTORE_PASSWORD"
