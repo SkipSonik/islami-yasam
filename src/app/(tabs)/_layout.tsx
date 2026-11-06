@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import type { IconName } from '@/components/ui';
 import { MiniPlayer } from '@/components/mini-player';
 import { useColors } from '@/constants/theme';
+import { AdBanner } from '@/lib/ads';
 import { useT } from '@/lib/app-state';
 
 const icon =
@@ -22,6 +23,7 @@ export default function TabsLayout() {
       tabBar={(props) => (
         <View style={{ backgroundColor: C.bg }}>
           <MiniPlayer />
+          <AdBanner />
           <BottomTabBar {...props} />
         </View>
       )}

@@ -1,5 +1,5 @@
 # config.php ve kurulum işaretine dışarıdan erişilmesin
-<FilesMatch "^(config\.php|config\.sample\.php|\.installed)$">
+<FilesMatch "^(config\.php|config\.sample\.php|\.installed|\.altin-onbellek\.json)$">
   Require all denied
 </FilesMatch>
 Options -Indexes

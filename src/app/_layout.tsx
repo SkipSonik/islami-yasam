@@ -10,6 +10,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { THEMES, ThemeContext, useColors } from '@/constants/theme';
 import { t } from '@/i18n';
 import { AppStateProvider, useAppState } from '@/lib/app-state';
+import { AdsBootstrap } from '@/lib/ads';
+import { PremiumProvider } from '@/lib/premium';
 import { QuranPlayerProvider } from '@/lib/quran-player';
 
 SplashScreen.preventAutoHideAsync();
@@ -84,6 +86,13 @@ function Root() {
       <Stack.Screen name="ortak-hatim/[kod]" />
       <Stack.Screen name="kabe" />
       <Stack.Screen name="rehber" />
+      <Stack.Screen name="premium" />
+      <Stack.Screen name="namaz-takip" />
+      <Stack.Screen name="rozetler" />
+      <Stack.Screen name="tesbihat" />
+      <Stack.Screen name="dualar" />
+      <Stack.Screen name="ramazan" />
+      <Stack.Screen name="okuma-plani" />
     </Stack>
   );
 }
@@ -93,9 +102,12 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <AppStateProvider>
         <Themed>
-          <QuranPlayerProvider>
-            <Root />
-          </QuranPlayerProvider>
+          <PremiumProvider>
+            <QuranPlayerProvider>
+              <AdsBootstrap />
+              <Root />
+            </QuranPlayerProvider>
+          </PremiumProvider>
         </Themed>
       </AppStateProvider>
     </SafeAreaProvider>

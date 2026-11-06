@@ -18,6 +18,7 @@ type Stored = {
   notify?: Parameters<typeof rescheduleAll>[2];
   lang?: Lang | null;
   method?: MethodKey | 'auto';
+  hijriOffset?: number;
 };
 
 // Görev tanımı modül yüklenirken (en üst seviyede) yapılmalı.
@@ -27,7 +28,7 @@ TaskManager.defineTask(TASK, async () => {
     if (!s?.place || !s.notify) return BackgroundTask.BackgroundTaskResult.Success;
     if (s.lang) setCurrentLang(s.lang);
     const calc = resolveCalc({ method: s.method ?? 'auto', place: s.place, lang: s.lang ?? null });
-    await rescheduleAll(s.place.lat, s.place.lng, s.notify, false, calc);
+    await rescheduleAll(s.place.lat, s.place.lng, s.notify, false, calc, s.hijriOffset ?? 0);
     return BackgroundTask.BackgroundTaskResult.Success;
   } catch {
     return BackgroundTask.BackgroundTaskResult.Failed;

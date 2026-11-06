@@ -102,6 +102,7 @@ jobs:
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://esma" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > esma.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://rehber" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > rehber.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://ayarlar" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > ayarlar.png || true
+            for s in namaz-takip rozetler tesbihat dualar ramazan okuma-plani premium; do adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://$s" com.skipsonik.islamiyasam > /dev/null; sleep 5; adb exec-out screencap -p > $s.png || true; done
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://zekat" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > zekat.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://hatim" com.skipsonik.islamiyasam; sleep 8; adb exec-out screencap -p > hatim.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://camiler" com.skipsonik.islamiyasam; sleep 45; adb exec-out screencap -p > camiler.png || true

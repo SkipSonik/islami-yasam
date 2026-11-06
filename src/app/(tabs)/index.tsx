@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { PrayerChecks } from '@/components/prayer-checks';
 import { ReliabilityBanner } from '@/components/reliability-card';
 import { Card, Screen, SectionTitle } from '@/components/ui';
 import { R, S, useColors, makeStyles } from '@/constants/theme';
@@ -11,10 +12,11 @@ import { surahName } from '@/data/surahs';
 import { formatDateLong, type StringKey } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import { startOfDay } from '@/lib/dates';
-import { formatHijri } from '@/lib/hijri';
+import { formatHijri, toHijri } from '@/lib/hijri';
 import { fmtTime, getCurrentPrayer, getDayTimes, getNextPrayer, PRAYER_KEYS } from '@/lib/prayer';
 import { getAyah, type Ayah } from '@/lib/quran';
-import { upcomingReligiousDays, whenLabel } from '@/lib/religious-days';
+import { daysUntil, ramadanDays, upcomingReligiousDays, whenLabel } from '@/lib/religious-days';
+import { currentStreak, FARZ_TIME_KEY, trackerStore } from '@/lib/tracker';
 import { useNow } from '@/lib/use-now';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -43,6 +45,8 @@ export default function HomeScreen() {
   const progress = span > 0 ? 1 - left / span : 0;
 
   const gregorian = formatDateLong(now, lang);
+  const trackData = trackerStore.useValue();
+  const streak = currentStreak(trackData, now);
   const nextDay = useMemo(
     () => upcomingReligiousDays(new Date(dayKey), hijriOffset, 2)[0],
     [dayKey, hijriOffset],
@@ -103,14 +107,69 @@ export default function HomeScreen() {
         </View>
       </Card>
 
+      <RamadanBanner now={now} />
+
+      <Card>
+        <Pressable style={st.trackHead} onPress={() => router.push('/namaz-takip')}>
+          <SectionTitle icon="checkmark-done-outline">{t('tracker.homeTitle')}</SectionTitle>
+          <View style={st.streak}>
+            <Ionicons name="flame" size={16} color={streak > 0 ? C.gold : C.textMute} />
+            <Text style={[st.streakText, streak > 0 && { color: C.gold }]}>{streak}</Text>
+            <Ionicons name="chevron-forward" size={16} color={C.textMute} />
+          </View>
+        </Pressable>
+        <PrayerChecks day={new Date(dayKey)} isFuture={(f) => times[FARZ_TIME_KEY[f]] > now} compact />
+      </Card>
+
       <DailyAyah date={now} />
 
       <View style={st.quick}>
         <QuickBtn icon="ellipse-outline" label={t('home.quickZikir')} onPress={() => router.push('/zikirmatik')} />
+        <QuickBtn icon="infinite-outline" label={t('home.quickTesbihat')} onPress={() => router.push('/tesbihat')} />
+        <QuickBtn icon="book-outline" label={t('home.quickDua')} onPress={() => router.push('/dualar')} />
+      </View>
+      <View style={st.quick}>
+        <QuickBtn icon="reader-outline" label={t('home.quickReading')} onPress={() => router.push('/okuma-plani')} />
         <QuickBtn icon="list-outline" label={t('home.quickKaza')} onPress={() => router.push('/kaza')} />
         <QuickBtn icon="location-outline" label={t('home.quickMosques')} onPress={() => router.push('/camiler')} />
       </View>
     </Screen>
+  );
+}
+
+/** Ramazan'da iftar/sahur sayacı, Ramazan'a 30 gün kala geri sayım */
+function RamadanBanner({ now }: { now: Date }) {
+  const C = useColors();
+  const st = useSt();
+  const t = useT();
+  const { settings, calc } = useAppState();
+  const { place, hijriOffset } = settings;
+  const dayMs = startOfDay(now).getTime();
+  const inRamadan = toHijri(now, hijriOffset).month === 9;
+  const days = useMemo(() => ramadanDays(new Date(dayMs), hijriOffset), [dayMs, hijriOffset]);
+  const times = useMemo(() => getDayTimes(place.lat, place.lng, new Date(dayMs), calc), [place.lat, place.lng, dayMs, calc]);
+  const startsIn = daysUntil(days[0], now);
+  if (!inRamadan && (startsIn > 30 || startsIn < 0)) return null;
+
+  let text: string;
+  if (inRamadan) {
+    const target = now < times.imsak ? times.imsak : now < times.aksam ? times.aksam : null;
+    if (target) {
+      const ms = target.getTime() - now.getTime();
+      const label = target === times.aksam ? t('ims.toIftar') : t('ims.toSahur');
+      text = `${label}: ${pad(Math.floor(ms / 3600000))}:${pad(Math.floor((ms % 3600000) / 60000))}:${pad(Math.floor((ms % 60000) / 1000))}`;
+    } else text = t('ramazan.iftarDone');
+  } else text = t('ramazan.countdown', { n: startsIn });
+
+  return (
+    <Pressable onPress={() => router.push('/ramazan')} style={({ pressed }) => [st.ramadan, pressed && { opacity: 0.85 }]}>
+      <Ionicons name="moon" size={22} color={C.gold} />
+      <View style={{ flex: 1 }}>
+        <Text style={st.ramadanTitle}>{t('ramazan.title')}</Text>
+        <Text style={st.ramadanText}>{text}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={C.textMute} />
+    </Pressable>
   );
 }
 
@@ -187,7 +246,22 @@ const useSt = makeStyles((C) => ({
   ar: { color: C.text, fontSize: 24, lineHeight: 44, textAlign: 'right', writingDirection: 'rtl' },
   tr: { color: C.textDim, fontSize: 15, lineHeight: 22 },
   ref: { color: C.gold, fontSize: 13, fontWeight: '600' },
-  quick: { flexDirection: 'row', gap: S.sm },
+  quick: { flexDirection: 'row', gap: S.sm, marginBottom: -S.sm },
+  trackHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  streak: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  streakText: { color: C.textMute, fontWeight: '800', fontSize: 15 },
+  ramadan: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: S.md,
+    backgroundColor: C.card,
+    borderRadius: R.md,
+    padding: S.lg,
+    borderWidth: 1.5,
+    borderColor: C.gold,
+  },
+  ramadanTitle: { color: C.text, fontSize: 16, fontWeight: '800' },
+  ramadanText: { color: C.gold, fontSize: 14, fontWeight: '600', fontVariant: ['tabular-nums'] },
   quickBtn: {
     flex: 1,
     backgroundColor: C.card,

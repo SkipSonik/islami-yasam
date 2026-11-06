@@ -1,0 +1,33 @@
+// Günün hadisi için kısa, sahih ve yaygın bilinen hadis-i şerifler (anlam olarak).
+export type Hadis = { tr: string; en: string; src: string };
+
+export const HADISLER: Hadis[] = [
+  { tr: 'Ameller ancak niyetlere göredir.', en: 'Actions are judged only by intentions.', src: 'Buhârî, Bed’ü’l-vahy 1; Müslim, İmâre 155' },
+  { tr: 'Kolaylaştırınız, zorlaştırmayınız; müjdeleyiniz, nefret ettirmeyiniz.', en: 'Make things easy and do not make them difficult; give glad tidings and do not drive people away.', src: 'Buhârî, İlim 11; Müslim, Cihâd 8' },
+  { tr: 'Sizin en hayırlınız, Kur’an’ı öğrenen ve öğretendir.', en: 'The best of you are those who learn the Qur’an and teach it.', src: 'Buhârî, Fezâilü’l-Kur’ân 21' },
+  { tr: 'Temizlik imanın yarısıdır.', en: 'Cleanliness is half of faith.', src: 'Müslim, Tahâret 1' },
+  { tr: 'Sizden biri, kendisi için istediğini kardeşi için de istemedikçe gerçek anlamda iman etmiş olmaz.', en: 'None of you truly believes until he wishes for his brother what he wishes for himself.', src: 'Buhârî, Îmân 7; Müslim, Îmân 71' },
+  { tr: 'Güzel söz sadakadır.', en: 'A good word is charity.', src: 'Buhârî, Edeb 34; Müslim, Zekât 56' },
+  { tr: 'Kardeşinin yüzüne gülümsemen sadakadır.', en: 'Your smile in the face of your brother is charity.', src: 'Tirmizî, Birr 36' },
+  { tr: 'Allah’a ve ahiret gününe iman eden ya hayır söylesin ya da sussun.', en: 'Whoever believes in Allah and the Last Day should speak good or remain silent.', src: 'Buhârî, Edeb 31; Müslim, Îmân 74' },
+  { tr: 'Merhamet etmeyene merhamet edilmez.', en: 'Whoever does not show mercy will not be shown mercy.', src: 'Buhârî, Edeb 18; Müslim, Fezâil 65' },
+  { tr: 'Güçlü kişi, güreşte rakibini yenen değil, öfkelendiğinde kendine hâkim olandır.', en: 'The strong one is not the one who overcomes others in wrestling, but the one who controls himself when angry.', src: 'Buhârî, Edeb 76; Müslim, Birr 107' },
+  { tr: 'Allah katında amellerin en sevimlisi, az da olsa devamlı olanıdır.', en: 'The most beloved deeds to Allah are the most consistent, even if small.', src: 'Buhârî, Rikâk 18; Müslim, Müsâfirîn 218' },
+  { tr: 'Dua ibadetin ta kendisidir.', en: 'Supplication is worship itself.', src: 'Ebû Dâvûd, Vitir 23; Tirmizî, Deavât 1' },
+  { tr: 'Müslüman, elinden ve dilinden Müslümanların emin olduğu kimsedir.', en: 'A Muslim is one from whose tongue and hand the Muslims are safe.', src: 'Buhârî, Îmân 4; Müslim, Îmân 64' },
+  { tr: 'Bir hayra vesile olan, onu yapan gibi sevap kazanır.', en: 'Whoever guides to good has a reward like the one who does it.', src: 'Müslim, İmâre 133' },
+  { tr: 'Sadaka malı eksiltmez.', en: 'Charity does not decrease wealth.', src: 'Müslim, Birr 69' },
+  { tr: 'İnsanlara teşekkür etmeyen, Allah’a da şükretmez.', en: 'Whoever does not thank people does not thank Allah.', src: 'Ebû Dâvûd, Edeb 11; Tirmizî, Birr 35' },
+  { tr: 'Hayâ imandandır.', en: 'Modesty is part of faith.', src: 'Buhârî, Îmân 16; Müslim, Îmân 57' },
+  { tr: 'Allah sizin dış görünüşünüze ve mallarınıza bakmaz; kalplerinize ve amellerinize bakar.', en: 'Allah does not look at your appearance or your wealth, but He looks at your hearts and your deeds.', src: 'Müslim, Birr 34' },
+  { tr: 'Müminler birbirini sevmede ve birbirine acımada tek bir beden gibidir.', en: 'The believers in their mutual love and mercy are like one body.', src: 'Buhârî, Edeb 27; Müslim, Birr 66' },
+  { tr: 'İki nimet vardır ki insanların çoğu onların kıymetini bilmez: sağlık ve boş vakit.', en: 'There are two blessings that many people neglect: health and free time.', src: 'Buhârî, Rikâk 1' },
+  { tr: 'İnsan ölünce üç şey dışında ameli kesilir: sadaka-i câriye, faydalanılan ilim ve kendisine dua eden hayırlı evlat.', en: 'When a person dies, his deeds end except three: ongoing charity, beneficial knowledge, and a righteous child who prays for him.', src: 'Müslim, Vasiyyet 14' },
+  { tr: 'Oruç bir kalkandır.', en: 'Fasting is a shield.', src: 'Buhârî, Savm 2; Müslim, Sıyâm 162' },
+  { tr: 'Kim inanarak ve karşılığını Allah’tan bekleyerek Ramazan orucunu tutarsa geçmiş günahları bağışlanır.', en: 'Whoever fasts Ramadan out of faith and seeking reward, his past sins will be forgiven.', src: 'Buhârî, Îmân 28; Müslim, Müsâfirîn 175' },
+  { tr: 'Hediyeleşin ki birbirinizi sevesiniz.', en: 'Give gifts to one another and you will love one another.', src: 'Buhârî, el-Edebü’l-müfred 594' },
+  { tr: 'Size iki şey bırakıyorum; onlara sarıldıkça yolunuzu şaşırmazsınız: Allah’ın Kitabı ve Peygamberinin sünneti.', en: 'I have left among you two things; you will not go astray as long as you hold to them: the Book of Allah and the Sunnah of His Prophet.', src: 'Muvatta’, Kader 3' },
+  { tr: 'Kim Allah için tevazu gösterirse Allah onu yüceltir.', en: 'Whoever humbles himself for Allah, Allah will raise him.', src: 'Müslim, Birr 69' },
+  { tr: 'Mümin, insanlarla kaynaşan ve kendisiyle kaynaşılan kimsedir.', en: 'The believer is one who is friendly and is befriended.', src: 'Ahmed b. Hanbel, Müsned II, 400' },
+  { tr: 'Komşusu, kötülüklerinden emin olmayan kimse cennete giremez.', en: 'He will not enter Paradise whose neighbour is not safe from his harm.', src: 'Müslim, Îmân 73' },
+];

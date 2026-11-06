@@ -8,6 +8,11 @@ import { t } from '@/i18n';
 
 import { getDayTimes, PRAYER_KEYS, type CalcConfig, type PrayerKey } from './prayer';
 import { channelFor, soundDef, SOUNDS, type SoundId } from './sounds';
+import { HADISLER } from '@/data/hadisler';
+import { currentLang } from '@/i18n';
+import { toHijri } from '@/lib/hijri';
+import { dailyPages, readingStore } from '@/lib/reading';
+import { dayKey } from '@/lib/tracker';
 
 const DAYS_AHEAD = 7;
 
@@ -64,7 +69,17 @@ export type NotifySettings = {
   enabled: Record<PrayerKey, boolean>;
   remindBefore: number; // dakika, 0 = kapalı
   sound?: SoundId; // vakit girişi sesi
+  /** Ramazan'da sahur hatırlatması ve iftar bildirimi */
+  ramazan?: boolean;
+  sahurBefore?: number; // dakika
+  /** Günün hadisi bildirimi */
+  daily?: boolean;
+  dailyHour?: number;
+  /** Kur'an okuma planı hatırlatması */
+  readingHour?: number;
 };
+
+export const NOTIFY_EXTRA_DEFAULTS = { ramazan: true, sahurBefore: 45, daily: true, dailyHour: 9, readingHour: 21 };
 
 async function canUseExactAlarms() {
   if (Platform.OS !== 'android') return true;
@@ -84,9 +99,14 @@ export async function rescheduleAll(
   s: NotifySettings,
   askPermission = true,
   cfg?: CalcConfig,
+  hijriOffset = 0,
 ) {
   await Notifications.cancelAllScheduledNotificationsAsync();
-  const anyOn = Object.values(s.enabled).some(Boolean);
+  const x = { ...NOTIFY_EXTRA_DEFAULTS, ...s };
+  await readingStore.ready;
+  const plan = readingStore.get();
+  const readingOn = plan.days > 0;
+  const anyOn = Object.values(s.enabled).some(Boolean) || x.ramazan || x.daily || readingOn;
   if (!anyOn) return 0;
 
   if (askPermission) {
@@ -130,9 +150,51 @@ export async function rescheduleAll(
         }
       }
     }
+
+    // Ramazan: sahur hatırlatması (imsaktan önce) ve iftar bildirimi
+    if (x.ramazan && toHijri(d, hijriOffset).month === 9) {
+      const sahur = times.imsak.getTime() - x.sahurBefore * 60 * 1000;
+      if (sahur > now) {
+        await schedule(sahur, t('notif.sahurTitle'), t('notif.sahurBody', { n: x.sahurBefore }), delivery);
+        count++;
+      }
+      const iftar = times.aksam.getTime();
+      if (iftar > now) {
+        await schedule(iftar, t('notif.iftarTitle'), t('notif.iftarBody'), delivery, s.sound);
+        count++;
+      }
+    }
+
+    // Günün hadisi
+    if (x.daily) {
+      const at = atHour(d, x.dailyHour);
+      if (at > now) {
+        const h = HADISLER[dayIndex(d) % HADISLER.length];
+        await schedule(at, t('notif.dailyTitle'), `${currentLang() === 'tr' ? h.tr : h.en} (${h.src})`, 'bestEffort', 'sessiz');
+        count++;
+      }
+    }
+
+    // Okuma planı hatırlatması (bugün okunduysa bugünkü atlanır)
+    if (readingOn) {
+      const at = atHour(d, x.readingHour);
+      const readToday = i === 0 && (plan.log[dayKey(d)] ?? 0) > 0;
+      if (at > now && !readToday) {
+        await schedule(at, t('notif.readingTitle'), t('notif.readingBody', { n: dailyPages(plan.days) }), 'bestEffort');
+        count++;
+      }
+    }
   }
   return count;
 }
+
+function atHour(d: Date, hour: number) {
+  const x = new Date(d);
+  x.setHours(hour, 0, 0, 0);
+  return x.getTime();
+}
+
+const dayIndex = (d: Date) => Math.floor(new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() / 86400000);
 
 function bodyText(k: PrayerKey) {
   if (k === 'imsak') return t('notif.bodyImsak');

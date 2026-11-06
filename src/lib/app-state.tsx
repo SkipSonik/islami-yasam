@@ -1,4 +1,5 @@
 import { DEFAULT_THEME, type ThemeId } from '@/constants/theme';
+import { readingStore } from '@/lib/reading';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { AppState as RNAppState } from 'react-native';
 
@@ -124,18 +125,20 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     [settings.method, settings.place, settings.lang], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  // Konum, yöntem, dil veya bildirim ayarı değişince bildirimleri yeniden planla.
+  // Konum, yöntem, dil, bildirim ayarı veya okuma planı değişince bildirimleri yeniden planla.
   const { place, notify } = settings;
+  const plan = readingStore.useValue();
+  const readingKey = `${plan.days}:${Object.keys(plan.log).length}`;
   useEffect(() => {
     if (!ready) return;
     // İzin penceresi yalnızca ilk planlamada açılır, her ön plana dönüşte değil.
-    rescheduleAll(place.lat, place.lng, notify, tick === 0, calc)
+    rescheduleAll(place.lat, place.lng, notify, tick === 0, calc, settings.hijriOffset)
       .then((n) => {
         setNotifyStatus(n < 0 ? 'notif.denied' : null);
         recheckReliability();
       })
       .catch(() => setNotifyStatus('notif.failed'));
-  }, [ready, place.lat, place.lng, notify, tick, calc, lang, recheckReliability]);
+  }, [ready, place.lat, place.lng, notify, tick, calc, lang, recheckReliability, settings.hijriOffset, readingKey]);
 
   return (
     <AppState.Provider

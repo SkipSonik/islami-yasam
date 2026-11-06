@@ -1,6 +1,7 @@
+import Constants from 'expo-constants';
 import * as Localization from 'expo-localization';
 import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Btn, Card, Screen, SectionTitle } from '@/components/ui';
 import { R, S, useColors, makeStyles } from '@/constants/theme';
@@ -11,6 +12,10 @@ import { loadJSON, saveJSON } from '@/lib/storage';
 // Diyanet: nisap 80,18 gram altın; zekat oranı kırkta bir.
 const NISAB_GOLD_GR = 80.18;
 const KEY = 'zekatmatik-v1';
+const GOLD_API = (
+  (Constants.expoConfig?.extra as { hatimApi?: string } | undefined)?.hatimApi ??
+  'https://mix.gen.tr/islamiyasam/hatim/api.php'
+).replace(/api\.php$/, 'altin.php');
 
 type Field = 'goldPrice' | 'cash' | 'foreign' | 'goldGr' | 'silver' | 'stocks' | 'trade' | 'receivable' | 'debts';
 type Values = Record<Field, string>;
@@ -65,9 +70,30 @@ export default function ZekatScreen() {
   const [v, setV] = useState<Values>(EMPTY);
   const currency = useMemo(() => Localization.getLocales()[0]?.currencyCode ?? null, []);
 
+  const [fetching, setFetching] = useState(false);
+  const [priceNote, setPriceNote] = useState<string | null>(null);
+
   useEffect(() => {
     loadJSON<Values>(KEY, EMPTY).then(setV);
   }, []);
+
+  const fetchPrice = async () => {
+    setFetching(true);
+    setPriceNote(null);
+    try {
+      const res = await fetch(`${GOLD_API}?c=${currency ?? 'USD'}`);
+      const j = await res.json();
+      if (!j?.ok) throw new Error();
+      const next = { ...v, goldPrice: String(j.gram) };
+      setV(next);
+      saveJSON(KEY, next);
+      setPriceNote(t('zekat.priceFetched'));
+    } catch {
+      setPriceNote(t('zekat.priceFailed'));
+    } finally {
+      setFetching(false);
+    }
+  };
 
   const set = (f: Field, text: string) => {
     const next = { ...v, [f]: text.replace(/[^0-9.,\s]/g, '') };
@@ -101,7 +127,14 @@ export default function ZekatScreen() {
       <Text style={st.intro}>{t('zekat.intro')}</Text>
       {currency ? <Text style={st.hint}>{t('zekat.currency', { c: currency })}</Text> : null}
 
-      <Card>{input('goldPrice', 'zekat.goldPrice', 'zekat.goldPriceHint')}</Card>
+      <Card>
+        {input('goldPrice', 'zekat.goldPrice', 'zekat.goldPriceHint')}
+        <Pressable onPress={fetchPrice} disabled={fetching} style={st.fetchBtn}>
+          {fetching ? <ActivityIndicator color={C.accent} size="small" /> : null}
+          <Text style={st.fetchText}>{t('zekat.fetchPrice')}</Text>
+        </Pressable>
+        {priceNote ? <Text style={st.hint}>{priceNote}</Text> : null}
+      </Card>
 
       <Card>
         <SectionTitle icon="wallet-outline">{t('zekat.assets')}</SectionTitle>
@@ -153,6 +186,8 @@ const useSt = makeStyles((C) => ({
     fontSize: 16,
     fontVariant: ['tabular-nums'],
   },
+  fetchBtn: { flexDirection: 'row', gap: 8, alignItems: 'center', alignSelf: 'flex-start', paddingVertical: 6 },
+  fetchText: { color: C.accent, fontWeight: '800', fontSize: 14 },
   result: { borderWidth: 1.5, borderColor: C.accent },
   value: { color: C.text, fontSize: 16, fontWeight: '700' },
   warn: { color: C.gold, fontSize: 14, lineHeight: 20 },

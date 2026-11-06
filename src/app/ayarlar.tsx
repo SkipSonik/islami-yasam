@@ -1,12 +1,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
 import { ReliabilityCard } from '@/components/reliability-card';
 import { SoundPicker } from '@/components/sound-picker';
+import { showPrivacyOptions, usePrivacyOptionsRequired } from '@/lib/ads';
+import { premiumStore } from '@/lib/premium-store';
 import { ThemePicker } from '@/components/theme-picker';
-import { Btn, Card, Screen, SectionTitle } from '@/components/ui';
+import { Btn, Card, ListRow, Screen, SectionTitle } from '@/components/ui';
 import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { LANGUAGES, type StringKey } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
@@ -16,11 +19,16 @@ import { METHOD_KEYS, methodForCountry, PRAYER_KEYS, type MethodKey } from '@/li
 
 const REMIND = [0, 5, 10, 15, 30, 45];
 
+const PRIVACY_URL = 'https://mix.gen.tr/islamiyasam/gizlilik.html';
+const CONTACT = 'akingocler@gmail.com';
+
 export default function AyarlarScreen() {
   const C = useColors();
   const st = useSt();
   const { settings, update, refreshLocation, notifyStatus, lang, calc } = useAppState();
   const t = useT();
+  const premium = premiumStore.useValue().active;
+  const privacyRequired = usePrivacyOptionsRequired();
   const { place, notify, hijriOffset } = settings;
   const [locMsg, setLocMsg] = useState<StringKey | null>(null);
   const [busy, setBusy] = useState(false);
@@ -124,6 +132,34 @@ export default function AyarlarScreen() {
       </Card>
 
       <Card>
+        <SectionTitle icon="chatbubble-ellipses-outline">{t('settings.daily')}</SectionTitle>
+        <View style={st.switchRow}>
+          <Text style={st.label}>{t('settings.dailyToggle')}</Text>
+          <Switch
+            value={notify.daily ?? true}
+            onValueChange={(v) => update({ notify: { ...notify, daily: v } })}
+            trackColor={{ true: C.accent, false: C.cardSoft }}
+            thumbColor={C.text}
+          />
+        </View>
+        {(notify.daily ?? true) ? (
+          <View style={st.chips}>
+            {[7, 9, 12, 17, 21].map((h) => (
+              <Pressable
+                key={h}
+                onPress={() => update({ notify: { ...notify, dailyHour: h } })}
+                style={[st.chip, (notify.dailyHour ?? 9) === h && st.chipOn]}>
+                <Text style={[st.chipText, (notify.dailyHour ?? 9) === h && { color: C.onAccent }]}>
+                  {String(h).padStart(2, '0')}:00
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        ) : null}
+        <Text style={st.small}>{t('settings.dailyHelp')}</Text>
+      </Card>
+
+      <Card>
         <SectionTitle icon="moon-outline">{t('settings.hijri')}</SectionTitle>
         <Text style={st.small}>{t('settings.hijriHelp')}</Text>
         <View style={st.stepper}>
@@ -142,6 +178,30 @@ export default function AyarlarScreen() {
             <Text style={st.stepText}>+</Text>
           </Pressable>
         </View>
+      </Card>
+
+      <Card>
+        <SectionTitle icon="shield-checkmark-outline">{t('settings.about')}</SectionTitle>
+        <ListRow
+          icon="diamond-outline"
+          title={premium ? t('settings.premiumActive') : t('tools.premium')}
+          subtitle={premium ? undefined : t('tools.premiumSub')}
+          onPress={() => router.push('/premium')}
+        />
+        <ListRow
+          icon="document-text-outline"
+          title={t('settings.privacy')}
+          onPress={() => Linking.openURL(PRIVACY_URL).catch(() => {})}
+        />
+        {privacyRequired ? (
+          <ListRow icon="options-outline" title={t('settings.adChoices')} onPress={() => showPrivacyOptions()} />
+        ) : null}
+        <ListRow
+          icon="mail-outline"
+          title={t('settings.contact')}
+          subtitle={CONTACT}
+          onPress={() => Linking.openURL(`mailto:${CONTACT}`).catch(() => {})}
+        />
       </Card>
 
       <Text style={st.footer}>

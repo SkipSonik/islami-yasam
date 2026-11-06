@@ -2,7 +2,7 @@
   "expo": {
     "name": "İslami Yaşam",
     "slug": "islami-yasam",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.skipsonik.islamiyasam",
-      "versionCode": 14,
+      "versionCode": 15,
       "adaptiveIcon": {
         "backgroundColor": "#0B3B2E",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -85,7 +85,16 @@
             "extraProguardRules": "# WorkManager (arka plan bildirim yenileme): Room veritabanı sınıfları yansıma ile oluşturulur, R8 silmesin\n-keep class * extends androidx.room.RoomDatabase { <init>(...); }\n-keep class androidx.work.impl.WorkDatabase_Impl { *; }\n-keep class androidx.work.** { *; }\n-keep class androidx.startup.** { *; }"
           }
         }
-      ]
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-5704710295015571~4466889771",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "delayAppMeasurementInit": true
+        }
+      ],
+      "expo-iap"
     ],
     "experiments": {
       "typedRoutes": true,
