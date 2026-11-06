@@ -48,21 +48,28 @@ jobs:
           KEYSTORE_B64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_B64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_PASSWORD }}
         run: |
-          if [ -n "$KEYSTORE_B64" ]; then
-            # Yapıştırırken araya giren boşluk/satır sonlarını temizle
-            printf '%s' "$KEYSTORE_B64" | tr -d ' \r\n\t' | base64 -di > "$RUNNER_TEMP/upload.p12"
-            keytool -list -v -keystore "$RUNNER_TEMP/upload.p12" -storepass "$KEYSTORE_PASSWORD" | grep -E "Alias|SHA256" || { echo "::error::Anahtar dosyası veya parolası hatalı"; exit 1; }
-            {
-              echo "uploadStoreFile=$RUNNER_TEMP/upload.p12"
-              echo "uploadStorePassword=$KEYSTORE_PASSWORD"
-              echo "uploadKeyAlias=upload"
-              echo "uploadKeyPassword=$KEYSTORE_PASSWORD"
-            } >> android/gradle.properties
-            echo "SIGNED=1" >> $GITHUB_ENV
-            echo "Yükleme anahtarıyla imzalanacak."
-          else
+          KS="$RUNNER_TEMP/upload.p12"
+          PW="$(printf '%s' "$KEYSTORE_PASSWORD" | tr -d ' \r\n\t')"
+          B64="$(printf '%s' "$KEYSTORE_B64" | tr -d ' \r\n\t')"
+          if [ -z "$PW" ] || [ -z "$B64" ]; then
             echo "::warning::Yükleme anahtarı yok; hata ayıklama anahtarıyla imzalanıyor (Play'e yüklenemez)."
+            exit 0
           fi
+          # Değerlerin kendisi değil, yalnızca uzunlukları yazdırılır (beklenen: anahtar 5880, parola 24)
+          BAD=$(printf '%s' "$B64" | tr -d 'A-Za-z0-9+/=' | wc -c)
+          echo "Anahtar uzunluğu: ${#B64}, geçersiz karakter: $BAD, parola uzunluğu: ${#PW}"
+          if ! printf '%s' "$B64" | base64 -d > "$KS" 2>/dev/null || ! keytool -list -keystore "$KS" -storepass "$PW" >/dev/null 2>&1; then
+            echo "::error::İmza anahtarı açılamadı. GitHub gizli değişkenlerini kontrol edin (anahtar 5880, parola 24 karakter olmalı)."
+            exit 1
+          fi
+          keytool -list -v -keystore "$KS" -storepass "$PW" | grep -E "Alias|SHA256"
+          {
+            echo "uploadStoreFile=$KS"
+            echo "uploadStorePassword=$PW"
+            echo "uploadKeyAlias=upload"
+            echo "uploadKeyPassword=$PW"
+          } >> android/gradle.properties
+          echo "SIGNED=1" >> $GITHUB_ENV
 
       - name: APK derle
         working-directory: android
