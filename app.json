@@ -3,14 +3,14 @@
     "name": "İslami Yaşam",
     "slug": "islami-yasam",
     "version": "0.9.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0E2C26",
     "ios": {
       "bundleIdentifier": "com.skipsonik.islamiyasam",
-      "supportsTablet": false
+      "supportsTablet": true
     },
     "android": {
       "package": "com.skipsonik.islamiyasam",

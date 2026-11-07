@@ -1,6 +1,6 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { router } from 'expo-router';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { router } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -10,12 +10,12 @@ import {
   Text,
   useWindowDimensions,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Btn, Screen } from '@/components/ui';
-import { R, S, makeStyles, useColors } from '@/constants/theme';
-import { useAppState, useT } from '@/lib/app-state';
+import { Btn, Screen } from "@/components/ui";
+import { R, S, makeStyles, useColors } from "@/constants/theme";
+import { useAppState, useT } from "@/lib/app-state";
 import {
   catName,
   imageUrl,
@@ -25,8 +25,8 @@ import {
   suggestedCat,
   thumbUrl,
   type MsgItem,
-} from '@/lib/messages';
-import { premiumStore } from '@/lib/premium-store';
+} from "@/lib/messages";
+import { premiumStore } from "@/lib/premium-store";
 
 export default function MesajlarScreen() {
   const C = useColors();
@@ -38,11 +38,16 @@ export default function MesajlarScreen() {
   const [list, setList] = useState(cached);
   const [loading, setLoading] = useState(!cached);
   const [error, setError] = useState(false);
-  const today = useMemo(() => suggestedCat(new Date(), settings.hijriOffset), [settings.hijriOffset]);
-  const [cat, setCat] = useState<string>(today ?? 'all');
+  const today = useMemo(
+    () => suggestedCat(new Date(), settings.hijriOffset),
+    [settings.hijriOffset],
+  );
+  const [cat, setCat] = useState<string>(today ?? "all");
   const [open, setOpen] = useState<MsgItem | null>(null);
   const { width } = useWindowDimensions();
-  const tile = (width - S.lg * 2 - S.sm) / 2;
+  const inner = Math.min(width, 1200) - S.lg * 2;
+  const cols = inner >= 900 ? 5 : inner >= 640 ? 4 : inner >= 460 ? 3 : 2;
+  const tile = (inner - S.sm * (cols - 1)) / cols;
 
   const load = useCallback((force = false) => {
     setError(false);
@@ -57,37 +62,69 @@ export default function MesajlarScreen() {
     load();
   }, [load]);
 
-  const cats = list?.cats.filter((c) => list.items.some((i) => i.cat === c.id)) ?? [];
-  const items = (list?.items ?? []).filter((i) => cat === 'all' || i.cat === cat);
+  const cats =
+    list?.cats.filter((c) => list.items.some((i) => i.cat === c.id)) ?? [];
+  const items = (list?.items ?? []).filter(
+    (i) => cat === "all" || i.cat === cat,
+  );
   // Ücretsiz resimler önce gelsin
-  const sorted = premium ? items : [...items.filter((i) => i.free), ...items.filter((i) => !i.free)];
+  const sorted = premium
+    ? items
+    : [...items.filter((i) => i.free), ...items.filter((i) => !i.free)];
 
   return (
-    <Screen title={t('msg.title')} back>
+    <Screen title={t("msg.title")} back wide>
       {cats.length ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: S.sm }}>
-          {[{ id: 'all' }, ...cats].map((c) => {
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: S.sm }}
+        >
+          {[{ id: "all" }, ...cats].map((c) => {
             const on = c.id === cat;
-            const label = c.id === 'all' ? t('msg.all') : catName(c as (typeof cats)[number], lang);
+            const label =
+              c.id === "all"
+                ? t("msg.all")
+                : catName(c as (typeof cats)[number], lang);
             return (
-              <Pressable key={c.id} onPress={() => setCat(c.id)} style={[st.chip, on && st.chipOn]}>
-                {c.id === today ? <Ionicons name="star" size={12} color={on ? C.onAccent : C.gold} /> : null}
-                <Text style={[st.chipText, on && { color: C.onAccent }]}>{label}</Text>
+              <Pressable
+                key={c.id}
+                onPress={() => setCat(c.id)}
+                style={[st.chip, on && st.chipOn]}
+              >
+                {c.id === today ? (
+                  <Ionicons
+                    name="star"
+                    size={12}
+                    color={on ? C.onAccent : C.gold}
+                  />
+                ) : null}
+                <Text style={[st.chipText, on && { color: C.onAccent }]}>
+                  {label}
+                </Text>
               </Pressable>
             );
           })}
         </ScrollView>
       ) : null}
 
-      {today && cat === today ? <Text style={st.today}>★ {t('msg.today')}</Text> : null}
+      {today && cat === today ? (
+        <Text style={st.today}>★ {t("msg.today")}</Text>
+      ) : null}
 
-      {loading && !list ? <ActivityIndicator color={C.accent} style={{ marginTop: 40 }} /> : null}
+      {loading && !list ? (
+        <ActivityIndicator color={C.accent} style={{ marginTop: 40 }} />
+      ) : null}
 
       {error && !list ? (
         <View style={st.center}>
           <Ionicons name="cloud-offline-outline" size={40} color={C.textMute} />
-          <Text style={st.muted}>{t('msg.error')}</Text>
-          <Btn label={t('msg.retry')} icon="refresh" onPress={() => load(true)} />
+          <Text style={st.muted}>{t("msg.error")}</Text>
+          <Btn
+            label={t("msg.retry")}
+            icon="refresh"
+            onPress={() => load(true)}
+          />
         </View>
       ) : null}
 
@@ -97,9 +134,21 @@ export default function MesajlarScreen() {
           return (
             <Pressable
               key={it.id}
-              onPress={() => (locked ? router.push('/premium') : setOpen(it))}
-              style={({ pressed }) => [st.tile, { width: tile, height: tile * 1.25, opacity: pressed ? 0.85 : 1 }]}>
-              <Image source={{ uri: thumbUrl(it) }} style={st.img} resizeMode="cover" />
+              onPress={() => (locked ? router.push("/premium") : setOpen(it))}
+              style={({ pressed }) => [
+                st.tile,
+                {
+                  width: tile,
+                  height: tile * 1.25,
+                  opacity: pressed ? 0.85 : 1,
+                },
+              ]}
+            >
+              <Image
+                source={{ uri: thumbUrl(it) }}
+                style={st.img}
+                resizeMode="cover"
+              />
               {locked ? (
                 <View style={st.lock}>
                   <Ionicons name="diamond" size={22} color={C.onAccent} />
@@ -111,7 +160,11 @@ export default function MesajlarScreen() {
       </View>
 
       {!premium && list?.items.some((i) => !i.free) ? (
-        <Btn label={t('msg.unlock')} icon="diamond-outline" onPress={() => router.push('/premium')} />
+        <Btn
+          label={t("msg.unlock")}
+          icon="diamond-outline"
+          onPress={() => router.push("/premium")}
+        />
       ) : null}
 
       <Viewer item={open} onClose={() => setOpen(null)} />
@@ -119,7 +172,13 @@ export default function MesajlarScreen() {
   );
 }
 
-function Viewer({ item, onClose }: { item: MsgItem | null; onClose: () => void }) {
+function Viewer({
+  item,
+  onClose,
+}: {
+  item: MsgItem | null;
+  onClose: () => void;
+}) {
   const C = useColors();
   const st = useSt();
   const t = useT();
@@ -133,7 +192,7 @@ function Viewer({ item, onClose }: { item: MsgItem | null; onClose: () => void }
     if (!item || busy) return;
     setBusy(true);
     try {
-      await shareImage(item, t('msg.share'));
+      await shareImage(item, t("msg.share"));
     } catch {
       // paylaşım iptal edildi ya da indirme başarısız oldu
     } finally {
@@ -142,14 +201,37 @@ function Viewer({ item, onClose }: { item: MsgItem | null; onClose: () => void }
   };
 
   return (
-    <Modal visible={!!item} animationType="fade" transparent onRequestClose={onClose}>
-      <View style={[st.viewer, { paddingTop: insets.top + S.md, paddingBottom: insets.bottom + S.lg }]}>
-        <Pressable onPress={onClose} style={st.close} hitSlop={12} accessibilityLabel={t('msg.close')}>
+    <Modal
+      visible={!!item}
+      animationType="fade"
+      transparent
+      onRequestClose={onClose}
+    >
+      <View
+        style={[
+          st.viewer,
+          {
+            paddingTop: insets.top + S.md,
+            paddingBottom: insets.bottom + S.lg,
+          },
+        ]}
+      >
+        <Pressable
+          onPress={onClose}
+          style={st.close}
+          hitSlop={12}
+          accessibilityLabel={t("msg.close")}
+        >
           <Ionicons name="close" size={28} color="#fff" />
         </Pressable>
         {item ? (
           <View style={st.viewerImgWrap}>
-            {!loaded ? <ActivityIndicator color="#fff" style={{ position: 'absolute' }} /> : null}
+            {!loaded ? (
+              <ActivityIndicator
+                color="#fff"
+                style={{ position: "absolute" }}
+              />
+            ) : null}
             <Image
               source={{ uri: imageUrl(item) }}
               style={st.viewerImg}
@@ -158,13 +240,19 @@ function Viewer({ item, onClose }: { item: MsgItem | null; onClose: () => void }
             />
           </View>
         ) : null}
-        <Pressable onPress={share} style={({ pressed }) => [st.shareBtn, { opacity: pressed || busy ? 0.7 : 1 }]}>
+        <Pressable
+          onPress={share}
+          style={({ pressed }) => [
+            st.shareBtn,
+            { opacity: pressed || busy ? 0.7 : 1 },
+          ]}
+        >
           {busy ? (
             <ActivityIndicator color={C.onAccent} />
           ) : (
             <Ionicons name="share-social" size={20} color={C.onAccent} />
           )}
-          <Text style={st.shareText}>{t('msg.share')}</Text>
+          <Text style={st.shareText}>{t("msg.share")}</Text>
         </Pressable>
       </View>
     </Modal>
@@ -173,8 +261,8 @@ function Viewer({ item, onClose }: { item: MsgItem | null; onClose: () => void }
 
 const useSt = makeStyles((C) => ({
   chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 5,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -182,31 +270,41 @@ const useSt = makeStyles((C) => ({
     backgroundColor: C.card,
   },
   chipOn: { backgroundColor: C.accent },
-  chipText: { color: C.textDim, fontWeight: '700', fontSize: 13 },
-  today: { color: C.gold, fontWeight: '700', fontSize: 13, marginTop: -S.sm },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: S.sm },
-  tile: { borderRadius: R.md, overflow: 'hidden', backgroundColor: C.card },
-  img: { width: '100%', height: '100%' },
+  chipText: { color: C.textDim, fontWeight: "700", fontSize: 13 },
+  today: { color: C.gold, fontWeight: "700", fontSize: 13, marginTop: -S.sm },
+  grid: { flexDirection: "row", flexWrap: "wrap", gap: S.sm },
+  tile: { borderRadius: R.md, overflow: "hidden", backgroundColor: C.card },
+  img: { width: "100%", height: "100%" },
   lock: {
-    position: 'absolute',
+    position: "absolute",
     top: 8,
     right: 8,
     width: 36,
     height: 36,
     borderRadius: 18,
     backgroundColor: C.gold,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
-  center: { alignItems: 'center', gap: S.md, marginTop: 40 },
-  muted: { color: C.textMute, textAlign: 'center' },
-  viewer: { flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', alignItems: 'center', paddingHorizontal: S.lg },
-  close: { alignSelf: 'flex-end', padding: 4 },
-  viewerImgWrap: { flex: 1, width: '100%', alignItems: 'center', justifyContent: 'center' },
-  viewerImg: { width: '100%', height: '100%' },
+  center: { alignItems: "center", gap: S.md, marginTop: 40 },
+  muted: { color: C.textMute, textAlign: "center" },
+  viewer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.92)",
+    alignItems: "center",
+    paddingHorizontal: S.lg,
+  },
+  close: { alignSelf: "flex-end", padding: 4 },
+  viewerImgWrap: {
+    flex: 1,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  viewerImg: { width: "100%", height: "100%" },
   shareBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: S.sm,
     backgroundColor: C.accent,
     paddingHorizontal: 28,
@@ -214,5 +312,5 @@ const useSt = makeStyles((C) => ({
     borderRadius: 28,
     marginTop: S.md,
   },
-  shareText: { color: C.onAccent, fontWeight: '800', fontSize: 16 },
+  shareText: { color: C.onAccent, fontWeight: "800", fontSize: 16 },
 }));
