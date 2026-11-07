@@ -11,6 +11,7 @@ import { DEFAULT_PLACE, locateDevice, type Place } from './location';
 import { checkReliability, rescheduleAll, type NotifySettings, type Reliability } from './notifications';
 import type { CalcConfig, MethodKey } from './prayer';
 import { loadJSON, saveJSON } from './storage';
+import { refreshWidgets } from '@/widget/task-handler';
 
 export type Settings = {
   place: Place;
@@ -120,6 +121,11 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     return () => sub.remove();
   }, [recheckReliability]);
 
+  // Tema veya dil değişince ana ekran widget'larını da güncelle
+  useEffect(() => {
+    if (ready) refreshWidgets();
+  }, [ready, settings.theme, settings.lang]);
+
   const calc = useMemo(
     () => resolveCalc(settings),
     [settings.method, settings.place, settings.lang], // eslint-disable-line react-hooks/exhaustive-deps
@@ -135,6 +141,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     rescheduleAll(place.lat, place.lng, notify, tick === 0, calc, settings.hijriOffset)
       .then((n) => {
         setNotifyStatus(n < 0 ? 'notif.denied' : null);
+        refreshWidgets();
         recheckReliability();
       })
       .catch(() => setNotifyStatus('notif.failed'));

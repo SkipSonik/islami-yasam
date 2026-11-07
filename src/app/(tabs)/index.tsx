@@ -1,8 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { AyahShareCard, type AyahShareHandle } from '@/components/ayah-share';
 import { PrayerChecks } from '@/components/prayer-checks';
 import { ReliabilityBanner } from '@/components/reliability-card';
 import { Card, Screen, SectionTitle, Split } from '@/components/ui';
@@ -211,6 +212,19 @@ function DailyAyah({ date }: { date: Date }) {
   const [failed, setFailed] = useState(false);
   const { lang } = useAppState();
   const t = useT();
+  const shareRef = useRef<AyahShareHandle>(null);
+  const [sharing, setSharing] = useState(false);
+  const share = async () => {
+    if (sharing) return;
+    setSharing(true);
+    try {
+      await shareRef.current?.share();
+    } catch {
+      // paylaşım iptal edildi
+    } finally {
+      setSharing(false);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -225,7 +239,33 @@ function DailyAyah({ date }: { date: Date }) {
 
   return (
     <Card>
-      <SectionTitle icon="book-outline">{t('home.dailyAyah')}</SectionTitle>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <SectionTitle icon="book-outline">{t('home.dailyAyah')}</SectionTitle>
+        {ayah ? (
+          <Pressable
+            onPress={share}
+            hitSlop={10}
+            accessibilityLabel={t('msg.share')}
+            style={({ pressed }) => [st.shareBtn, pressed && { opacity: 0.7 }]}>
+            {sharing ? (
+              <ActivityIndicator size="small" color={C.onAccent} />
+            ) : (
+              <Ionicons name="share-social" size={16} color={C.onAccent} />
+            )}
+            <Text style={st.shareText}>{t('msg.share')}</Text>
+          </Pressable>
+        ) : null}
+      </View>
+      {ayah ? (
+        <AyahShareCard
+          ref={shareRef}
+          ar={ayah.ar}
+          meal={ayah.tr}
+          reference={t('home.ayahRef', { surah: surahName(surahNo, lang), ayah: ayahNo })}
+          title={t('home.dailyAyah')}
+          brand={t('app.name')}
+        />
+      ) : null}
       {ayah ? (
         <Pressable onPress={() => router.push(`/mushaf?sure=${surahNo}&ayet=${ayahNo}`)} style={{ gap: S.md }}>
           <Text style={st.ar}>{ayah.ar}</Text>
@@ -310,6 +350,16 @@ const useSt = makeStyles((C) => ({
     fontFamily: 'AmiriQuran_400Regular',
   },
   tr: { color: C.textDim, fontSize: 15, lineHeight: 22 },
+  shareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: C.accent,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  shareText: { color: C.onAccent, fontWeight: '800', fontSize: 13 },
   ref: { color: C.gold, fontSize: 13, fontWeight: '600' },
   quick: { flexDirection: 'row', gap: S.sm, marginBottom: -S.sm },
   trackHead: {

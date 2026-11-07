@@ -159,7 +159,6 @@ export default function AraclarScreen() {
       {list(WORSHIP)}
       <Text style={st.group}>{t('tools.other')}</Text>
       {list(OTHER)}
-      <Text style={st.soon}>{t('tools.soon')}</Text>
     </Screen>
   );
 }

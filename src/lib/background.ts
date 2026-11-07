@@ -8,6 +8,7 @@ import type { Place } from './location';
 import { rescheduleAll } from './notifications';
 import type { MethodKey } from './prayer';
 import { loadValue } from './storage';
+import { refreshWidgets } from '@/widget/task-handler';
 
 // Uygulama hiç açılmasa bile bildirim planını günceller: Android günde
 // birkaç kez bu görevi çalıştırır ve önümüzdeki 7 günün bildirimleri yeniden kurulur.
@@ -29,6 +30,7 @@ TaskManager.defineTask(TASK, async () => {
     if (s.lang) setCurrentLang(s.lang);
     const calc = resolveCalc({ method: s.method ?? 'auto', place: s.place, lang: s.lang ?? null });
     await rescheduleAll(s.place.lat, s.place.lng, s.notify, false, calc, s.hijriOffset ?? 0);
+    await refreshWidgets();
     return BackgroundTask.BackgroundTaskResult.Success;
   } catch {
     return BackgroundTask.BackgroundTaskResult.Failed;

@@ -106,7 +106,38 @@
         }
       ],
       "./plugins/with-release-signing",
-      "./plugins/with-android-tv"
+      "./plugins/with-android-tv",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "SiradakiVakit",
+              "label": "Sıradaki Vakit",
+              "description": "Sıradaki namaz vakti ve saati",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/widget/siradaki.png",
+              "updatePeriodMillis": 1800000,
+              "resizeMode": "horizontal|vertical"
+            },
+            {
+              "name": "NamazVakitleri",
+              "label": "Namaz Vakitleri",
+              "description": "Günün namaz vakitleri, hicri tarih ve şehir",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/widget/vakitler.png",
+              "updatePeriodMillis": 1800000,
+              "resizeMode": "horizontal|vertical"
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
