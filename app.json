@@ -105,7 +105,8 @@
           }
         }
       ],
-      "./plugins/with-release-signing"
+      "./plugins/with-release-signing",
+      "./plugins/with-android-tv"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -54,7 +54,8 @@ export default function AyarlarScreen() {
 
   const langName = LANGUAGES.find((l) => l.code === lang)?.name ?? lang;
   const autoMethod = t(`method.${methodForCountry(place.country ?? (place.auto ? null : 'TR'))}`);
-  const methodLabel = settings.method === 'auto' ? t('settings.methodAuto', { method: autoMethod }) : t(`method.${calc.method}`);
+  const methodLabel =
+    settings.method === 'auto' ? t('settings.methodAuto', { method: autoMethod }) : t(`method.${calc.method}`);
 
   return (
     <Screen title={t('settings.title')} back>
@@ -75,13 +76,20 @@ export default function AyarlarScreen() {
         <SectionTitle icon="location-outline">{t('settings.location')}</SectionTitle>
         <Text style={st.value}>{place.name}</Text>
         <Text style={st.small}>
-          {place.auto ? t('settings.fromDevice') : t('settings.defaultLoc')} · {place.lat.toFixed(3)},{' '}
-          {place.lng.toFixed(3)}
+          {place.auto
+            ? t('settings.fromDevice')
+            : place.name === 'İstanbul' && place.lat === 41.0082
+              ? t('settings.defaultLoc')
+              : t('settings.manualLoc')}{' '}
+          · {place.lat.toFixed(3)}, {place.lng.toFixed(3)}
         </Text>
         {busy ? (
           <ActivityIndicator color={C.accent} />
         ) : (
-          <Btn label={t('settings.findMe')} icon="locate" onPress={locate} />
+          <>
+            <Btn label={t('settings.findMe')} icon="locate" onPress={locate} />
+            <Btn label={t('city.pick')} icon="search" kind="ghost" onPress={() => router.push('/sehir')} />
+          </>
         )}
         {locMsg ? <Text style={st.small}>{t(locMsg)}</Text> : null}
       </Card>
@@ -104,7 +112,14 @@ export default function AyarlarScreen() {
             <Text style={st.label}>{t(`prayer.${key}`)}</Text>
             <Switch
               value={notify.enabled[key]}
-              onValueChange={(v) => update({ notify: { ...notify, enabled: { ...notify.enabled, [key]: v } } })}
+              onValueChange={(v) =>
+                update({
+                  notify: {
+                    ...notify,
+                    enabled: { ...notify.enabled, [key]: v },
+                  },
+                })
+              }
               trackColor={{ true: C.accent, false: C.cardSoft }}
               thumbColor={C.text}
             />
@@ -124,7 +139,10 @@ export default function AyarlarScreen() {
           ))}
         </View>
         <Text style={[st.label, { marginTop: S.sm }]}>{t('settings.sound')}</Text>
-        <SoundPicker value={notify.sound ?? 'varsayilan'} onChange={(id) => update({ notify: { ...notify, sound: id } })} />
+        <SoundPicker
+          value={notify.sound ?? 'varsayilan'}
+          onChange={(id) => update({ notify: { ...notify, sound: id } })}
+        />
         <Text style={st.small}>{t('settings.soundHelp')}</Text>
         {notifyStatus ? <Text style={[st.small, { color: C.danger }]}>{t(notifyStatus)}</Text> : null}
         <Btn label={t('settings.testNotif')} kind="ghost" icon="paper-plane-outline" onPress={testNotify} />
@@ -171,7 +189,9 @@ export default function AyarlarScreen() {
             <Text style={st.small}>
               {hijriOffset === 0
                 ? t('settings.noCorrection')
-                : t('settings.days', { n: `${hijriOffset > 0 ? '+' : ''}${hijriOffset}` })}
+                : t('settings.days', {
+                    n: `${hijriOffset > 0 ? '+' : ''}${hijriOffset}`,
+                  })}
             </Text>
           </View>
           <Pressable style={st.stepBtn} onPress={() => update({ hijriOffset: Math.min(2, hijriOffset + 1) })}>
@@ -269,9 +289,18 @@ const useSt = makeStyles((C) => ({
     paddingHorizontal: S.md,
     paddingVertical: 12,
   },
-  switchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: S.sm },
-  chip: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 18, backgroundColor: C.cardSoft },
+  chip: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 18,
+    backgroundColor: C.cardSoft,
+  },
   chipOn: { backgroundColor: C.accent },
   chipText: { color: C.text, fontWeight: '600', fontSize: 13 },
   stepper: { flexDirection: 'row', alignItems: 'center', gap: S.md },
@@ -285,7 +314,11 @@ const useSt = makeStyles((C) => ({
   },
   stepText: { color: C.text, fontSize: 22, fontWeight: '700' },
   footer: { color: C.textMute, fontSize: 12, textAlign: 'center' },
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'flex-end',
+  },
   sheet: {
     backgroundColor: C.bgDeep,
     borderTopLeftRadius: R.lg,
@@ -293,7 +326,12 @@ const useSt = makeStyles((C) => ({
     padding: S.lg,
     paddingBottom: S.xl * 1.5,
   },
-  sheetTitle: { color: C.text, fontSize: 18, fontWeight: '700', marginBottom: S.sm },
+  sheetTitle: {
+    color: C.text,
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: S.sm,
+  },
   option: {
     flexDirection: 'row',
     alignItems: 'center',

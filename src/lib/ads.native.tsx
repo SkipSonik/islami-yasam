@@ -12,6 +12,7 @@ import mobileAds, {
 } from 'react-native-google-mobile-ads';
 
 import { useColors } from '@/constants/theme';
+import { IS_TV } from '@/lib/layout';
 import { premiumStore } from '@/lib/premium-store';
 
 // AdMob reklam birimleri (İslami Yaşam / Android)
@@ -76,7 +77,8 @@ async function init() {
 export function AdsBootstrap() {
   const premium = premiumStore.useValue().active;
   useEffect(() => {
-    if (premium || ready) return;
+    // Televizyonda reklam gösterilmez (AdMob TV'yi desteklemiyor)
+    if (premium || ready || IS_TV) return;
     // Premium durumu Play'den doğrulanana kadar kısa bir bekleme
     const id = setTimeout(() => {
       if (!premiumStore.get().active) init();

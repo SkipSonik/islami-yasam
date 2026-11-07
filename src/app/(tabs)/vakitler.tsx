@@ -1,14 +1,14 @@
-import { useMemo } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useMemo } from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { R, S, useColors, makeStyles } from "@/constants/theme";
-import { formatDateShort, hijriMonthName, weekdayShort } from "@/i18n";
-import { useAppState, useT } from "@/lib/app-state";
-import { addDays, startOfDay } from "@/lib/dates";
-import { toHijri } from "@/lib/hijri";
-import { fmtTime, getDayTimes, PRAYER_KEYS } from "@/lib/prayer";
-import { useNow } from "@/lib/use-now";
+import { R, S, useColors, makeStyles } from '@/constants/theme';
+import { formatDateShort, hijriMonthName, weekdayShort } from '@/i18n';
+import { useAppState, useT } from '@/lib/app-state';
+import { addDays, startOfDay } from '@/lib/dates';
+import { toHijri } from '@/lib/hijri';
+import { fmtTime, getDayTimes, PRAYER_KEYS } from '@/lib/prayer';
+import { useNow } from '@/lib/use-now';
 
 const DAYS = 30;
 
@@ -42,27 +42,17 @@ export default function VakitlerScreen() {
           paddingLeft: insets.left,
           paddingRight: insets.right,
         },
-      ]}
-    >
-      <View
-        style={{ flex: 1, width: "100%", maxWidth: 960, alignSelf: "center" }}
-      >
+      ]}>
+      <View style={{ flex: 1, width: '100%', maxWidth: 960, alignSelf: 'center' }}>
         <View style={st.head}>
-          <Text style={st.title}>{t("times.title")}</Text>
-          <Text style={st.sub}>
-            {t("times.sub", { place: place.name, n: DAYS })}
-          </Text>
+          <Text style={st.title}>{t('times.title')}</Text>
+          <Text style={st.sub}>{t('times.sub', { place: place.name, n: DAYS })}</Text>
         </View>
 
         <View style={[st.row, st.headerRow]}>
-          <Text style={[st.dateCol, st.hText]}>{t("times.date")}</Text>
+          <Text style={[st.dateCol, st.hText]}>{t('times.date')}</Text>
           {PRAYER_KEYS.map((key) => (
-            <Text
-              key={key}
-              style={[st.cell, st.hText]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-            >
+            <Text key={key} style={[st.cell, st.hText]} numberOfLines={1} adjustsFontSizeToFit>
               {t(`prayer.${key}`)}
             </Text>
           ))}
@@ -75,40 +65,24 @@ export default function VakitlerScreen() {
           renderItem={({ item, index }) => {
             const isToday = index === 0;
             return (
-              <View
-                style={[
-                  st.row,
-                  isToday && st.todayRow,
-                  index % 2 === 1 && !isToday && st.altRow,
-                ]}
-              >
+              <View style={[st.row, isToday && st.todayRow, index % 2 === 1 && !isToday && st.altRow]}>
                 <View style={st.dateCol}>
                   <Text style={[st.date, isToday && st.todayText]}>
                     {formatDateShort(item.d, lang)} {weekdayShort(item.d, lang)}
                   </Text>
-                  <Text
-                    style={[st.hijri, isToday && st.todayText]}
-                    numberOfLines={1}
-                  >
+                  <Text style={[st.hijri, isToday && st.todayText]} numberOfLines={1}>
                     {item.h.day} {hijriMonthName(item.h.month, lang)}
                   </Text>
                 </View>
                 {PRAYER_KEYS.map((key) => (
-                  <Text
-                    key={key}
-                    style={[st.cell, st.time, isToday && st.todayText]}
-                  >
+                  <Text key={key} style={[st.cell, st.time, isToday && st.todayText]}>
                     {fmtTime(item.t[key])}
                   </Text>
                 ))}
               </View>
             );
           }}
-          ListFooterComponent={
-            <Text style={st.note}>
-              {t("times.note", { method: t(`method.${calc.method}`) })}
-            </Text>
-          }
+          ListFooterComponent={<Text style={st.note}>{t('times.note', { method: t(`method.${calc.method}`) })}</Text>}
         />
       </View>
     </View>
@@ -123,11 +97,11 @@ const useSt = makeStyles((C) => ({
     paddingBottom: S.md,
     gap: 4,
   },
-  title: { color: C.text, fontSize: 22, fontWeight: "700" },
+  title: { color: C.text, fontSize: 22, fontWeight: '700' },
   sub: { color: C.textDim, fontSize: 13 },
   row: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: S.sm,
     borderRadius: R.sm,
@@ -135,13 +109,13 @@ const useSt = makeStyles((C) => ({
   headerRow: { marginHorizontal: S.md, backgroundColor: C.bgDeep },
   altRow: { backgroundColor: C.card },
   todayRow: { backgroundColor: C.accent },
-  todayText: { color: C.onAccent, fontWeight: "700" },
-  hText: { color: C.textDim, fontSize: 11, fontWeight: "700" },
+  todayText: { color: C.onAccent, fontWeight: '700' },
+  hText: { color: C.textDim, fontSize: 11, fontWeight: '700' },
   dateCol: { width: 78 },
-  date: { color: C.text, fontSize: 12, fontWeight: "600" },
+  date: { color: C.text, fontSize: 12, fontWeight: '600' },
   hijri: { color: C.textMute, fontSize: 10, marginTop: 1 },
-  cell: { flex: 1, textAlign: "center" },
-  time: { color: C.text, fontSize: 12.5, fontVariant: ["tabular-nums"] },
+  cell: { flex: 1, textAlign: 'center' },
+  time: { color: C.text, fontSize: 12.5, fontVariant: ['tabular-nums'] },
   note: {
     color: C.textMute,
     fontSize: 12,

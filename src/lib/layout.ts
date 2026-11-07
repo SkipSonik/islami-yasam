@@ -1,3 +1,4 @@
+import * as Device from 'expo-device';
 import { useWindowDimensions } from 'react-native';
 
 /**
@@ -18,3 +19,6 @@ export function useLayout() {
 export const READ_MAX = 760;
 /** İki sütunlu içerik için en büyük genişlik */
 export const WIDE_MAX = 1200;
+
+/** Android TV / Google TV cihazı mı (kumanda ile kullanılan büyük ekran) */
+export const IS_TV = Device.deviceType === Device.DeviceType.TV;
