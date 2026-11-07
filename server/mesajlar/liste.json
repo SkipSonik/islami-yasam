@@ -1,0 +1,178 @@
+{
+ "v": 1,
+ "updated": "2026-11-07",
+ "cats": [
+  {
+   "id": "cuma",
+   "name": {
+    "tr": "Cuma",
+    "en": "Friday",
+    "ar": "الجمعة",
+    "de": "Freitag",
+    "fr": "Vendredi",
+    "ru": "Пятница",
+    "id": "Jumat",
+    "ur": "جمعہ",
+    "ja": "金曜日"
+   }
+  },
+  {
+   "id": "kandil",
+   "name": {
+    "tr": "Kandil",
+    "en": "Holy Nights",
+    "ar": "الليالي المباركة",
+    "de": "Kandil-Nächte",
+    "fr": "Nuits bénies",
+    "ru": "Священные ночи",
+    "id": "Malam Mulia",
+    "ur": "مبارک راتیں",
+    "ja": "聖なる夜"
+   }
+  },
+  {
+   "id": "ramazan",
+   "name": {
+    "tr": "Ramazan",
+    "en": "Ramadan",
+    "ar": "رمضان",
+    "de": "Ramadan",
+    "fr": "Ramadan",
+    "ru": "Рамадан",
+    "id": "Ramadan",
+    "ur": "رمضان",
+    "ja": "ラマダーン"
+   }
+  },
+  {
+   "id": "bayram",
+   "name": {
+    "tr": "Bayram",
+    "en": "Eid",
+    "ar": "العيد",
+    "de": "Bayram",
+    "fr": "Aïd",
+    "ru": "Праздник",
+    "id": "Hari Raya",
+    "ur": "عید",
+    "ja": "イード"
+   }
+  },
+  {
+   "id": "ozel",
+   "name": {
+    "tr": "Özel Günler",
+    "en": "Special Days",
+    "ar": "أيام خاصة",
+    "de": "Besondere Tage",
+    "fr": "Jours spéciaux",
+    "ru": "Особые дни",
+    "id": "Hari Khusus",
+    "ur": "خاص دن",
+    "ja": "特別な日"
+   }
+  }
+ ],
+ "items": [
+  {
+   "id": "cuma-01",
+   "cat": "cuma",
+   "free": true
+  },
+  {
+   "id": "cuma-02",
+   "cat": "cuma",
+   "free": true
+  },
+  {
+   "id": "cuma-03",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-04",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "kandil-01",
+   "cat": "kandil",
+   "free": true
+  },
+  {
+   "id": "kandil-02",
+   "cat": "kandil",
+   "free": true
+  },
+  {
+   "id": "kandil-03",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-04",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "ramazan-01",
+   "cat": "ramazan",
+   "free": true
+  },
+  {
+   "id": "ramazan-02",
+   "cat": "ramazan",
+   "free": true
+  },
+  {
+   "id": "ramazan-03",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-04",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "bayram-01",
+   "cat": "bayram",
+   "free": true
+  },
+  {
+   "id": "bayram-02",
+   "cat": "bayram",
+   "free": true
+  },
+  {
+   "id": "bayram-03",
+   "cat": "bayram",
+   "free": false
+  },
+  {
+   "id": "bayram-04",
+   "cat": "bayram",
+   "free": false
+  },
+  {
+   "id": "ozel-01",
+   "cat": "ozel",
+   "free": true
+  },
+  {
+   "id": "ozel-02",
+   "cat": "ozel",
+   "free": true
+  },
+  {
+   "id": "ozel-03",
+   "cat": "ozel",
+   "free": false
+  },
+  {
+   "id": "ozel-04",
+   "cat": "ozel",
+   "free": false
+  }
+ ]
+}

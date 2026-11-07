@@ -17,6 +17,7 @@ const WORSHIP: Item[] = [
   { icon: 'book-outline', title: 'tools.hatim', sub: 'tools.hatimSub', href: '/hatim' },
   { icon: 'reader-outline', title: 'tools.reading', sub: 'tools.readingSub', href: '/okuma-plani' },
   { icon: 'infinite-outline', title: 'tools.tesbihat', sub: 'tools.tesbihatSub', href: '/tesbihat' },
+  { icon: 'images-outline', title: 'tools.mesajlar', sub: 'tools.mesajlarSub', href: '/mesajlar' },
   { icon: 'heart-outline', title: 'tools.dualar', sub: 'tools.dualarSub', href: '/dualar' },
   { icon: 'calendar-outline', title: 'tools.religious', sub: 'tools.religiousSub', href: '/dini-gunler' },
   { icon: 'time-outline', title: 'tools.imsakiye', sub: 'tools.imsakiyeSub', href: '/imsakiye' },

@@ -1,0 +1,12 @@
+# Resimli mesajlar: resimler uzun süre önbelleğe alınabilir, liste kısa süre
+<IfModule mod_headers.c>
+  <FilesMatch "\.jpg$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+  <FilesMatch "liste\.json$">
+    Header set Cache-Control "public, max-age=600"
+  </FilesMatch>
+</IfModule>
+<FilesMatch "tanim\.json$">
+  Require all denied
+</FilesMatch>

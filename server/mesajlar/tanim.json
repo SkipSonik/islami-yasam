@@ -1,0 +1,138 @@
+[
+ {
+  "id": "cuma-01",
+  "src": "cuma-01.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Rabbim dualarınızı kabul, gönlünüzü huzurla doldursun."
+ },
+ {
+  "id": "cuma-02",
+  "src": "cuma-02.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Cumanız Kur'an'ın nuruyla aydınlansın."
+ },
+ {
+  "id": "cuma-03",
+  "src": "cuma-03.png",
+  "title": "Cumanız Mübarek Olsun",
+  "sub": "Bu mübarek günde dualarımız bir olsun."
+ },
+ {
+  "id": "cuma-04",
+  "src": "cuma-04.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Allah'ın rahmeti ve bereketi üzerinize olsun."
+ },
+ {
+  "id": "kandil-01",
+  "src": "kandil-01.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Bu mübarek gecede dualarınız kabul olsun.",
+  "size": 92
+ },
+ {
+  "id": "kandil-02",
+  "src": "kandil-02.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Gecenin bereketi hanenize, huzuru gönlünüze dolsun.",
+  "size": 92
+ },
+ {
+  "id": "kandil-03",
+  "src": "kandil-03.png",
+  "title": "Hayırlı Kandiller",
+  "sub": "Rabbim bu geceyi kurtuluşumuza vesile kılsın."
+ },
+ {
+  "id": "kandil-04",
+  "src": "kandil-04.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Dualarda buluşmak dileğiyle.",
+  "size": 92
+ },
+ {
+  "id": "ramazan-01",
+  "src": "ramazan-01.png",
+  "title": "Hoş Geldin Ya Şehr-i Ramazan",
+  "sub": "On bir ayın sultanı rahmetle gelsin.",
+  "size": 88
+ },
+ {
+  "id": "ramazan-02",
+  "src": "ramazan-02.png",
+  "title": "Hayırlı İftarlar",
+  "sub": "Allah oruçlarınızı ve dualarınızı kabul etsin."
+ },
+ {
+  "id": "ramazan-03",
+  "src": "ramazan-03.png",
+  "title": "Hayırlı Ramazanlar",
+  "sub": "Ramazan-ı Şerifiniz mübarek olsun."
+ },
+ {
+  "id": "ramazan-04",
+  "src": "ramazan-04.png",
+  "title": "Ramazanınız Mübarek Olsun",
+  "sub": "Rahmet, mağfiret ve bereket dolu bir Ramazan dileğiyle.",
+  "size": 92
+ },
+ {
+  "id": "bayram-01",
+  "src": "bayram-01.png",
+  "title": "Bayramınız Mübarek Olsun",
+  "sub": "Sevdiklerinizle sağlık ve huzur dolu bir bayram dileriz.",
+  "size": 92
+ },
+ {
+  "id": "bayram-02",
+  "src": "bayram-02.png",
+  "title": "Ramazan Bayramınız Mübarek Olsun",
+  "sub": "Tatlı bayramınız tatlı geçsin.",
+  "size": 84
+ },
+ {
+  "id": "bayram-03",
+  "src": "bayram-03.png",
+  "title": "Kurban Bayramınız Mübarek Olsun",
+  "sub": "Kurbanlarınız kabul, bayramınız bereketli olsun.",
+  "size": 84
+ },
+ {
+  "id": "bayram-04",
+  "src": "bayram-04.png",
+  "title": "İyi Bayramlar",
+  "sub": "Nice huzurlu ve bereketli bayramlara."
+ },
+ {
+  "id": "ozel-01",
+  "src": "ozel-01.png",
+  "title": "Hicri Yılbaşınız Mübarek Olsun",
+  "sub": "Yeni yıl ümmete hayır ve huzur getirsin.",
+  "size": 84
+ },
+ {
+  "id": "ozel-02",
+  "src": "ozel-02.png",
+  "title": "Aşure Gününüz Mübarek Olsun",
+  "sub": "Paylaştıkça bereketlenen bir gün dileğiyle.",
+  "size": 88
+ },
+ {
+  "id": "ozel-03",
+  "src": "ozel-03.png",
+  "title": "Üç Aylarınız Mübarek Olsun",
+  "sub": "Recep, Şaban ve Ramazan hayırlara vesile olsun.",
+  "size": 66,
+  "top": 600,
+  "light": true,
+  "maxw": 460,
+  "subsize": 34
+ },
+ {
+  "id": "ozel-04",
+  "src": "ozel-04.png",
+  "title": "Dualarınız Kabul Olsun",
+  "sub": "Rabbim gönlünüzden geçen tüm hayırlı dilekleri nasip etsin.",
+  "size": 92
+ }
+]
