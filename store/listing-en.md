@@ -50,6 +50,17 @@ Islami Yasam brings everything you need for daily worship into one clean app: ac
 • 99 Names of Allah with meanings
 • Hadith of the day
 
+🖼️ GREETING IMAGES & SHARING
+• Ready-made images for Friday, holy nights, Ramadan, Eid and special days
+• Share to WhatsApp, Instagram and more with one tap
+• Share the verse of the day as a beautiful image
+
+📱 WIDGETS, TABLET & TV
+• Home screen widgets: next prayer and today's prayer times
+• Two-column layout for tablets and landscape, two-page Mushaf on tablets
+• Large prayer-time board on Android TV for home or mosque
+• Offline city picker: accurate times even without location permission
+
 📅 AND MORE
 • Islamic holidays and holy nights with countdown
 • Zakat calculator with live gold price

@@ -50,6 +50,17 @@ Ezan vakti, Kur'an, kıble, namaz takibi, hatim, Ramazan imsakiyesi ve dualar
 • Esmaül Hüsna: Allah'ın 99 ismi ve anlamları
 • Günün hadisi bildirimi
 
+🖼️ RESİMLİ MESAJLAR VE PAYLAŞIM
+• Cuma, kandil, Ramazan, bayram ve özel günler için hazır resimli mesajlar
+• Tek dokunuşla WhatsApp, Instagram ve diğer uygulamalarda paylaşım
+• Günün ayetini şık bir görsel olarak paylaş
+
+📱 WIDGET, TABLET VE TV
+• Ana ekran widget'ları: sıradaki vakit ve günün namaz vakitleri
+• Tablet ve yatay ekran için iki sütunlu düzen, tablette çift sayfa Mushaf
+• Android TV'de büyük vakit panosu: evde ya da camide açık bırakın
+• İnternetsiz şehir seçimi: konum izni vermeden de doğru vakitler
+
 📅 DİNİ GÜNLER VE DAHA FAZLASI
 • Kandiller, bayramlar ve Ramazan için geri sayım (Diyanet takvimiyle uyumlu hicri tarih)
 • Zekatmatik: güncel altın fiyatıyla zekat hesabı
