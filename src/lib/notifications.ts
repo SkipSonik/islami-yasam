@@ -28,8 +28,7 @@ Notifications.setNotificationHandler({
 async function ensureChannel(sound?: SoundId) {
   if (Platform.OS !== 'android') return;
   const def = soundDef(sound);
-  const name =
-    def.id === 'varsayilan' ? t('notif.channel') : `${t('notif.channel')} · ${t(`sound.${def.id}`)}`;
+  const name = def.id === 'varsayilan' ? t('notif.channel') : `${t('notif.channel')} · ${t(`sound.${def.id}`)}`;
   await Notifications.setNotificationChannelAsync(channelFor(def.id), {
     name,
     importance: Notifications.AndroidImportance.HIGH,
@@ -90,10 +89,24 @@ async function canUseExactAlarms() {
   }
 }
 
+// Aynı anda birden fazla yeniden planlama çalışırsa (uygulama açılışı + ayar değişikliği +
+// arka plan görevi) bildirimler katlanıyordu. Çağrılar sıraya alınır; her bildirimin sabit
+// bir kimliği olduğundan aynı bildirim ikinci kez kurulursa eskisinin yerine geçer.
+let queue: Promise<unknown> = Promise.resolve();
+
 // Tüm planlı bildirimleri silip önümüzdeki günler için yeniden kurar.
 // Uygulama açılınca, ayar değişince ve arka plan görevinde çağrılır.
 // Çalışırken izin istemez (arka planda izin penceresi açılamaz).
-export async function rescheduleAll(
+export function rescheduleAll(...args: Parameters<typeof rescheduleNow>): Promise<number> {
+  const run = queue.then(
+    () => rescheduleNow(...args),
+    () => rescheduleNow(...args),
+  );
+  queue = run.catch(() => undefined);
+  return run;
+}
+
+async function rescheduleNow(
   lat: number,
   lng: number,
   s: NotifySettings,
@@ -128,19 +141,21 @@ export async function rescheduleAll(
     const d = new Date();
     d.setDate(d.getDate() + i);
     const times = getDayTimes(lat, lng, d, cfg);
+    const dk = dayKey(d);
     for (const key of PRAYER_KEYS) {
       if (!s.enabled[key]) continue;
       const at = times[key].getTime();
       const prayer = t(`prayer.${key}`);
 
       if (at > now) {
-        await schedule(at, t('notif.entered', { prayer }), bodyText(key), delivery, s.sound);
+        await schedule(`vakit-${dk}-${key}`, at, t('notif.entered', { prayer }), bodyText(key), delivery, s.sound);
         count++;
       }
       if (s.remindBefore > 0) {
         const r = at - s.remindBefore * 60 * 1000;
         if (r > now) {
           await schedule(
+            `once-${dk}-${key}`,
             r,
             t('notif.remindTitle', { prayer, n: s.remindBefore }),
             t('notif.remindBody', { prayer }),
@@ -155,12 +170,18 @@ export async function rescheduleAll(
     if (x.ramazan && toHijri(d, hijriOffset).month === 9) {
       const sahur = times.imsak.getTime() - x.sahurBefore * 60 * 1000;
       if (sahur > now) {
-        await schedule(sahur, t('notif.sahurTitle'), t('notif.sahurBody', { n: x.sahurBefore }), delivery);
+        await schedule(
+          `sahur-${dk}`,
+          sahur,
+          t('notif.sahurTitle'),
+          t('notif.sahurBody', { n: x.sahurBefore }),
+          delivery,
+        );
         count++;
       }
       const iftar = times.aksam.getTime();
       if (iftar > now) {
-        await schedule(iftar, t('notif.iftarTitle'), t('notif.iftarBody'), delivery, s.sound);
+        await schedule(`iftar-${dk}`, iftar, t('notif.iftarTitle'), t('notif.iftarBody'), delivery, s.sound);
         count++;
       }
     }
@@ -170,7 +191,14 @@ export async function rescheduleAll(
       const at = atHour(d, x.dailyHour);
       if (at > now) {
         const h = HADISLER[dayIndex(d) % HADISLER.length];
-        await schedule(at, t('notif.dailyTitle'), `${currentLang() === 'tr' ? h.tr : h.en} (${h.src})`, 'bestEffort', 'sessiz');
+        await schedule(
+          `hadis-${dk}`,
+          at,
+          t('notif.dailyTitle'),
+          `${currentLang() === 'tr' ? h.tr : h.en} (${h.src})`,
+          'bestEffort',
+          'sessiz',
+        );
         count++;
       }
     }
@@ -178,9 +206,15 @@ export async function rescheduleAll(
     // Okuma planı hatırlatması (bugün okunduysa bugünkü atlanır)
     if (readingOn) {
       const at = atHour(d, x.readingHour);
-      const readToday = i === 0 && (plan.log[dayKey(d)] ?? 0) > 0;
+      const readToday = i === 0 && (plan.log[dk] ?? 0) > 0;
       if (at > now && !readToday) {
-        await schedule(at, t('notif.readingTitle'), t('notif.readingBody', { n: dailyPages(plan.days) }), 'bestEffort');
+        await schedule(
+          `okuma-${dk}`,
+          at,
+          t('notif.readingTitle'),
+          t('notif.readingBody', { n: dailyPages(plan.days) }),
+          'bestEffort',
+        );
         count++;
       }
     }
@@ -203,6 +237,7 @@ function bodyText(k: PrayerKey) {
 }
 
 function schedule(
+  identifier: string,
   time: number,
   title: string,
   body: string,
@@ -212,6 +247,7 @@ function schedule(
   // Hatırlatmalar varsayılan sesle, vakit girişi seçilen sesle çalar.
   const def = soundDef(sound);
   return Notifications.scheduleNotificationAsync({
+    identifier,
     content: {
       title,
       body,
