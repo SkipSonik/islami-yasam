@@ -258,7 +258,14 @@ const useSt = makeStyles((C) => ({
   place: { color: '#D6E6E3', fontSize: 13, marginTop: 2 },
   todayPill: { backgroundColor: C.ornament, borderRadius: 14, paddingHorizontal: 10, paddingVertical: 4 },
   todayPillText: { color: '#FFFFFF', fontWeight: '800', fontSize: 12 },
-  arcBox: { height: 150, marginTop: 26, marginHorizontal: 18, justifyContent: 'flex-end' },
+  arcBox: {
+    height: 150,
+    marginTop: 26,
+    justifyContent: 'flex-end',
+    width: '88%',
+    maxWidth: 440,
+    alignSelf: 'center',
+  },
   arcLine: {
     position: 'absolute',
     left: 0,
