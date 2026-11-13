@@ -1,0 +1,30 @@
+# Duman testi ekran görüntülerini "duman-kaynak" dalına koyar (geliştirme ortamı
+# GitHub'ın artifact deposuna doğrudan erişemiyor).
+name: Duman görüntülerini al
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: 'Android APK iş akışı çalıştırma numarası'
+        required: true
+permissions:
+  contents: write
+  actions: read
+jobs:
+  al:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: duman-testi
+          path: out
+          run-id: ${{ github.event.inputs.run_id }}
+          github-token: ${{ github.token }}
+      - name: Dala gönder
+        run: |
+          cd out
+          git init -q -b duman-kaynak
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Duman testi ekran görüntüleri"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" duman-kaynak
