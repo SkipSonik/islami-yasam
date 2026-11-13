@@ -15,7 +15,7 @@ import { useColors } from '@/constants/theme';
 import { IS_TV } from '@/lib/layout';
 import { premiumStore } from '@/lib/premium-store';
 
-// AdMob reklam birimleri (İslami Yaşam / Android)
+// AdMob reklam birimleri (Namaz Yolu / Android)
 const UNITS = {
   banner: __DEV__ ? TestIds.ADAPTIVE_BANNER : 'ca-app-pub-5704710295015571/8838359568',
   interstitial: __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-5704710295015571/5187898320',

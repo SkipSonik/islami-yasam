@@ -115,7 +115,7 @@ export function QuranPlayerProvider({ children }: { children: ReactNode }) {
         player.setActiveForLockScreen(true, {
           title: t('quran.surahTitle', { name: surahName(n, currentLang()) }),
           artist: reciterName(rec, currentLang()),
-          albumTitle: 'İslami Yaşam',
+          albumTitle: 'Namaz Yolu',
         });
       } catch {
         // kilit ekranı kontrolleri desteklenmiyorsa sorun değil

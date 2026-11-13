@@ -51,25 +51,21 @@ export default function HomeScreen() {
   const nextDay = useMemo(() => upcomingReligiousDays(new Date(dayKey), hijriOffset, 2)[0], [dayKey, hijriOffset]);
 
   const header = (
-    <View style={{ gap: 6 }}>
-      <Text style={st.appTitle}>{t('app.name')}</Text>
-      <Pressable style={st.metaRow} onPress={() => router.push('/ayarlar')}>
-        <Ionicons name="location-outline" size={15} color={C.textDim} />
-        <Text style={st.meta}>{place.name}</Text>
-        {!place.auto ? <Text style={st.metaHint}>{t('home.change')}</Text> : null}
-      </Pressable>
-      <View style={st.metaRow}>
-        <Ionicons name="calendar-outline" size={15} color={C.textDim} />
-        <Text style={st.meta}>{gregorian}</Text>
+    <View style={{ gap: 4 }}>
+      <View style={st.topRow}>
+        <Text style={st.appTitle}>{t('app.name')}</Text>
+        <Pressable style={st.placeBtn} onPress={() => router.push('/sehir')} hitSlop={8}>
+          <Ionicons name="location-outline" size={15} color={C.accent} />
+          <Text style={st.placeText} numberOfLines={1}>
+            {place.name}
+          </Text>
+        </Pressable>
       </View>
-      <View style={st.metaRow}>
-        <Ionicons name="moon-outline" size={15} color={C.gold} />
-        <Text style={[st.meta, { color: C.gold }]}>{formatHijri(now, hijriOffset, lang)}</Text>
-      </View>
+      <Text style={st.meta}>{gregorian}</Text>
       {nextDay ? (
         <Pressable style={st.metaRow} onPress={() => router.push('/dini-gunler')}>
-          <Ionicons name="star-outline" size={15} color={C.accent} />
-          <Text style={[st.meta, { color: C.accent }]}>
+          <Ionicons name="star-outline" size={15} color={C.gold} />
+          <Text style={[st.meta, { color: C.gold, fontWeight: '600' }]}>
             {t('rd.upcoming', {
               name: t(`rd.${nextDay.key}` as StringKey),
               when: whenLabel(nextDay, new Date(dayKey), t),
@@ -84,28 +80,47 @@ export default function HomeScreen() {
     <>
       {header}
       <ReliabilityBanner />
-      <Card style={{ backgroundColor: C.cardActive, alignItems: 'center' }}>
-        <Text style={st.countLabel}>{t('home.timeLeft', { prayer: t(`prayer.${next.key}`) })}</Text>
-        <Text style={st.count}>
-          {pad(h)}:{pad(m)}:{pad(s)}
-        </Text>
-        <View style={st.progressTrack}>
-          <View style={[st.progressFill, { width: `${Math.min(100, progress * 100)}%` }]} />
+      {/* Çini çerçeveli mihrap kemeri: sıradaki vakte geri sayım */}
+      <View style={st.archOuter}>
+        <View style={st.archGap}>
+          <View style={st.arch}>
+            <View style={st.archStars}>
+              {[0, 1, 2].map((i) => (
+                <View key={i} style={[st.archStar, i === 1 && st.archStarBig]} />
+              ))}
+            </View>
+            <Text style={st.archLabel}>{t('home.timeLeft', { prayer: t(`prayer.${next.key}`) })}</Text>
+            <Text style={st.count} numberOfLines={1} adjustsFontSizeToFit>
+              {pad(h)}:{pad(m)}:{pad(s)}
+            </Text>
+            <View style={st.progressTrack}>
+              <View style={[st.progressFill, { width: `${Math.min(100, progress * 100)}%` }]} />
+            </View>
+            <Text style={st.archSub}>
+              {fmtTime(next.time)} · {formatHijri(now, hijriOffset, lang)}
+            </Text>
+          </View>
         </View>
-        <View style={st.grid}>
-          {PRAYER_KEYS.map((key) => {
-            const active = key === current;
-            return (
-              <View key={key} style={[st.cell, active && st.cellActive]}>
-                <Text style={[st.cellLabel, active && { color: C.onAccent }]} numberOfLines={1} adjustsFontSizeToFit>
-                  {t(`prayer.${key}`)}
-                </Text>
-                <Text style={[st.cellTime, active && { color: C.onAccent }]}>{fmtTime(times[key])}</Text>
-              </View>
-            );
-          })}
-        </View>
-      </Card>
+      </View>
+      <View style={st.grid}>
+        {PRAYER_KEYS.map((key) => {
+          const active = key === current;
+          const upcoming = key === next.key && !active;
+          return (
+            <View key={key} style={[st.cell, active && st.cellActive, upcoming && st.cellNext]}>
+              <Text
+                style={[st.cellLabel, active && { color: C.onAccent }, upcoming && { color: C.accent }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit>
+                {t(`prayer.${key}`)}
+              </Text>
+              <Text style={[st.cellTime, active && { color: C.onAccent }, upcoming && { color: C.accent }]}>
+                {fmtTime(times[key])}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
       <RamadanBanner now={now} />
     </>
   );
@@ -239,22 +254,13 @@ function DailyAyah({ date }: { date: Date }) {
 
   return (
     <Card>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <View style={st.ayahHead}>
         <SectionTitle icon="book-outline">{t('home.dailyAyah')}</SectionTitle>
-        {ayah ? (
-          <Pressable
-            onPress={share}
-            hitSlop={10}
-            accessibilityLabel={t('msg.share')}
-            style={({ pressed }) => [st.shareBtn, pressed && { opacity: 0.7 }]}>
-            {sharing ? (
-              <ActivityIndicator size="small" color={C.onAccent} />
-            ) : (
-              <Ionicons name="share-social" size={16} color={C.onAccent} />
-            )}
-            <Text style={st.shareText}>{t('msg.share')}</Text>
-          </Pressable>
-        ) : null}
+        <View style={st.badge}>
+          <Text style={st.badgeText}>
+            {surahNo}:{ayahNo}
+          </Text>
+        </View>
       </View>
       {ayah ? (
         <AyahShareCard
@@ -263,20 +269,36 @@ function DailyAyah({ date }: { date: Date }) {
           meal={ayah.tr}
           reference={t('home.ayahRef', { surah: surahName(surahNo, lang), ayah: ayahNo })}
           title={t('home.dailyAyah')}
-          brand={t('app.name')}
+          brand={`${t('app.name')} · namazyolu.com`}
         />
       ) : null}
       {ayah ? (
-        <Pressable onPress={() => router.push(`/mushaf?sure=${surahNo}&ayet=${ayahNo}`)} style={{ gap: S.md }}>
-          <Text style={st.ar}>{ayah.ar}</Text>
-          <Text style={st.tr}>{ayah.tr}</Text>
-          <Text style={st.ref}>
-            {t('home.ayahRef', {
-              surah: surahName(surahNo, lang),
-              ayah: ayahNo,
-            })}
-          </Text>
-        </Pressable>
+        <>
+          <Pressable onPress={() => router.push(`/mushaf?sure=${surahNo}&ayet=${ayahNo}`)} style={{ gap: S.md }}>
+            <Text style={st.ar}>{ayah.ar}</Text>
+            <Text style={st.tr}>{ayah.tr}</Text>
+            <Text style={st.ref}>
+              {t('home.ayahRef', {
+                surah: surahName(surahNo, lang),
+                ayah: ayahNo,
+              })}
+            </Text>
+          </Pressable>
+          {/* Ayet, görsel olarak WhatsApp, Instagram vb. uygulamalarda paylaşılır */}
+          <Pressable
+            onPress={share}
+            accessibilityRole="button"
+            accessibilityLabel={t('msg.share')}
+            style={({ pressed }) => [st.shareBtn, pressed && { opacity: 0.8 }]}>
+            {sharing ? (
+              <ActivityIndicator size="small" color={C.onAccent} />
+            ) : (
+              <Ionicons name="logo-whatsapp" size={18} color={C.onAccent} />
+            )}
+            <Text style={st.shareText}>{t('msg.share')}</Text>
+            <Ionicons name="image-outline" size={16} color={C.onAccent} />
+          </Pressable>
+        </>
       ) : failed ? (
         <Text style={st.tr}>{t('home.ayahNeedsNet')}</Text>
       ) : (
@@ -291,76 +313,142 @@ function QuickBtn({ icon, label, onPress }: { icon: any; label: string; onPress:
   const st = useSt();
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [st.quickBtn, pressed && { opacity: 0.7 }]}>
-      <Ionicons name={icon} size={22} color={C.accent} />
+      <Ionicons name={icon} size={22} color={C.gold} />
       <Text style={st.quickLabel}>{label}</Text>
     </Pressable>
   );
 }
 
+const ARCH = 170;
+
 const useSt = makeStyles((C) => ({
-  appTitle: { color: C.text, fontSize: 28, fontWeight: '800' },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: S.md },
+  appTitle: { color: C.accent, fontSize: 26, fontWeight: '800' },
+  placeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flexShrink: 1,
+    borderWidth: 1.5,
+    borderColor: C.accent,
+    borderRadius: 18,
+    paddingHorizontal: 10,
+    minHeight: 36,
+  },
+  placeText: { color: C.accent, fontSize: 13, fontWeight: '700', flexShrink: 1 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   meta: { color: C.textDim, fontSize: 14 },
-  metaHint: { color: C.accent, fontSize: 13 },
-  countLabel: { color: C.text, fontSize: 16, fontWeight: '600' },
+  archOuter: {
+    padding: 6,
+    borderTopLeftRadius: ARCH,
+    borderTopRightRadius: ARCH,
+    borderBottomLeftRadius: R.lg,
+    borderBottomRightRadius: R.lg,
+    backgroundColor: C.ornament,
+    borderWidth: 3,
+    borderColor: C.accent,
+  },
+  archGap: {
+    padding: 5,
+    borderTopLeftRadius: ARCH - 8,
+    borderTopRightRadius: ARCH - 8,
+    borderBottomLeftRadius: R.lg - 4,
+    borderBottomRightRadius: R.lg - 4,
+    backgroundColor: C.bg,
+  },
+  arch: {
+    minHeight: 270,
+    borderTopLeftRadius: ARCH - 14,
+    borderTopRightRadius: ARCH - 14,
+    borderBottomLeftRadius: R.md,
+    borderBottomRightRadius: R.md,
+    backgroundColor: C.dark ? C.cardActive : C.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: S.xl,
+    paddingTop: 44,
+    paddingBottom: S.xl,
+  },
+  archStars: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 4 },
+  archStar: { width: 8, height: 8, backgroundColor: C.ornament, transform: [{ rotate: '45deg' }] },
+  archStarBig: { width: 13, height: 13 },
+  archLabel: { color: '#F3D2B9', fontSize: 14, fontWeight: '700', letterSpacing: 0.5, textAlign: 'center' },
+  archSub: { color: '#D6E6E3', fontSize: 13, textAlign: 'center' },
   count: {
-    color: C.text,
-    fontSize: 48,
+    color: '#FFFFFF',
+    fontSize: 54,
     fontWeight: '800',
     fontVariant: ['tabular-nums'],
     letterSpacing: 1,
   },
   progressTrack: {
     alignSelf: 'stretch',
-    height: 6,
+    marginHorizontal: S.lg,
+    height: 5,
     borderRadius: 3,
-    backgroundColor: C.bgDeep,
+    backgroundColor: 'rgba(255,255,255,0.18)',
     overflow: 'hidden',
   },
-  progressFill: { height: 6, backgroundColor: C.accent },
+  progressFill: { height: 5, backgroundColor: C.ornament },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: S.sm,
     alignSelf: 'stretch',
-    marginTop: S.xs,
   },
   cell: {
-    width: '31.5%',
+    width: '31%',
     flexGrow: 1,
-    backgroundColor: C.card,
-    borderRadius: R.sm,
+    backgroundColor: C.cardSoft,
+    borderRadius: R.sm + 4,
     paddingVertical: S.md,
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
-  cellActive: { backgroundColor: C.accent },
-  cellLabel: { color: C.text, fontWeight: '700', fontSize: 14 },
+  cellActive: { backgroundColor: C.ornament, borderColor: C.ornament },
+  cellNext: { backgroundColor: C.card, borderColor: C.accent },
+  cellLabel: { color: C.textDim, fontWeight: '700', fontSize: 13 },
   cellTime: {
-    color: C.textDim,
-    fontSize: 14,
+    color: C.text,
+    fontSize: 19,
+    fontWeight: '800',
     marginTop: 2,
     fontVariant: ['tabular-nums'],
   },
+  ayahHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  badge: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: C.ornament,
+    alignItems: 'center',
+    justifyContent: 'center',
+    transform: [{ rotate: '45deg' }],
+  },
+  badgeText: { color: '#FFFFFF', fontWeight: '800', fontSize: 11, transform: [{ rotate: '-45deg' }] },
   ar: {
-    color: C.text,
+    color: C.accent,
     fontSize: 25,
     lineHeight: 50,
     textAlign: 'right',
     writingDirection: 'rtl',
     fontFamily: 'AmiriQuran_400Regular',
   },
-  tr: { color: C.textDim, fontSize: 15, lineHeight: 22 },
+  tr: { color: C.text, fontSize: 15, lineHeight: 22 },
   shareBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    justifyContent: 'center',
+    gap: 8,
     backgroundColor: C.accent,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    minHeight: 48,
+    borderRadius: R.md,
+    marginTop: S.xs,
   },
-  shareText: { color: C.onAccent, fontWeight: '800', fontSize: 13 },
-  ref: { color: C.gold, fontSize: 13, fontWeight: '600' },
+  shareText: { color: C.onAccent, fontWeight: '800', fontSize: 15 },
+  ref: { color: C.gold, fontSize: 13, fontWeight: '700' },
   quick: { flexDirection: 'row', gap: S.sm, marginBottom: -S.sm },
   trackHead: {
     flexDirection: 'row',
@@ -390,9 +478,11 @@ const useSt = makeStyles((C) => ({
     flex: 1,
     backgroundColor: C.card,
     borderRadius: R.md,
+    borderWidth: 1.5,
+    borderColor: C.accent,
     paddingVertical: S.lg,
     alignItems: 'center',
     gap: 6,
   },
-  quickLabel: { color: C.text, fontSize: 13, fontWeight: '600' },
+  quickLabel: { color: C.accent, fontSize: 13, fontWeight: '700' },
 }));

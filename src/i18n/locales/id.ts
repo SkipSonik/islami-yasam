@@ -2,7 +2,7 @@ import type { Locale } from './tr';
 
 export const id: Locale = {
   strings: {
-    'app.name': 'Hidup Islami',
+    'app.name': 'Namaz Yolu',
     'common.retry': 'Coba lagi',
     'common.close': 'Tutup',
     'common.cancel': 'Batal',
@@ -292,6 +292,7 @@ export const id: Locale = {
     'settings.theme': 'Tema',
     'theme.zumrut': 'Zamrud',
     'theme.gece': 'Malam',
+    'theme.cini': 'Ubin',
     'theme.iznik': 'Iznik',
     'theme.medine': 'Madinah',
     'theme.kabe': 'Ka\'bah',
@@ -415,7 +416,7 @@ export const id: Locale = {
     'hatim.release': 'Lepaskan',
     'hatim.openMushaf': 'Buka di mushaf',
     'hatim.invite': 'Undang',
-    'hatim.shareText': 'Ayo ikut khatam bersama "{title}"! Di aplikasi Islami Yasam buka Alat > Khatam > Gabung dengan kode lalu masukkan: {code}',
+    'hatim.shareText': 'Ayo ikut khatam bersama "{title}"! Di aplikasi Namaz Yolu buka Alat > Khatam > Gabung dengan kode lalu masukkan: {code}',
     'hatim.round': 'Putaran {n}',
     'hatim.finished': 'Khatam selesai, semoga Allah menerimanya! Putaran baru telah dimulai.',
     'hatim.stats': '{done} selesai · {taken} dibaca · {free} kosong',

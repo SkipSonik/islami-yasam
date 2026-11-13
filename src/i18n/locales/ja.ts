@@ -2,7 +2,7 @@ import type { Locale } from './tr';
 
 export const ja: Locale = {
   strings: {
-    'app.name': 'イスラームライフ',
+    'app.name': 'Namaz Yolu',
     'common.retry': '再試行',
     'common.close': '閉じる',
     'common.cancel': 'キャンセル',
@@ -292,6 +292,7 @@ export const ja: Locale = {
     'settings.theme': 'テーマ',
     'theme.zumrut': 'エメラルド',
     'theme.gece': 'ナイト',
+    'theme.cini': 'タイル',
     'theme.iznik': 'イズニック',
     'theme.medine': 'マディーナ',
     'theme.kabe': 'カアバ',
@@ -415,7 +416,7 @@ export const ja: Locale = {
     'hatim.release': '手放す',
     'hatim.openMushaf': 'ムスハフで開く',
     'hatim.invite': '招待',
-    'hatim.shareText': '共同通読「{title}」に参加しよう！Islami Yasamアプリで ツール > ハトム（通読） > コードで参加 を開き、次のコードを入力：{code}',
+    'hatim.shareText': '共同通読「{title}」に参加しよう！Namaz Yoluアプリで ツール > ハトム（通読） > コードで参加 を開き、次のコードを入力：{code}',
     'hatim.round': '第{n}巡',
     'hatim.finished': '通読完了！アッラーが受け入れてくださいますように。新しい巡が始まりました。',
     'hatim.stats': '読了{done}・読書中{taken}・空き{free}',

@@ -2,7 +2,7 @@
 // TypeScript derlemeyi durdurur.
 export const tr = {
   strings: {
-    'app.name': 'İslami Yaşam',
+    'app.name': 'Namaz Yolu',
     'common.retry': 'Tekrar dene',
     'common.close': 'Kapat',
     'common.cancel': 'Vazgeç',
@@ -292,6 +292,7 @@ export const tr = {
     'settings.theme': 'Tema',
     'theme.zumrut': 'Zümrüt',
     'theme.gece': 'Gece',
+    'theme.cini': 'Çini',
     'theme.iznik': 'İznik',
     'theme.medine': 'Medine',
     'theme.kabe': 'Kâbe',
@@ -420,7 +421,7 @@ export const tr = {
     'hatim.release': 'Bırak',
     'hatim.openMushaf': 'Mushafta aç',
     'hatim.invite': 'Davet et',
-    'hatim.shareText': '"{title}" ortak hatmine katıl! İslami Yaşam uygulamasında Araçlar > Hatim > Kodla katıl bölümüne bu kodu yaz: {code}',
+    'hatim.shareText': '"{title}" ortak hatmine katıl! Namaz Yolu uygulamasında Araçlar > Hatim > Kodla katıl bölümüne bu kodu yaz: {code}',
     'hatim.round': '{n}. tur',
     'hatim.finished': 'Hatim tamamlandı, Allah kabul etsin! Yeni tur başladı.',
     'hatim.stats': '{done} okundu · {taken} okunuyor · {free} boş',

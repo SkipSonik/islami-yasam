@@ -21,6 +21,8 @@ export type Settings = {
   lang: Lang | null; // null: henüz seçilmedi → cihaz dili
   method: MethodKey | 'auto';
   theme: ThemeId;
+  /** Namaz Yolu marka temasına bir kez geçildi mi */
+  brand?: number;
 };
 
 const DEFAULTS: Settings = {
@@ -68,6 +70,12 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       // Dil hiç seçilmediyse cihaz dilini kalıcı yap (arka plan görevi de aynı dili kullansın)
       if (!merged.lang) {
         merged.lang = deviceLang();
+        saveJSON(SETTINGS_KEY, merged);
+      }
+      // Namaz Yolu'na geçişte eski varsayılan temadakiler bir kez yeni marka temasına alınır
+      if (!merged.brand) {
+        if (merged.theme === 'zumrut') merged.theme = DEFAULT_THEME;
+        merged.brand = 1;
         saveJSON(SETTINGS_KEY, merged);
       }
       setCurrentLang(merged.lang);

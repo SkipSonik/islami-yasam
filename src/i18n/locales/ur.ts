@@ -2,7 +2,7 @@ import type { Locale } from './tr';
 
 export const ur: Locale = {
   strings: {
-    'app.name': 'اسلامی زندگی',
+    'app.name': 'Namaz Yolu',
     'common.retry': 'دوبارہ کوشش کریں',
     'common.close': 'بند کریں',
     'common.cancel': 'منسوخ',
@@ -292,6 +292,7 @@ export const ur: Locale = {
     'settings.theme': 'تھیم',
     'theme.zumrut': 'زمرد',
     'theme.gece': 'رات',
+    'theme.cini': 'کاشی',
     'theme.iznik': 'ازنک',
     'theme.medine': 'مدینہ',
     'theme.kabe': 'کعبہ',
@@ -415,7 +416,7 @@ export const ur: Locale = {
     'hatim.release': 'چھوڑ دیں',
     'hatim.openMushaf': 'مصحف میں کھولیں',
     'hatim.invite': 'دعوت دیں',
-    'hatim.shareText': 'مشترکہ ختم "{title}" میں شامل ہوں! Islami Yasam ایپ میں ٹولز > ختم قرآن > کوڈ سے شامل ہوں کھولیں اور یہ کوڈ لکھیں: {code}',
+    'hatim.shareText': 'مشترکہ ختم "{title}" میں شامل ہوں! Namaz Yolu ایپ میں ٹولز > ختم قرآن > کوڈ سے شامل ہوں کھولیں اور یہ کوڈ لکھیں: {code}',
     'hatim.round': 'دور {n}',
     'hatim.finished': 'ختم مکمل ہوگیا، اللہ قبول فرمائے! نیا دور شروع ہوگیا۔',
     'hatim.stats': '{done} پڑھے گئے · {taken} زیر مطالعہ · {free} خالی',

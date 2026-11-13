@@ -29,9 +29,30 @@ export type Palette = {
   ornament: string;
 };
 
-export type ThemeId = 'zumrut' | 'gece' | 'iznik' | 'medine' | 'kabe';
+export type ThemeId = 'cini' | 'zumrut' | 'gece' | 'iznik' | 'medine' | 'kabe';
 
 export const THEMES: Record<ThemeId, Palette> = {
+  // Çini (Namaz Yolu): krem zemin, çini turkuazı ve kiremit; logodan alınan marka teması
+  cini: {
+    id: 'cini',
+    dark: false,
+    bg: '#F6EFE0',
+    bgDeep: '#EADFC8',
+    card: '#FFFAF0',
+    cardSoft: '#F1E6CF',
+    cardActive: '#DCEBE7',
+    border: '#E3D5B8',
+    text: '#1E2A2A',
+    textDim: '#4F5D5B',
+    textMute: '#76827F',
+    accent: '#0D6463',
+    onAccent: '#FFFFFF',
+    gold: '#B4492B',
+    danger: '#B3261E',
+    dangerBg: '#F6D9D3',
+    warnBg: '#F6E7C4',
+    ornament: '#D4603F',
+  },
   // Zümrüt: derin zümrüt yeşili, sıcak beyaz yazı, nane yeşili ve altın vurgu
   zumrut: {
     id: 'zumrut',
@@ -140,7 +161,7 @@ export const THEMES: Record<ThemeId, Palette> = {
 };
 
 export const THEME_IDS = Object.keys(THEMES) as ThemeId[];
-export const DEFAULT_THEME: ThemeId = 'zumrut';
+export const DEFAULT_THEME: ThemeId = 'cini';
 
 export const ThemeContext = createContext<Palette>(THEMES[DEFAULT_THEME]);
 

@@ -2,7 +2,7 @@ import type { Locale } from './tr';
 
 export const de: Locale = {
   strings: {
-    'app.name': 'Islamisches Leben',
+    'app.name': 'Namaz Yolu',
     'common.retry': 'Erneut versuchen',
     'common.close': 'Schließen',
     'common.cancel': 'Abbrechen',
@@ -292,6 +292,7 @@ export const de: Locale = {
     'settings.theme': 'Design',
     'theme.zumrut': 'Smaragd',
     'theme.gece': 'Nacht',
+    'theme.cini': 'Fliese',
     'theme.iznik': 'Iznik',
     'theme.medine': 'Medina',
     'theme.kabe': 'Kaaba',
@@ -415,7 +416,7 @@ export const de: Locale = {
     'hatim.release': 'Freigeben',
     'hatim.openMushaf': 'Im Mushaf öffnen',
     'hatim.invite': 'Einladen',
-    'hatim.shareText': 'Mach mit bei der gemeinsamen Khatm „{title}“! Öffne in der App Islami Yasam Werkzeuge > Khatm > Mit Code beitreten und gib ein: {code}',
+    'hatim.shareText': 'Mach mit bei der gemeinsamen Khatm „{title}“! Öffne in der App Namaz Yolu Werkzeuge > Khatm > Mit Code beitreten und gib ein: {code}',
     'hatim.round': 'Runde {n}',
     'hatim.finished': 'Khatm abgeschlossen, möge Allah sie annehmen! Eine neue Runde hat begonnen.',
     'hatim.stats': '{done} gelesen · {taken} in Arbeit · {free} frei',

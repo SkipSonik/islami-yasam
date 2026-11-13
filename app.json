@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "İslami Yaşam",
+    "name": "Namaz Yolu",
     "slug": "islami-yasam",
     "version": "0.9.0",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#0E2C26",
+    "backgroundColor": "#0D6463",
     "ios": {
       "bundleIdentifier": "com.skipsonik.islamiyasam",
       "supportsTablet": true
@@ -16,7 +16,7 @@
       "package": "com.skipsonik.islamiyasam",
       "versionCode": 17,
       "adaptiveIcon": {
-        "backgroundColor": "#0E2C26",
+        "backgroundColor": "#F6EFE0",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
@@ -75,7 +75,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0E2C26",
+          "backgroundColor": "#0D6463",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 160
         }
