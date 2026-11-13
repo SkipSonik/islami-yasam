@@ -129,10 +129,15 @@ jobs:
           api-level: 34
           arch: x86_64
           target: google_apis
+          profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             adb install -r -g islami-yasam-*.apk
+            adb root || true; sleep 2
+            adb shell cmd alarm set-timezone Europe/Istanbul || adb shell service call alarm 3 s16 Europe/Istanbul || true
+            adb shell cmd locale set-app-locales com.skipsonik.islamiyasam --locales tr-TR || true
+            adb shell date
             adb logcat -c
             adb shell monkey -p com.skipsonik.islamiyasam -c android.intent.category.LAUNCHER 1
             sleep 30
@@ -143,7 +148,7 @@ jobs:
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://esma" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > esma.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://rehber" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > rehber.png || true
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://ayarlar" com.skipsonik.islamiyasam; sleep 6; adb exec-out screencap -p > ayarlar.png || true
-            for s in namaz-takip rozetler tesbihat dualar ramazan okuma-plani premium sehir tv; do adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://$s" com.skipsonik.islamiyasam > /dev/null; sleep 5; adb exec-out screencap -p > $s.png || true; done
+            for s in namaz-takip rozetler tesbihat dualar ramazan okuma-plani premium sehir tv vakitler gun kible kuran araclar; do adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://$s" com.skipsonik.islamiyasam > /dev/null; sleep 5; adb exec-out screencap -p > $s.png || true; done
             adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://mesajlar" com.skipsonik.islamiyasam; sleep 15; adb exec-out screencap -p > mesajlar.png || true
             adb shell settings put system accelerometer_rotation 0; adb shell settings put system user_rotation 1
             for s in "" kuran mushaf; do adb shell am start -W -a android.intent.action.VIEW -d "islamiyasam://$s" com.skipsonik.islamiyasam > /dev/null; sleep 8; adb exec-out screencap -p > yatay-$s.png || true; done
