@@ -19,7 +19,7 @@ import { METHOD_KEYS, methodForCountry, PRAYER_KEYS, type MethodKey } from '@/li
 
 const REMIND = [0, 5, 10, 15, 30, 45];
 
-const PRIVACY_URL = 'https://mix.gen.tr/islamiyasam/gizlilik.html';
+const PRIVACY_URL = 'https://namazyolu.com/gizlilik.html';
 const CONTACT = 'akingocler@gmail.com';
 
 export default function AyarlarScreen() {
