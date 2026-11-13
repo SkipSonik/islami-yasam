@@ -48,12 +48,6 @@ const WORSHIP: Item[] = [
     href: '/tesbihat',
   },
   {
-    icon: 'images-outline',
-    title: 'tools.mesajlar',
-    sub: 'tools.mesajlarSub',
-    href: '/mesajlar',
-  },
-  {
     icon: 'heart-outline',
     title: 'tools.dualar',
     sub: 'tools.dualarSub',

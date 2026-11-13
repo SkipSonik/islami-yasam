@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AyahShareCard, type AyahShareHandle } from '@/components/ayah-share';
 import { PrayerChecks } from '@/components/prayer-checks';
@@ -15,6 +15,7 @@ import { useAppState, useT } from '@/lib/app-state';
 import { startOfDay } from '@/lib/dates';
 import { formatHijri, toHijri } from '@/lib/hijri';
 import { fmtTime, getCurrentPrayer, getDayTimes, getNextPrayer, PRAYER_KEYS } from '@/lib/prayer';
+import { catName, loadMessages, suggestedCat, thumbUrl, type MsgList } from '@/lib/messages';
 import { getAyah, type Ayah } from '@/lib/quran';
 import { daysUntil, ramadanDays, upcomingReligiousDays, whenLabel } from '@/lib/religious-days';
 import { currentStreak, FARZ_TIME_KEY, trackerStore } from '@/lib/tracker';
@@ -145,31 +146,29 @@ export default function HomeScreen() {
 
             <DailyAyah date={now} />
 
+            <MessagesCard />
+
             <View style={st.quick}>
-              <QuickBtn
-                icon="ellipse-outline"
-                label={t('home.quickZikir')}
-                onPress={() => router.push('/zikirmatik')}
-              />
               <QuickBtn
                 icon="infinite-outline"
                 label={t('home.quickTesbihat')}
                 onPress={() => router.push('/tesbihat')}
               />
               <QuickBtn icon="book-outline" label={t('home.quickDua')} onPress={() => router.push('/dualar')} />
-            </View>
-            <View style={st.quick}>
               <QuickBtn
                 icon="reader-outline"
                 label={t('home.quickReading')}
                 onPress={() => router.push('/okuma-plani')}
               />
+            </View>
+            <View style={st.quick}>
               <QuickBtn icon="list-outline" label={t('home.quickKaza')} onPress={() => router.push('/kaza')} />
               <QuickBtn
                 icon="location-outline"
                 label={t('home.quickMosques')}
                 onPress={() => router.push('/camiler')}
               />
+              <QuickBtn icon="sparkles-outline" label={t('tools.esma')} onPress={() => router.push('/esma')} />
             </View>
           </>
         }
@@ -308,13 +307,62 @@ function DailyAyah({ date }: { date: Date }) {
   );
 }
 
+/** Resimli mesajlar: bugüne uygun kategoriden (Cuma, kandil, bayram…) önizleme ve tek dokunuşla geçiş */
+function MessagesCard() {
+  const C = useColors();
+  const st = useSt();
+  const t = useT();
+  const { settings, lang } = useAppState();
+  const [list, setList] = useState<MsgList | null>(null);
+  useEffect(() => {
+    let alive = true;
+    loadMessages()
+      .then((l) => alive && setList(l))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+  const today = useMemo(() => suggestedCat(new Date(), settings.hijriOffset), [settings.hijriOffset]);
+  const cat = list?.cats.find((c) => c.id === today);
+  const pool = list?.items.filter((i) => i.free) ?? [];
+  const shown = (today ? pool.filter((i) => i.cat === today) : []).concat(pool).slice(0, 3);
+  const unique = shown.filter((it, i) => shown.findIndex((x) => x.id === it.id) === i);
+
+  return (
+    <Pressable
+      onPress={() => router.push('/mesajlar')}
+      accessibilityRole="button"
+      style={({ pressed }) => [st.msgCard, pressed && { opacity: 0.85 }]}>
+      <View style={st.msgHead}>
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={st.msgTitle}>{t('msg.title')}</Text>
+          <Text style={st.msgSub} numberOfLines={1}>
+            {cat ? `${t('msg.today')}: ${catName(cat, lang)}` : t('tools.mesajlarSub')}
+          </Text>
+        </View>
+        <Ionicons name="chevron-forward" size={20} color={C.accent} />
+      </View>
+      {unique.length ? (
+        <View style={st.msgRow}>
+          {unique.map((it) => (
+            <Image key={it.id} source={{ uri: thumbUrl(it) }} style={st.msgThumb} resizeMode="cover" />
+          ))}
+        </View>
+      ) : null}
+    </Pressable>
+  );
+}
+
 function QuickBtn({ icon, label, onPress }: { icon: any; label: string; onPress: () => void }) {
   const C = useColors();
   const st = useSt();
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [st.quickBtn, pressed && { opacity: 0.7 }]}>
       <Ionicons name={icon} size={22} color={C.gold} />
-      <Text style={st.quickLabel}>{label}</Text>
+      <Text style={st.quickLabel} numberOfLines={2}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -484,5 +532,18 @@ const useSt = makeStyles((C) => ({
     alignItems: 'center',
     gap: 6,
   },
-  quickLabel: { color: C.accent, fontSize: 13, fontWeight: '700' },
+  quickLabel: { color: C.accent, fontSize: 13, fontWeight: '700', textAlign: 'center', paddingHorizontal: 4 },
+  msgCard: {
+    backgroundColor: C.card,
+    borderRadius: R.md,
+    padding: S.lg,
+    gap: S.md,
+    borderWidth: 1.5,
+    borderColor: C.ornament,
+  },
+  msgHead: { flexDirection: 'row', alignItems: 'center', gap: S.md },
+  msgTitle: { color: C.text, fontSize: 17, fontWeight: '800' },
+  msgSub: { color: C.gold, fontSize: 13, fontWeight: '600' },
+  msgRow: { flexDirection: 'row', gap: S.sm },
+  msgThumb: { flex: 1, aspectRatio: 3 / 4, borderRadius: R.sm, backgroundColor: C.cardSoft },
 }));
