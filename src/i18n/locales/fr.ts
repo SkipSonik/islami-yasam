@@ -36,6 +36,15 @@ export const fr: Locale = {
 
     'times.title': 'Horaires de prière',
     'times.sub': '{place} · {n} prochains jours',
+    'day.today': "Aujourd'hui",
+    'day.daylight': 'Jour {h} h {m} min',
+    'day.now': 'Prière en cours',
+    'day.left': 'encore {h} h {m} min',
+    'day.until': '{h} h {m} min avant {prayer}',
+    'day.night': "Jusqu'au Fajr du lendemain",
+    'day.prev': 'Jour précédent',
+    'day.next': 'Jour suivant',
+    'times.tapHint': 'Touchez un jour pour les détails',
     'times.date': 'Date',
     'times.note': 'Les horaires sont calculés pour votre position selon la méthode « {method} ». Ils peuvent différer de 1 à 2 minutes du calendrier officiel local. Vous pouvez changer de méthode dans les Réglages.',
 

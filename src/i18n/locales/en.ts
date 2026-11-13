@@ -36,6 +36,15 @@ export const en: Locale = {
 
     'times.title': 'Prayer Times',
     'times.sub': '{place} · Next {n} days',
+    'day.today': 'Today',
+    'day.daylight': 'Daylight {h} h {m} min',
+    'day.now': 'Current prayer time',
+    'day.left': '{h} h {m} min left',
+    'day.until': '{h} h {m} min until {prayer}',
+    'day.night': 'Until Fajr next day',
+    'day.prev': 'Previous day',
+    'day.next': 'Next day',
+    'times.tapHint': 'Tap a day for details',
     'times.date': 'Date',
     'times.note': 'Times are calculated for your location using the "{method}" method. They may differ from your local official calendar by 1–2 minutes. You can change the method in Settings.',
 

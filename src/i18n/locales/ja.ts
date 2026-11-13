@@ -36,6 +36,15 @@ export const ja: Locale = {
 
     'times.title': '礼拝時刻',
     'times.sub': '{place} · 今後{n}日間',
+    'day.today': '今日',
+    'day.daylight': '日中 {h}時間{m}分',
+    'day.now': '現在の礼拝時間',
+    'day.left': '残り{h}時間{m}分',
+    'day.until': '{prayer}まで{h}時間{m}分',
+    'day.night': '翌日のファジュルまで',
+    'day.prev': '前日',
+    'day.next': '翌日',
+    'times.tapHint': '日付をタップすると詳細が見られます',
     'times.date': '日付',
     'times.note': '礼拝時刻は現在地をもとに「{method}」方式で計算しています。地域の公式カレンダーと1〜2分ずれることがあります。方式は設定で変更できます。',
 

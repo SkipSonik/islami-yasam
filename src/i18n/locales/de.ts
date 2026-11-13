@@ -36,6 +36,15 @@ export const de: Locale = {
 
     'times.title': 'Gebetszeiten',
     'times.sub': '{place} · Nächste {n} Tage',
+    'day.today': 'Heute',
+    'day.daylight': 'Tageslicht {h} Std. {m} Min.',
+    'day.now': 'Aktuelle Gebetszeit',
+    'day.left': 'noch {h} Std. {m} Min.',
+    'day.until': '{h} Std. {m} Min. bis {prayer}',
+    'day.night': 'Bis Fadschr am nächsten Tag',
+    'day.prev': 'Vorheriger Tag',
+    'day.next': 'Nächster Tag',
+    'times.tapHint': 'Tippe auf einen Tag für Details',
     'times.date': 'Datum',
     'times.note': 'Die Zeiten werden für deinen Standort nach der Methode „{method}“ berechnet. Sie können um 1–2 Minuten vom offiziellen örtlichen Kalender abweichen. Die Methode kannst du in den Einstellungen ändern.',
 

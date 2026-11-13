@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { R, S, useColors, makeStyles } from '@/constants/theme';
@@ -47,6 +48,7 @@ export default function VakitlerScreen() {
         <View style={st.head}>
           <Text style={st.title}>{t('times.title')}</Text>
           <Text style={st.sub}>{t('times.sub', { place: place.name, n: DAYS })}</Text>
+          <Text style={st.hint}>{t('times.tapHint')}</Text>
         </View>
 
         <View style={[st.row, st.headerRow]}>
@@ -65,7 +67,15 @@ export default function VakitlerScreen() {
           renderItem={({ item, index }) => {
             const isToday = index === 0;
             return (
-              <View style={[st.row, isToday && st.todayRow, index % 2 === 1 && !isToday && st.altRow]}>
+              <Pressable
+                onPress={() => router.push(`/gun?t=${item.d.getTime()}`)}
+                accessibilityRole="button"
+                style={({ pressed }) => [
+                  st.row,
+                  isToday && st.todayRow,
+                  index % 2 === 1 && !isToday && st.altRow,
+                  pressed && { opacity: 0.6 },
+                ]}>
                 <View style={st.dateCol}>
                   <Text style={[st.date, isToday && st.todayText]}>
                     {formatDateShort(item.d, lang)} {weekdayShort(item.d, lang)}
@@ -79,7 +89,7 @@ export default function VakitlerScreen() {
                     {fmtTime(item.t[key])}
                   </Text>
                 ))}
-              </View>
+              </Pressable>
             );
           }}
           ListFooterComponent={<Text style={st.note}>{t('times.note', { method: t(`method.${calc.method}`) })}</Text>}
@@ -99,6 +109,7 @@ const useSt = makeStyles((C) => ({
   },
   title: { color: C.text, fontSize: 22, fontWeight: '700' },
   sub: { color: C.textDim, fontSize: 13 },
+  hint: { color: C.accent, fontSize: 12, fontWeight: '600' },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

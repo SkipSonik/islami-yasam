@@ -120,6 +120,7 @@ function Root() {
       <Stack.Screen name="okuma-plani" />
       <Stack.Screen name="mesajlar" />
       <Stack.Screen name="sehir" />
+      <Stack.Screen name="gun" />
       <Stack.Screen name="tv" />
     </Stack>
   );

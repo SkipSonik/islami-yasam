@@ -36,6 +36,15 @@ export const tr = {
 
     'times.title': 'Namaz Vakitleri',
     'times.sub': '{place} · Önümüzdeki {n} gün',
+    'day.today': 'Bugün',
+    'day.daylight': 'Gündüz {h} sa {m} dk',
+    'day.now': 'Şu anki vakit',
+    'day.left': '{h} sa {m} dk kaldı',
+    'day.until': '{prayer} vaktine {h} sa {m} dk',
+    'day.night': 'Ertesi gün imsaka kadar',
+    'day.prev': 'Önceki gün',
+    'day.next': 'Sonraki gün',
+    'times.tapHint': 'Ayrıntı için bir güne dokun',
     'times.date': 'Tarih',
     'times.note': 'Vakitler "{method}" yöntemiyle bulunduğun konuma göre hesaplanır. Resmî takvimle 1-2 dakikalık fark olabilir. Yöntemi Ayarlar\'dan değiştirebilirsin.',
 

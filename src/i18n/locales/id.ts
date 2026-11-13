@@ -36,6 +36,15 @@ export const id: Locale = {
 
     'times.title': 'Jadwal Salat',
     'times.sub': '{place} · {n} hari ke depan',
+    'day.today': 'Hari ini',
+    'day.daylight': 'Siang {h} j {m} mnt',
+    'day.now': 'Waktu salat saat ini',
+    'day.left': '{h} j {m} mnt lagi',
+    'day.until': '{h} j {m} mnt menuju {prayer}',
+    'day.night': 'Hingga Subuh esok hari',
+    'day.prev': 'Hari sebelumnya',
+    'day.next': 'Hari berikutnya',
+    'times.tapHint': 'Ketuk hari untuk melihat detail',
     'times.date': 'Tanggal',
     'times.note': 'Waktu salat dihitung untuk lokasi Anda dengan metode "{method}". Bisa berbeda 1–2 menit dari jadwal resmi setempat. Metode dapat diubah di Pengaturan.',
 
