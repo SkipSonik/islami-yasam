@@ -93,7 +93,7 @@ def render(spec, src_dir: Path, out_dir: Path, fonts: Path):
             shadow_text(bg, (W // 2, y), line, sub_f, body, blur=8, strength=sh)
             y += int(sub_f.size * 1.4)
 
-    shadow_text(bg, (W // 2, H - 52), 'İslami Yaşam', sign_f, (255, 255, 255, 230), anchor='ms', blur=6)
+    shadow_text(bg, (W // 2, H - 52), 'Namaz Yolu · namazyolu.com', sign_f, (255, 255, 255, 230), anchor='ms', blur=6)
 
     out = bg.convert('RGB')
     (out_dir / 'img').mkdir(parents=True, exist_ok=True)
