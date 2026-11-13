@@ -4,6 +4,13 @@ name: Android APK
 on:
   push:
     branches: [main]
+    # Site, mağaza metinleri ve sunucu dosyaları uygulamayı etkilemez; bunlarda derleme yapılmaz
+    paths-ignore:
+      - 'server/**'
+      - 'store/**'
+      - 'scripts/**'
+      - '.github/workflows/duman-al.yml'
+      - '.github/workflows/gorsel-indir.yml'
   workflow_dispatch:
 
 permissions:

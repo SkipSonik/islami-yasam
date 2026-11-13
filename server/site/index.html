@@ -57,7 +57,11 @@
   .ico{width:46px;height:46px;border-radius:10px;background:var(--clay);display:grid;place-items:center;transform:rotate(45deg)}
   .ico svg{transform:rotate(-45deg)}
   .alt{background:var(--deep)}
-  .shots{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+  .gallery{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 4px 18px;scrollbar-color:var(--teal) transparent}
+  .gallery figure{flex:0 0 220px;margin:0;scroll-snap-align:start}
+  .gallery img{width:100%;height:auto;aspect-ratio:540/1200;border-radius:24px;border:5px solid var(--teal);display:block;background:var(--card)}
+  .gallery figcaption{text-align:center;font-weight:600;color:var(--dim);margin-top:8px;font-size:14px}
+  .swipe{text-align:center;color:var(--clay2);font-weight:600;font-size:14px;margin:4px 0 0}
   .shots figure{margin:0;width:min(250px,100%)}
   .shots img{width:100%;border-radius:26px;border:6px solid var(--teal);display:block;aspect-ratio:390/844;background:var(--card)}
   .shots figcaption{text-align:center;font-weight:600;color:var(--dim);margin-top:8px;font-size:14px}
@@ -122,11 +126,23 @@
   <div class="wrap">
     <h2>Sade, okunaklı, çini esintili</h2>
     <p class="sub">Beş tema, büyük yazılar ve tablette iki sütunlu düzen. Ana ekran widget'ları ve Android TV için büyük vakit panosu.</p>
-    <div class="shots">
-      <figure><img src="img/ana.jpg" alt="Ana ekran" loading="lazy" width="390" height="844"><figcaption>Sıradaki vakte geri sayım</figcaption></figure>
-      <figure><img src="img/vakitler.jpg" alt="30 günlük namaz vakitleri" loading="lazy" width="390" height="844"><figcaption>30 günlük vakit listesi</figcaption></figure>
-      <figure><img src="img/araclar.jpg" alt="Araçlar menüsü" loading="lazy" width="390" height="844"><figcaption>Tüm araçlar tek yerde</figcaption></figure>
+    <div class="gallery" tabindex="0" aria-label="Uygulama ekran görüntüleri">
+      <figure><img src="img/ekran/acilis.jpg" alt="Sıradaki vakte geri sayım" loading="lazy" width="540" height="1200"><figcaption>Sıradaki vakte geri sayım</figcaption></figure>
+      <figure><img src="img/ekran/gun.jpg" alt="Günün vakitleri, güneş yayı" loading="lazy" width="540" height="1200"><figcaption>Günün vakitleri, güneş yayı</figcaption></figure>
+      <figure><img src="img/ekran/vakitler.jpg" alt="30 günlük vakit listesi" loading="lazy" width="540" height="1200"><figcaption>30 günlük vakit listesi</figcaption></figure>
+      <figure><img src="img/ekran/kuran.jpg" alt="Kur'an-ı Kerim ve sureler" loading="lazy" width="540" height="1200"><figcaption>Kur'an-ı Kerim ve sureler</figcaption></figure>
+      <figure><img src="img/ekran/kible.jpg" alt="Kıble pusulası" loading="lazy" width="540" height="1200"><figcaption>Kıble pusulası</figcaption></figure>
+      <figure><img src="img/ekran/mesajlar.jpg" alt="Resimli Cuma ve kandil mesajları" loading="lazy" width="540" height="1200"><figcaption>Resimli Cuma ve kandil mesajları</figcaption></figure>
+      <figure><img src="img/ekran/dualar.jpg" alt="Kaynaklı dualar" loading="lazy" width="540" height="1200"><figcaption>Kaynaklı dualar</figcaption></figure>
+      <figure><img src="img/ekran/rehber.jpg" alt="Resimli abdest ve namaz rehberi" loading="lazy" width="540" height="1200"><figcaption>Resimli abdest ve namaz rehberi</figcaption></figure>
+      <figure><img src="img/ekran/imsakiye.jpg" alt="Ramazan imsakiyesi" loading="lazy" width="540" height="1200"><figcaption>Ramazan imsakiyesi</figcaption></figure>
+      <figure><img src="img/ekran/dini-gunler.jpg" alt="Kandiller ve dini günler" loading="lazy" width="540" height="1200"><figcaption>Kandiller ve dini günler</figcaption></figure>
+      <figure><img src="img/ekran/hatim.jpg" alt="Hatim ve ortak hatim" loading="lazy" width="540" height="1200"><figcaption>Hatim ve ortak hatim</figcaption></figure>
+      <figure><img src="img/ekran/namaz-takip.jpg" alt="Namaz takibi" loading="lazy" width="540" height="1200"><figcaption>Namaz takibi</figcaption></figure>
+      <figure><img src="img/ekran/esma.jpg" alt="Esmaül Hüsna" loading="lazy" width="540" height="1200"><figcaption>Esmaül Hüsna</figcaption></figure>
+      <figure><img src="img/ekran/rozetler.jpg" alt="Rozetler" loading="lazy" width="540" height="1200"><figcaption>Rozetler</figcaption></figure>
     </div>
+    <p class="swipe">Kaydırarak tüm ekranlara göz at →</p>
   </div>
 </section>
 
