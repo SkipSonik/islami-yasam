@@ -1,5 +1,5 @@
 <?php
-// İslami Yaşam — Zekatmatik için güncel gram altın fiyatı.
+// Namaz Yolu — Zekatmatik için güncel gram altın fiyatı.
 // Ons altın (USD) ve döviz kurları ücretsiz servislerden alınır, 30 dakika önbelleklenir.
 //   GET altin.php?c=TRY  →  {"ok":true,"currency":"TRY","gram":4250.12,"updated":"..."}
 

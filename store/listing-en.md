@@ -1,13 +1,13 @@
 # Google Play store listing — English (en-US)
 
 ## App name (max 30)
-Islami Yasam: Prayer & Quran
+Namaz Yolu: Prayer Time, Qibla
 
 ## Short description (max 80)
 Prayer times & adhan, Quran, qibla, prayer tracker, khatm, Ramadan and duas
 
 ## Full description
-Islami Yasam brings everything you need for daily worship into one clean app: accurate prayer times, the Holy Quran, qibla, Ramadan tools and much more.
+Namaz Yolu brings everything you need for daily worship into one clean app: accurate prayer times, the Holy Quran, qibla, Ramadan tools and much more.
 
 🕌 PRAYER TIMES & ADHAN ALERTS
 • Precise prayer times for your location, calculated offline

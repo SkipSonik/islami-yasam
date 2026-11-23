@@ -1,13 +1,13 @@
 # Google Play mağaza metni — Türkçe (tr-TR, varsayılan)
 
 ## Uygulama adı (en fazla 30 karakter)
-İslami Yaşam: Ezan ve Kur'an
+Namaz Yolu: Ezan Vakti, Kıble
 
 ## Kısa açıklama (en fazla 80 karakter)
 Ezan vakti, Kur'an, kıble, namaz takibi, hatim, Ramazan imsakiyesi ve dualar
 
 ## Tam açıklama
-İslami Yaşam; namaz vakitlerinden Kur'an-ı Kerim'e, kıbleden Ramazan'a kadar günlük ibadetin için ihtiyacın olan her şeyi tek ve sade bir uygulamada toplar.
+Namaz Yolu; namaz vakitlerinden Kur'an-ı Kerim'e, kıbleden Ramazan'a kadar günlük ibadetin için ihtiyacın olan her şeyi tek ve sade bir uygulamada toplar.
 
 🕌 EZAN VAKİTLERİ VE BİLDİRİMLER
 • Bulunduğun yere göre dakikası dakikasına, internetsiz hesaplanan namaz vakitleri

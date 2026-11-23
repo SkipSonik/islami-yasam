@@ -1,4 +1,4 @@
-# İslami Yaşam
+# Namaz Yolu
 
 Namaz vakitleri, Kur'an-ı Kerim, kıble pusulası ve günlük ibadet araçları sunan Android uygulaması (Expo / React Native).
 

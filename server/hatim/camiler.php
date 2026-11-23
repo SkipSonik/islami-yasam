@@ -1,5 +1,5 @@
 <?php
-// İslami Yaşam — yakındaki camiler (OpenStreetMap / Overpass) için önbellekli ara sunucu.
+// Namaz Yolu — yakındaki camiler (OpenStreetMap / Overpass) için önbellekli ara sunucu.
 //
 // Ücretsiz Overpass sunucuları telefondan doğrudan sorulduğunda 20-60 sn sürebiliyor ya da
 // isteği reddedebiliyor. Bu dosya bölgeyi 0,1°'lik karelere (≈11 km) böler, her kareyi bir
