@@ -134,5 +134,324 @@
   "title": "Dualarınız Kabul Olsun",
   "sub": "Rabbim gönlünüzden geçen tüm hayırlı dilekleri nasip etsin.",
   "size": 92
+ },
+ {
+  "id": "cuma-05",
+  "src": "hf_20261122_164715_2db85394-08eb-42f5-a7f2-0f1e73fcb2a0.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Cumanız Kur'an'ın huzuruyla dolsun."
+ },
+ {
+  "id": "cuma-06",
+  "src": "hf_20261123_164723_dc3a0d4e-f09f-45d5-bdcc-6e9f7c684ef3.png",
+  "title": "Cumanız Mübarek Olsun",
+  "sub": "Gönlünüze sükûnet, evinize bereket yağsın."
+ },
+ {
+  "id": "cuma-07",
+  "src": "hf_20261123_164808_de934476-8247-417a-b819-3e796a570a03.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Rabbim bu mübarek günde dualarınızı kabul etsin."
+ },
+ {
+  "id": "cuma-08",
+  "src": "hf_20261123_164836_4fba92c7-8913-4ceb-a8b7-c80ecdc17843.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Huzurlu bir Cuma dileğiyle.",
+  "top": 70
+ },
+ {
+  "id": "cuma-09",
+  "src": "hf_20261123_164906_12c0713d-6b47-4174-927c-cb92eca90bad.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Secdelerinizin huzuru kalbinizden hiç eksilmesin."
+ },
+ {
+  "id": "cuma-10",
+  "src": "hf_20261123_165024_589e30bf-0529-4380-be7d-d755bf3f222b.png",
+  "title": "Cumanız Mübarek Olsun",
+  "sub": "Kalbinize nur, hanenize huzur dolsun."
+ },
+ {
+  "id": "cuma-11",
+  "src": "hf_20261123_165052_8eab82e5-e793-4068-8874-ed656cf78434.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Tesbihleriniz çoğalsın, dualarınız kabul olsun."
+ },
+ {
+  "id": "cuma-12",
+  "src": "hf_20261123_165121_0ed90c2f-08a1-4d1f-b4e1-b7cac951d040.png",
+  "title": "Cumanız Mübarek Olsun",
+  "sub": "Bu güzel günün bereketi üzerinize olsun."
+ },
+ {
+  "id": "cuma-13",
+  "src": "hf_20261123_165150_c0ce6307-d89f-4958-95ff-7574c32055db.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Allah'ın selamı, rahmeti ve bereketi sizinle olsun."
+ },
+ {
+  "id": "cuma-14",
+  "src": "hf_20261122_164909_47341fd6-b3dd-45b9-9142-e8705c41db8f.png",
+  "title": "Cumanız Mübarek Olsun",
+  "sub": "Çiçek gibi tazelenen bir gönül dileğiyle."
+ },
+ {
+  "id": "cuma-15",
+  "src": "hf_20261122_164847_2376d00d-3211-4df4-9ae3-71c7c307f84d.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Boğaz'ın sükûneti gibi dingin bir gün olsun."
+ },
+ {
+  "id": "cuma-16",
+  "src": "hf_20261122_170237_824f80c0-6320-4261-a030-33a62657ba12.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Secdeye varan gönüller huzura ersin."
+ },
+ {
+  "id": "cuma-17",
+  "src": "hf_20261123_170905_0b0e13fe-8198-4deb-80d1-5359d0bab8bc.png",
+  "title": "Cumanız Mübarek Olsun",
+  "sub": "Namaz, huzurun ve kabul olan duaların anahtarıdır."
+ },
+ {
+  "id": "kandil-05",
+  "src": "hf_20261122_164803_7470ddd9-cf3a-476a-b939-23a1eedcf93d.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Bu gecenin nuru gönlünüzü aydınlatsın.",
+  "size": 92
+ },
+ {
+  "id": "kandil-06",
+  "src": "hf_20261122_165004_8579ee63-a18b-4be6-a312-8aa97b3f0eee.png",
+  "title": "Hayırlı Kandiller",
+  "sub": "Dualarınız kabul, günahlarınız affolsun."
+ },
+ {
+  "id": "kandil-07",
+  "src": "hf_20261122_165017_ef8d0680-6cb2-4c13-b24d-2d03c4be1026.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Rabbim bu geceyi hayırlara vesile kılsın.",
+  "size": 92,
+  "top": 330
+ },
+ {
+  "id": "kandil-08",
+  "src": "hf_20261122_165018_e8d263e2-ab0a-405b-b464-7079f14e445e.png",
+  "title": "Hayırlı Kandiller",
+  "sub": "Işığı çoğalan gönüllerde buluşmak dileğiyle."
+ },
+ {
+  "id": "kandil-09",
+  "src": "hf_20261122_170214_4036450c-4dd4-40bc-9495-a1d92e1017cb.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Bu mübarek gecede tövbeleriniz kabul olsun.",
+  "size": 92,
+  "top": 330
+ },
+ {
+  "id": "kandil-10",
+  "src": "hf_20261122_170255_a4956189-f3c0-421c-9987-a16b7b8dffe9.png",
+  "title": "Hayırlı Kandiller",
+  "sub": "Gecenin bereketi hanenize dolsun."
+ },
+ {
+  "id": "kandil-11",
+  "src": "hf_20261123_165236_1267f7bb-ba45-41f4-a30c-552009515fed.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Minarelerde yanan ışık gönüllere huzur getirsin.",
+  "size": 92
+ },
+ {
+  "id": "kandil-12",
+  "src": "hf_20261123_165335_90f78d58-f5c4-428d-842a-edbdcc193dff.png",
+  "title": "Hayırlı Kandiller",
+  "sub": "Mumlar gibi çoğalan dualarla."
+ },
+ {
+  "id": "kandil-13",
+  "src": "hf_20261123_165518_eaa9834d-6686-443f-b0ae-c18befe6181b.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Kur'an'ın nuruyla aydınlanan bir gece dileğiyle.",
+  "size": 92
+ },
+ {
+  "id": "kandil-14",
+  "src": "hf_20261123_170743_af9e8354-53ff-4359-8134-37ac745d4ddc.png",
+  "title": "Hayırlı Kandiller",
+  "sub": "Ay ışığı kadar berrak, huzurlu bir gece olsun."
+ },
+ {
+  "id": "ramazan-05",
+  "src": "hf_20261122_165037_2a54a50c-680c-4208-841d-a03b37d91f0b.png",
+  "title": "Hayırlı İftarlar",
+  "sub": "Sofranız bereketli, duanız kabul olsun."
+ },
+ {
+  "id": "ramazan-06",
+  "src": "hf_20261122_170246_0733b7c1-3511-4fc0-9330-74030d107ceb.png",
+  "title": "Hayırlı Ramazanlar",
+  "sub": "Mahyalarla aydınlanan geceler hayırlı olsun."
+ },
+ {
+  "id": "ramazan-07",
+  "src": "hf_20261123_165403_60584f9d-106f-4dc8-86fd-efd75497734a.png",
+  "title": "Ramazanınız Mübarek Olsun",
+  "sub": "Rahmet, mağfiret ve bereket dolu bir ay dileriz.",
+  "size": 92
+ },
+ {
+  "id": "ramazan-08",
+  "src": "hf_20261123_165546_51a105f7-e889-4d9a-9f7b-34e7e574c793.png",
+  "title": "Hayırlı Ramazanlar",
+  "sub": "Orucunuz ve duanız kabul olsun.",
+  "size": 88
+ },
+ {
+  "id": "ramazan-09",
+  "src": "hf_20261123_165833_7c241407-f437-4221-ba95-b6bd83328c03.png",
+  "title": "Hayırlı İftarlar",
+  "sub": "Ezanla gönüllere huzur insin.",
+  "top": 60
+ },
+ {
+  "id": "ramazan-10",
+  "src": "hf_20261123_165901_563bb8cd-d66a-47f2-b27d-5d6d6fa9e50e.png",
+  "title": "Hayırlı İftarlar",
+  "sub": "İftar vaktinin bereketi sofranıza dolsun."
+ },
+ {
+  "id": "ramazan-11",
+  "src": "hf_20261123_165929_b456711d-64d1-462a-81e7-aab8272ca657.png",
+  "title": "Hayırlı İftarlar",
+  "sub": "Hurmayla açılan oruç, huzurla dolan gönüller."
+ },
+ {
+  "id": "ramazan-12",
+  "src": "hf_20261123_165959_8b3783aa-0150-4333-8bb6-1d24c2f67838.png",
+  "title": "Hayırlı Ramazanlar",
+  "sub": "Hilalle başlayan bu mübarek yolculuk hayırlı olsun."
+ },
+ {
+  "id": "ramazan-13",
+  "src": "hf_20261123_170112_22266ad6-5882-474c-bc06-9bce4882fb82.png",
+  "title": "Hayırlı İftarlar",
+  "sub": "Birlikte açılan sofralar bereketlensin."
+ },
+ {
+  "id": "ramazan-14",
+  "src": "hf_20261123_170141_031c86ee-6eda-4ec0-a876-f9b29396d6ed.png",
+  "title": "Ramazanınız Mübarek Olsun",
+  "sub": "Fenerler gibi aydınlık bir Ramazan dileğiyle.",
+  "size": 92
+ },
+ {
+  "id": "bayram-05",
+  "src": "hf_20261123_170322_e8c257ef-5d2d-4340-bbca-376d1ec6264c.png",
+  "title": "Bayramınız Mübarek Olsun",
+  "sub": "Sevinciniz bayram gibi çoğalsın.",
+  "size": 92
+ },
+ {
+  "id": "bayram-06",
+  "src": "hf_20261123_170418_6584b8b2-b52e-4ef1-b1e3-e9d640cabbbc.png",
+  "title": "Ramazan Bayramınız Mübarek Olsun",
+  "sub": "Tatlı sofralar, tatlı sohbetler dileğiyle.",
+  "size": 84
+ },
+ {
+  "id": "bayram-07",
+  "src": "hf_20261123_170659_bb4da21c-be94-410e-9570-5e4c7f0e62e5.png",
+  "title": "İyi Bayramlar",
+  "sub": "Barış ve huzur dolu bir bayram dileriz."
+ },
+ {
+  "id": "bayram-08",
+  "src": "hf_20261122_164625_fd662bda-6948-4439-bf9f-4231738f49f6.png",
+  "title": "Bayramınız Kutlu Olsun",
+  "sub": "Gönlünüz bayram sevinciyle dolsun.",
+  "top": 50
+ },
+ {
+  "id": "bayram-09",
+  "src": "hf_20261123_171038_e5192fd3-5268-4641-a1c6-135d0bcd8903.png",
+  "title": "Bayramınız Mübarek Olsun",
+  "sub": "Gül gibi taze bir bayram dileğiyle.",
+  "size": 92
+ },
+ {
+  "id": "ozel-05",
+  "src": "hf_20261123_164955_b76ff05a-5495-43f0-a3d3-77fbdbaa8468.png",
+  "title": "Hicri Yılbaşınız Mübarek Olsun",
+  "sub": "Yeni yıl barışa, huzura ve sağlığa vesile olsun.",
+  "size": 84
+ },
+ {
+  "id": "ozel-06",
+  "src": "hf_20261123_170812_8414448e-2aaf-484c-8568-ff82b63d75c2.png",
+  "title": "Üç Aylar Mübarek Olsun",
+  "sub": "Recep, Şaban ve Ramazan hayırlı olsun.",
+  "size": 72,
+  "top": 60
+ },
+ {
+  "id": "ozel-07",
+  "src": "hf_20261123_171012_fb4daef1-7072-47e4-8157-6f1704f7702f.png",
+  "title": "Dualarınız Kabul Olsun",
+  "sub": "Gönlünüzden geçen hayırlı dilekler gerçek olsun.",
+  "size": 92
+ },
+ {
+  "id": "cuma-18",
+  "src": "yeni8/hf_20261123_172652_d1700015-3e6d-4bfb-aec4-092035c2813e.png",
+  "title": "Hayırlı Cumalar",
+  "sub": "Güvercin kanadı kadar hafif, huzur dolu bir gün olsun."
+ },
+ {
+  "id": "cuma-19",
+  "src": "yeni8/hf_20261123_172744_2c8be3fd-ae55-4ebd-acf4-210f574eaf8d.png",
+  "title": "Cumanız Mübarek Olsun",
+  "sub": "Gül kokusu gibi huzurlu bir gün dileğiyle."
+ },
+ {
+  "id": "ozel-08",
+  "src": "yeni8/hf_20261123_172823_c96aa8c8-6d7b-42cc-a8e1-387d0b4b48f0.png",
+  "title": "Dualarınız Kabul Olsun",
+  "sub": "Hayırlı yollar dileğiyle.",
+  "size": 84,
+  "top": 40
+ },
+ {
+  "id": "kandil-15",
+  "src": "yeni8/hf_20261123_172902_88f279b8-bb8d-4002-863d-57c0cce910b5.png",
+  "title": "Hayırlı Kandiller",
+  "sub": "Kandil ışığı gönlünüze huzur getirsin."
+ },
+ {
+  "id": "ramazan-15",
+  "src": "yeni8/hf_20261123_172959_ffc09d41-4f8d-4ba8-9995-19a74c9d5e44.png",
+  "title": "Hayırlı Ramazanlar",
+  "sub": "Hilalin müjdesiyle gönlünüz huzur bulsun.",
+  "size": 92
+ },
+ {
+  "id": "kandil-16",
+  "src": "yeni8/hf_20261123_173038_a42eb507-f336-4fd0-be10-b0398b01e368.png",
+  "title": "Kandiliniz Mübarek Olsun",
+  "sub": "Gönlünüzdeki ışık hiç sönmesin.",
+  "size": 92
+ },
+ {
+  "id": "ramazan-16",
+  "src": "yeni8/hf_20261123_173119_1330d026-64f0-4f8c-86e7-5fcc8bbcd386.png",
+  "title": "Hayırlı İftarlar",
+  "sub": "Bereketle açılan sofralar çoğalsın."
+ },
+ {
+  "id": "ramazan-17",
+  "src": "yeni8/hf_20261123_173156_45f2dabe-0d50-4e3a-a3f7-5390c24c45fd.png",
+  "title": "Hayırlı Ramazanlar",
+  "sub": "Işıl ışıl bir Ramazan dileğiyle.",
+  "size": 92
  }
 ]
