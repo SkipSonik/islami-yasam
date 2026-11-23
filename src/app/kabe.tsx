@@ -13,7 +13,7 @@ const STREAMS = {
 } as const;
 type Key = keyof typeof STREAMS;
 
-const ORIGIN = 'https://mix.gen.tr';
+const ORIGIN = 'https://namazyolu.com';
 
 /** Kanalın o anki canlı yayınının video kimliğini bulur. */
 async function liveVideoId(channel: string): Promise<string | null> {

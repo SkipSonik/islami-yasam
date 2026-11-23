@@ -24,7 +24,7 @@ function getJson(string $url): ?array
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 15,
-        CURLOPT_USERAGENT => 'IslamiYasam/1.0 (+https://mix.gen.tr)',
+        CURLOPT_USERAGENT => 'NamazYolu/1.0 (+https://namazyolu.com)',
     ]);
     $body = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);

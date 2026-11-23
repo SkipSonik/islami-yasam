@@ -12,7 +12,7 @@ import { createStore } from '@/lib/store';
 
 export const MESSAGES_BASE =
   (Constants.expoConfig?.extra as { messagesBase?: string } | undefined)?.messagesBase ??
-  'https://mix.gen.tr/islamiyasam/mesajlar/';
+  'https://namazyolu.com/mesajlar/';
 
 export type MsgCat = {
   id: string;

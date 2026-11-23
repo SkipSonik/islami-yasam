@@ -14,12 +14,12 @@ const SERVERS = [
   'https://overpass.kumi.systems/api/interpreter',
 ];
 const TIMEOUT_MS = 60000;
-const UA = 'IslamiYasam/1.0 (+https://mix.gen.tr)';
+const UA = 'NamazYolu/1.0 (+https://namazyolu.com)';
 
 // Kendi ara sunucumuz: bölgeleri veritabanında önbelleğe alır, tekrar eden aramalar anında döner.
 const PROXY: string = (
   (Constants.expoConfig?.extra as { hatimApi?: string } | undefined)?.hatimApi ??
-  'https://mix.gen.tr/islamiyasam/hatim/api.php'
+  'https://namazyolu.com/sunucu/api.php'
 ).replace(/api\.php$/, 'camiler.php');
 
 export type Mosque = {
