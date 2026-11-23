@@ -1,6 +1,6 @@
 {
- "v": 1,
- "updated": "2026-11-07",
+ "v": 2,
+ "updated": "2026-11-23",
  "cats": [
   {
    "id": "cuma",
@@ -95,6 +95,81 @@
    "free": false
   },
   {
+   "id": "cuma-05",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-06",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-07",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-08",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-09",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-10",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-11",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-12",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-13",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-14",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-15",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-16",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-17",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-18",
+   "cat": "cuma",
+   "free": false
+  },
+  {
+   "id": "cuma-19",
+   "cat": "cuma",
+   "free": false
+  },
+  {
    "id": "kandil-01",
    "cat": "kandil",
    "free": true
@@ -111,6 +186,66 @@
   },
   {
    "id": "kandil-04",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-05",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-06",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-07",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-08",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-09",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-10",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-11",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-12",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-13",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-14",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-15",
+   "cat": "kandil",
+   "free": false
+  },
+  {
+   "id": "kandil-16",
    "cat": "kandil",
    "free": false
   },
@@ -135,6 +270,71 @@
    "free": false
   },
   {
+   "id": "ramazan-05",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-06",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-07",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-08",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-09",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-10",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-11",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-12",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-13",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-14",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-15",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-16",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
+   "id": "ramazan-17",
+   "cat": "ramazan",
+   "free": false
+  },
+  {
    "id": "bayram-01",
    "cat": "bayram",
    "free": true
@@ -155,6 +355,31 @@
    "free": false
   },
   {
+   "id": "bayram-05",
+   "cat": "bayram",
+   "free": false
+  },
+  {
+   "id": "bayram-06",
+   "cat": "bayram",
+   "free": false
+  },
+  {
+   "id": "bayram-07",
+   "cat": "bayram",
+   "free": false
+  },
+  {
+   "id": "bayram-08",
+   "cat": "bayram",
+   "free": false
+  },
+  {
+   "id": "bayram-09",
+   "cat": "bayram",
+   "free": false
+  },
+  {
    "id": "ozel-01",
    "cat": "ozel",
    "free": true
@@ -171,6 +396,26 @@
   },
   {
    "id": "ozel-04",
+   "cat": "ozel",
+   "free": false
+  },
+  {
+   "id": "ozel-05",
+   "cat": "ozel",
+   "free": false
+  },
+  {
+   "id": "ozel-06",
+   "cat": "ozel",
+   "free": false
+  },
+  {
+   "id": "ozel-07",
+   "cat": "ozel",
+   "free": false
+  },
+  {
+   "id": "ozel-08",
    "cat": "ozel",
    "free": false
   }

@@ -14,7 +14,7 @@ const NISAB_GOLD_GR = 80.18;
 const KEY = 'zekatmatik-v1';
 const GOLD_API = (
   (Constants.expoConfig?.extra as { hatimApi?: string } | undefined)?.hatimApi ??
-  'https://mix.gen.tr/islamiyasam/hatim/api.php'
+  'https://namazyolu.com/sunucu/api.php'
 ).replace(/api\.php$/, 'altin.php');
 
 type Field = 'goldPrice' | 'cash' | 'foreign' | 'goldGr' | 'silver' | 'stocks' | 'trade' | 'receivable' | 'debts';

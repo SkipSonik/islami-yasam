@@ -1,5 +1,5 @@
 <?php
-// İslami Yaşam — ortak hatim (Kur'an kardeşliği) API'si.
+// Namaz Yolu — ortak hatim (Kur'an kardeşliği) API'si.
 // Tek dosya, PHP 7.4+ ve MySQL/MariaDB. Tablolar ilk istekte kendiliğinden kurulur.
 //
 // Uç noktalar (JSON):

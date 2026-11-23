@@ -1,5 +1,5 @@
 <?php
-// İslami Yaşam — yakındaki camiler (OpenStreetMap / Overpass) için önbellekli ara sunucu.
+// Namaz Yolu — yakındaki camiler (OpenStreetMap / Overpass) için önbellekli ara sunucu.
 //
 // Ücretsiz Overpass sunucuları telefondan doğrudan sorulduğunda 20-60 sn sürebiliyor ya da
 // isteği reddedebiliyor. Bu dosya bölgeyi 0,1°'lik karelere (≈11 km) böler, her kareyi bir
@@ -74,7 +74,7 @@ function fetchBox(float $s, float $w, float $n, float $e): ?array
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => 100,
             CURLOPT_CONNECTTIMEOUT => 10,
-            CURLOPT_USERAGENT => 'IslamiYasam/1.0 (+https://mix.gen.tr; mosque finder)',
+            CURLOPT_USERAGENT => 'NamazYolu/1.0 (+https://namazyolu.com; mosque finder)',
             CURLOPT_HTTPHEADER => ['Accept: application/json'],
         ]);
         $body = curl_exec($ch);

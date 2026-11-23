@@ -50,8 +50,8 @@ async function shot(name, route, { lang = 'tr', theme = 'zumrut', before, wait =
       return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ code: 200, data: [{ text: s.data[0].ayahs[i].text, numberInSurah: i + 1 }, { text: s.data[1].ayahs[i].text, numberInSurah: i + 1 }] }) });
     }
     if (u.includes('cdn.islamic.network')) return r.fulfill({ status: 200, contentType: 'audio/mpeg', body: silent });
-    if (u.startsWith('https://mix.gen.tr/islamiyasam/hatim/api.php')) {
-      const local = u.replace('https://mix.gen.tr/islamiyasam/hatim/api.php', 'http://127.0.0.1:8099/api.php');
+    if (u.startsWith('https://namazyolu.com/sunucu/api.php')) {
+      const local = u.replace('https://namazyolu.com/sunucu/api.php', 'http://127.0.0.1:8099/api.php');
       const resp = await fetch(local, { method: r.request().method(), body: r.request().postData() ?? undefined });
       return r.fulfill({ status: resp.status, contentType: 'application/json', body: await resp.text() });
     }

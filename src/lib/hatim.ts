@@ -39,7 +39,7 @@ export class HatimError extends Error {
 
 const API: string =
   (Constants.expoConfig?.extra as { hatimApi?: string } | undefined)?.hatimApi ??
-  'https://mix.gen.tr/islamiyasam/hatim/api.php';
+  'https://namazyolu.com/sunucu/api.php';
 
 let deviceCache: string | null = null;
 

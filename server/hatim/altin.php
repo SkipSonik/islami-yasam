@@ -1,5 +1,5 @@
 <?php
-// İslami Yaşam — Zekatmatik için güncel gram altın fiyatı.
+// Namaz Yolu — Zekatmatik için güncel gram altın fiyatı.
 // Ons altın (USD) ve döviz kurları ücretsiz servislerden alınır, 30 dakika önbelleklenir.
 //   GET altin.php?c=TRY  →  {"ok":true,"currency":"TRY","gram":4250.12,"updated":"..."}
 
@@ -24,7 +24,7 @@ function getJson(string $url): ?array
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_TIMEOUT => 15,
-        CURLOPT_USERAGENT => 'IslamiYasam/1.0 (+https://mix.gen.tr)',
+        CURLOPT_USERAGENT => 'NamazYolu/1.0 (+https://namazyolu.com)',
     ]);
     $body = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);

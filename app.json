@@ -144,8 +144,8 @@
       "reactCompiler": true
     },
     "extra": {
-      "hatimApi": "https://mix.gen.tr/islamiyasam/hatim/api.php",
-      "messagesBase": "https://mix.gen.tr/islamiyasam/mesajlar/"
+      "hatimApi": "https://namazyolu.com/sunucu/api.php",
+      "messagesBase": "https://namazyolu.com/mesajlar/"
     }
   }
 }
