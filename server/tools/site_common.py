@@ -6,7 +6,7 @@ DOMAIN = "https://namazyolu.com"
 PLAY = "https://play.google.com/store/apps/details?id=com.skipsonik.islamiyasam"
 MAIL = "akingocler@gmail.com"
 # Veri sorumlusu adı: kullanıcıdan alınınca burası güncellenir.
-CONTROLLER = "[AD SOYAD]"
+CONTROLLER = "Akın GÖÇLER"
 UPDATED = {"tr": "25 Kasım 2026", "en": "25 November 2026"}
 
 CSS = r"""
