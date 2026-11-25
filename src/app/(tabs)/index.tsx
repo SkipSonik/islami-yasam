@@ -9,6 +9,7 @@ import { ReliabilityBanner } from '@/components/reliability-card';
 import { Card, Screen, SectionTitle, Split } from '@/components/ui';
 import { R, S, useColors, makeStyles } from '@/constants/theme';
 import { ayahForDate } from '@/data/daily-ayahs';
+import { dayContent, refreshRamazanContent, remoteStore, rg } from '@/data/ramazan-gun';
 import { surahName } from '@/data/surahs';
 import { formatDateLong, type StringKey } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
@@ -177,22 +178,29 @@ export default function HomeScreen() {
   );
 }
 
-/** Ramazan'da iftar/sahur sayacı, Ramazan'a 30 gün kala geri sayım */
+/** Ramazan'a 7 gün kala geri sayım, Ramazan'da iftar/sahur sayacı; bayramın ilk günü akşamına kadar */
 function RamadanBanner({ now }: { now: Date }) {
   const C = useColors();
   const st = useSt();
   const t = useT();
-  const { settings, calc } = useAppState();
+  const { settings, calc, lang } = useAppState();
   const { place, hijriOffset } = settings;
+  const remote = remoteStore.useValue().data;
+  useEffect(() => {
+    refreshRamazanContent();
+  }, []);
   const dayMs = startOfDay(now).getTime();
-  const inRamadan = toHijri(now, hijriOffset).month === 9;
+  const hij = toHijri(now, hijriOffset);
+  const inRamadan = hij.month === 9;
+  const bayram1 = hij.month === 10 && hij.day === 1;
   const days = useMemo(() => ramadanDays(new Date(dayMs), hijriOffset), [dayMs, hijriOffset]);
   const times = useMemo(
     () => getDayTimes(place.lat, place.lng, new Date(dayMs), calc),
     [place.lat, place.lng, dayMs, calc],
   );
   const startsIn = daysUntil(days[0], now);
-  if (!inRamadan && (startsIn > 30 || startsIn < 0)) return null;
+  // Ramazan'dan 7 gün önce belirir, Ramazan boyunca kalır, bayramın ilk günü kalkar (hicri ay 10 başlayınca).
+  if (!inRamadan && !bayram1 && (startsIn > 7 || startsIn < 0)) return null;
 
   let text: string;
   if (inRamadan) {
@@ -202,16 +210,28 @@ function RamadanBanner({ now }: { now: Date }) {
       const label = target === times.aksam ? t('ims.toIftar') : t('ims.toSahur');
       text = `${label}: ${pad(Math.floor(ms / 3600000))}:${pad(Math.floor((ms % 3600000) / 60000))}:${pad(Math.floor((ms % 60000) / 1000))}`;
     } else text = t('ramazan.iftarDone');
-  } else text = t('ramazan.countdown', { n: startsIn });
+  } else if (bayram1) text = rg(lang, 'bayram');
+  else text = t('ramazan.countdown', { n: startsIn });
+  const dayNo = inRamadan ? days.findIndex((d) => d.getTime() === dayMs) + 1 : 0;
+  const menu = dayNo > 0 ? dayContent(dayNo, lang, remote).menu : '';
 
   return (
     <Pressable
-      onPress={() => router.push('/ramazan')}
+      onPress={() =>
+        dayNo > 0 ? router.push({ pathname: '/ramazan-gun', params: { i: String(dayNo) } }) : router.push('/ramazan')
+      }
       style={({ pressed }) => [st.ramadan, pressed && { opacity: 0.85 }]}>
       <Ionicons name="moon" size={22} color={C.gold} />
       <View style={{ flex: 1 }}>
-        <Text style={st.ramadanTitle}>{t('ramazan.title')}</Text>
+        <Text style={st.ramadanTitle}>
+          {dayNo > 0 ? rg(lang, 'title', { n: dayNo }) : t('ramazan.title')}
+        </Text>
         <Text style={st.ramadanText}>{text}</Text>
+        {menu ? (
+          <Text style={st.ramadanText} numberOfLines={1}>
+            {rg(lang, 'card')}: {menu.split(' · ').slice(1, 3).join(' · ')}
+          </Text>
+        ) : null}
       </View>
       <Ionicons name="chevron-forward" size={18} color={C.textMute} />
     </Pressable>

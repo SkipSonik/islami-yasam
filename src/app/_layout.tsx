@@ -105,6 +105,7 @@ function Root() {
       <Stack.Screen name="mushaf" />
       <Stack.Screen name="dini-gunler" />
       <Stack.Screen name="imsakiye" />
+      <Stack.Screen name="ramazan-gun" />
       <Stack.Screen name="esma" />
       <Stack.Screen name="zekat" />
       <Stack.Screen name="hatim" />

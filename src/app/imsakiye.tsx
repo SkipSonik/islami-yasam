@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Card, Screen } from '@/components/ui';
 import { R, S, useColors, makeStyles } from '@/constants/theme';
@@ -82,7 +83,16 @@ export default function ImsakiyeScreen() {
             const isToday = i === todayIdx;
             const past = r.date.getTime() < dayKey;
             return (
-              <View key={i} style={[st.tr, i % 2 === 1 && st.alt, isToday && st.today, past && { opacity: 0.45 }]}>
+              <Pressable
+                key={i}
+                onPress={() => router.push({ pathname: '/ramazan-gun', params: { i: String(i + 1) } })}
+                style={({ pressed }) => [
+                  st.tr,
+                  i % 2 === 1 && st.alt,
+                  isToday && st.today,
+                  past && { opacity: 0.45 },
+                  pressed && { opacity: 0.7 },
+                ]}>
                 <Text style={[st.cell, st.cDay, st.num]}>{i + 1}</Text>
                 <Text style={[st.cell, st.cDate]} numberOfLines={1}>
                   {formatDateShort(r.date, lang)} {weekdayShort(r.date, lang)}
@@ -92,13 +102,14 @@ export default function ImsakiyeScreen() {
                     {fmtTime(r.times[k])}
                   </Text>
                 ))}
-              </View>
+              </Pressable>
             );
           })}
         </View>
       </ScrollView>
 
       <Text style={st.note}>{t('ims.note')}</Text>
+      <Text style={st.note}>{lang === 'tr' ? 'Bir güne dokunarak gün sayfasını açabilirsin.' : 'Tap a day to open its day page.'}</Text>
     </Screen>
   );
 }

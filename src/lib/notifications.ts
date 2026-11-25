@@ -9,8 +9,10 @@ import { t } from '@/i18n';
 import { getDayTimes, PRAYER_KEYS, type CalcConfig, type PrayerKey } from './prayer';
 import { channelFor, soundDef, SOUNDS, type SoundId } from './sounds';
 import { HADISLER } from '@/data/hadisler';
-import { currentLang } from '@/i18n';
+import { rg } from '@/data/ramazan-gun';
+import { currentLang, formatDateLong } from '@/i18n';
 import { toHijri } from '@/lib/hijri';
+import { ramadanDays } from '@/lib/religious-days';
 import { dailyPages, readingStore } from '@/lib/reading';
 import { dayKey } from '@/lib/tracker';
 
@@ -137,6 +139,9 @@ async function rescheduleNow(
 
   const now = Date.now();
   let count = 0;
+  // Ramazan'ın (içinde bulunulan ya da sıradaki) ilk günü: "bir hafta kaldı" ve "ilk gün" bildirimleri için
+  const ramadanStart = ramadanDays(new Date(), hijriOffset)[0];
+  const lang = currentLang();
   for (let i = 0; i < DAYS_AHEAD; i++) {
     const d = new Date();
     d.setDate(d.getDate() + i);
@@ -182,6 +187,37 @@ async function rescheduleNow(
       const iftar = times.aksam.getTime();
       if (iftar > now) {
         await schedule(`iftar-${dk}`, iftar, t('notif.iftarTitle'), t('notif.iftarBody'), delivery, s.sound);
+        count++;
+      }
+    }
+
+    // Ramazan'a bir hafta kala ve Ramazan'ın ilk günü, sabah 09:00
+    if (x.ramazan && ramadanStart) {
+      const dMs = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+      const sY = ramadanStart.getFullYear();
+      const sM = ramadanStart.getMonth();
+      const sD = ramadanStart.getDate();
+      const sMs = new Date(sY, sM, sD).getTime();
+      const weekMs = new Date(sY, sM, sD - 7).getTime();
+      const at = atHour(d, 9);
+      if (at > now && dMs === weekMs) {
+        await schedule(
+          `ramazan-hafta-${dk}`,
+          at,
+          rg(lang, 'notifWeekTitle'),
+          rg(lang, 'notifWeekBody', { date: formatDateLong(ramadanStart, lang) }),
+          'bestEffort',
+        );
+        count++;
+      }
+      if (at > now && dMs === sMs) {
+        await schedule(
+          `ramazan-ilk-${dk}`,
+          at,
+          rg(lang, 'notifFirstTitle'),
+          rg(lang, 'notifFirstBody'),
+          'bestEffort',
+        );
         count++;
       }
     }

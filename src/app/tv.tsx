@@ -1,17 +1,19 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useKeepAwake } from 'expo-keep-awake';
 import { router } from 'expo-router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Text, useWindowDimensions, View } from 'react-native';
 
 import { FocusPressable } from '@/components/focus-pressable';
 import { R, THEME_IDS, makeStyles, useColors } from '@/constants/theme';
 import { HADISLER } from '@/data/hadisler';
+import { dayContent, refreshRamazanContent, remoteStore, rg } from '@/data/ramazan-gun';
 import { formatDateLong } from '@/i18n';
 import { useAppState, useT } from '@/lib/app-state';
 import { startOfDay } from '@/lib/dates';
-import { formatHijri } from '@/lib/hijri';
+import { formatHijri, toHijri } from '@/lib/hijri';
 import { fmtTime, getCurrentPrayer, getDayTimes, getNextPrayer, PRAYER_KEYS } from '@/lib/prayer';
+import { daysUntil, ramadanDays } from '@/lib/religious-days';
 import { useNow } from '@/lib/use-now';
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -88,6 +90,8 @@ export default function TvScreen() {
         })}
       </View>
 
+      <TvRamadanStrip k={k} now={now} />
+
       <View style={[st.bottom, { gap: 20 * k }]}>
         <View style={{ flex: 1, gap: 4 * k }}>
           <Text style={[st.hadisLabel, { fontSize: 18 * k }]}>{t('tv.hadith')}</Text>
@@ -102,6 +106,63 @@ export default function TvScreen() {
           <TvBtn k={k} icon="grid-outline" label={t('tv.allFeatures')} onPress={() => router.push('/(tabs)')} />
         </View>
       </View>
+    </View>
+  );
+}
+
+/** Ramazan'a 7 gün kala, Ramazan boyunca ve bayramın ilk günü: iftar geri sayımı ve gün sayfası düğmesi */
+function TvRamadanStrip({ k, now }: { k: number; now: Date }) {
+  const st = useSt();
+  const { settings, lang, calc } = useAppState();
+  const { place, hijriOffset } = settings;
+  const remote = remoteStore.useValue().data;
+  useEffect(() => {
+    refreshRamazanContent();
+  }, []);
+  const dayMs = startOfDay(now).getTime();
+  const hij = toHijri(now, hijriOffset);
+  const inRamadan = hij.month === 9;
+  const bayram1 = hij.month === 10 && hij.day === 1;
+  const days = useMemo(() => ramadanDays(new Date(dayMs), hijriOffset), [dayMs, hijriOffset]);
+  const times = useMemo(
+    () => getDayTimes(place.lat, place.lng, new Date(dayMs), calc),
+    [place.lat, place.lng, dayMs, calc],
+  );
+  const startsIn = daysUntil(days[0], now);
+  if (!inRamadan && !bayram1 && (startsIn > 7 || startsIn < 0)) return null;
+
+  const dayNo = inRamadan ? days.findIndex((d) => d.getTime() === dayMs) + 1 : 0;
+  let label = '';
+  let value = '';
+  if (inRamadan) {
+    const target = now < times.imsak ? times.imsak : now < times.aksam ? times.aksam : null;
+    if (target) {
+      const ms = Math.max(0, target.getTime() - now.getTime());
+      label = target === times.aksam ? rg(lang, 'iftar') : rg(lang, 'sahur');
+      value = `${pad(Math.floor(ms / 3600000))}:${pad(Math.floor((ms % 3600000) / 60000))}:${pad(Math.floor((ms % 60000) / 1000))}`;
+    } else label = rg(lang, 'done');
+  } else if (bayram1) label = rg(lang, 'bayram');
+  else label = `${startsIn} ${lang === 'tr' ? 'gün kaldı' : 'days to go'}`;
+  const menu = dayNo > 0 ? dayContent(dayNo, lang, remote).menu : '';
+
+  return (
+    <View style={[st.strip, { padding: 16 * k, borderRadius: R.lg * k, gap: 20 * k }]}>
+      <Text style={[st.stripTitle, { fontSize: 30 * k }]}>
+        {dayNo > 0 ? rg(lang, 'title', { n: dayNo }) : 'Ramazan'}
+      </Text>
+      <Text style={[st.stripLabel, { fontSize: 24 * k }]}>{label}</Text>
+      {value ? <Text style={[st.stripValue, { fontSize: 44 * k }]}>{value}</Text> : null}
+      <Text style={[st.stripMenu, { fontSize: 22 * k }]} numberOfLines={1}>
+        {menu ? `${rg(lang, 'card')}: ${menu.split(' · ').slice(1, 3).join(' · ')}` : ''}
+      </Text>
+      <FocusPressable
+        onPress={() =>
+          dayNo > 0 ? router.push({ pathname: '/ramazan-gun', params: { i: String(dayNo) } }) : router.push('/ramazan')
+        }
+        style={[st.btn, { paddingHorizontal: 22 * k, paddingVertical: 12 * k, borderRadius: R.md * k }]}
+        focusStyle={st.btnFocus}>
+        <Text style={[st.btnText, { fontSize: 22 * k }]}>{rg(lang, 'tvStrip')}</Text>
+      </FocusPressable>
     </View>
   );
 }
@@ -141,6 +202,17 @@ function TvBtn({
 }
 
 const useSt = makeStyles((C) => ({
+  strip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: C.cardActive,
+    borderWidth: 2,
+    borderColor: C.gold,
+  },
+  stripTitle: { color: C.text, fontWeight: '800' },
+  stripLabel: { color: C.textDim },
+  stripValue: { color: C.gold, fontWeight: '800', fontVariant: ['tabular-nums'] },
+  stripMenu: { color: C.text, flex: 1 },
   root: { flex: 1, backgroundColor: C.bg, justifyContent: 'space-between' },
   top: { flexDirection: 'row', alignItems: 'center', gap: 24 },
   clock: {
