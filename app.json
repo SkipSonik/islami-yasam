@@ -2,7 +2,7 @@
   "expo": {
     "name": "Namaz Yolu",
     "slug": "islami-yasam",
-    "version": "0.9.0",
+    "version": "0.9.1",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "islamiyasam",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.skipsonik.islamiyasam",
-      "versionCode": 17,
+      "versionCode": 18,
       "adaptiveIcon": {
         "backgroundColor": "#F6EFE0",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

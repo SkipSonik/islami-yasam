@@ -7,6 +7,7 @@ import { useEffect, useMemo, type ReactNode } from 'react';
 import { Pressable, ScrollView, Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { UpdateGate } from '@/components/update-gate';
 import { THEMES, ThemeContext, useColors } from '@/constants/theme';
 import { t } from '@/i18n';
 import { AppStateProvider, useAppState } from '@/lib/app-state';
@@ -135,6 +136,7 @@ export default function RootLayout() {
           <PremiumProvider>
             <QuranPlayerProvider>
               <AdsBootstrap />
+              <UpdateGate />
               <Root />
             </QuranPlayerProvider>
           </PremiumProvider>

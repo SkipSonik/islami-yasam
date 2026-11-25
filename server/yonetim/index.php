@@ -116,6 +116,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $menu = []; for ($i = 1; $i <= 30; $i++) $menu[] = trim((string)($_POST['menu'][$i] ?? ''));
             $soz = array_values(array_filter(array_map('trim', explode("\n", (string)$_POST['soz']))));
             write_json(ICERIK_DIR . 'ramazan.json', ['v' => 1, 'updated' => date('Y-m-d'), 'menus' => $menu, 'sozler' => $soz]); flash('Ramazan içeriği kaydedildi.');
+        } elseif ($do === 'surum_save') {
+            $ok = fn($v) => preg_match('/^\d+(\.\d+){1,3}$/', $v) ? $v : '';
+            $min = $ok(trim((string)$_POST['min'])); $latest = $ok(trim((string)$_POST['latest']));
+            if (($_POST['min'] ?? '') !== '' && !$min) throw new Exception('En düşük sürüm 0.9.1 gibi yazılmalı.');
+            if (($_POST['latest'] ?? '') !== '' && !$latest) throw new Exception('Güncel sürüm 0.9.1 gibi yazılmalı.');
+            write_json(ICERIK_DIR . 'surum.json', ['min' => $min, 'latest' => $latest, 'messageTr' => trim((string)$_POST['mtr']), 'messageEn' => trim((string)$_POST['men'])]);
+            flash('Sürüm ayarı kaydedildi. Uygulamalar günde bir kez kontrol eder.');
         } elseif ($do === 'duyuru_save') {
             $d = [];
             foreach (($_POST['d_title'] ?? []) as $i => $t) {
@@ -131,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ---- Sayfa ----
 $msg = read_json(MSG_DIR . 'liste.json', ['cats' => [], 'items' => []]);
 $fl = $_SESSION['flash'] ?? null; unset($_SESSION['flash']);
-$tabs = ['ozet' => 'Özet', 'mesaj' => 'Resimli mesajlar', 'hatim' => 'Ortak hatim', 'ramazan' => 'Ramazan içeriği', 'duyuru' => 'Duyurular'];
+$tabs = ['ozet' => 'Özet', 'mesaj' => 'Resimli mesajlar', 'hatim' => 'Ortak hatim', 'ramazan' => 'Ramazan içeriği', 'duyuru' => 'Duyurular', 'surum' => 'Sürüm'];
 function form_open(string $do, string $tab, bool $file = false): void { echo '<form method="post" ' . ($file ? 'enctype="multipart/form-data"' : '') . '><input type="hidden" name="csrf" value="' . h(csrf()) . '"><input type="hidden" name="do" value="' . $do . '">'; }
 ?><!doctype html><html lang="tr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Namaz Yolu · Yönetim</title>
 <style>
@@ -190,6 +197,11 @@ if ($tab === 'ozet') {
     echo '<div class="card"><h2>Ramazan içeriği</h2><p class="m">Uygulama bu dosyayı internetten okur; güncelleme yayınlamadan menüleri ve sözleri değiştirebilirsin. Boş bıraktığın gün için uygulamadaki varsayılan menü gösterilir.</p>'; form_open('ramazan_save', $tab);
     echo '<table>'; for ($i = 1; $i <= 30; $i++) echo '<tr><td style="width:70px">' . $i . '. gün</td><td><input style="width:100%" name="menu[' . $i . ']" value="' . h($r['menus'][$i - 1] ?? '') . '" placeholder="Örn: Ezogelin çorbası · Etli nohut · Pilav · Cacık · Güllaç"></td></tr>'; echo '</table>';
     echo '<h2 style="margin-top:16px">Günün sözleri (her satıra bir tane)</h2><textarea name="soz" rows="10">' . h(implode("\n", $r['sozler'] ?? [])) . '</textarea><p class="m">Hadis veya ayet yazacaksan kaynağını da yaz; kaynaksız söz uydurma.</p><button>Kaydet</button></form></div>';
+} elseif ($tab === 'surum') {
+    $v = read_json(ICERIK_DIR . 'surum.json', []);
+    echo '<div class="card"><h2>Sürüm ve zorunlu güncelleme</h2><p class="m"><b>En düşük sürüm</b>: bundan eski sürümlerde uygulama açılışında kapatılamayan “Güncelleme gerekli” penceresi çıkar. Yalnızca ciddi hata veya veri sorunlarında doldur. <b>Güncel sürüm</b>: bundan eski sürümlerde “Yeni sürüm var” penceresi çıkar, kullanıcı “Sonra” diyebilir. Boş bırakılan alan kontrolü kapatır. Bu özellik 0.9.1 ve sonrası sürümlerde çalışır.</p>'; form_open('surum_save', $tab);
+    echo '<p>En düşük sürüm <input name="min" value="' . h($v['min'] ?? '') . '" placeholder="örn. 0.9.1" size="10"> &nbsp; Güncel sürüm <input name="latest" value="' . h($v['latest'] ?? '') . '" placeholder="örn. 0.9.2" size="10"></p>';
+    echo '<p>Mesaj (Türkçe)<br><textarea name="mtr" rows="2">' . h($v['messageTr'] ?? '') . '</textarea></p><p>Mesaj (İngilizce)<br><textarea name="men" rows="2">' . h($v['messageEn'] ?? '') . '</textarea></p><button>Kaydet</button></form></div>';
 } elseif ($tab === 'duyuru') {
     $d = read_json(ICERIK_DIR . 'duyuru.json', ['items' => []])['items'];
     while (count($d) < 3) $d[] = ['title' => '', 'text' => '', 'from' => '', 'to' => '', 'active' => false];
