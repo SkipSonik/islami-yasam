@@ -6,7 +6,23 @@ declare(strict_types=1);
 session_set_cookie_params(['lifetime' => 0, 'path' => '/yonetim/', 'secure' => !empty($_SERVER['HTTPS']), 'httponly' => true, 'samesite' => 'Strict']);
 session_start();
 header('X-Robots-Tag: noindex, nofollow'); header('Cache-Control: no-store');
-if (!file_exists(__DIR__ . '/config.php')) { http_response_code(500); exit('config.php yok (config.sample.php dosyasına bak).'); }
+if (!file_exists(__DIR__ . '/config.php')) {
+    // İlk kurulum: yalnızca yonetim/ klasöründe kurulum-izni.txt dosyası varsa şifre belirlenebilir; kurulumdan sonra dosya silinir.
+    $izin = __DIR__ . '/kurulum-izni.txt';
+    if (!file_exists($izin)) { http_response_code(503); exit('Kurulum kapalı.'); }
+    $m = '';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $a = (string)($_POST['s1'] ?? ''); $b = (string)($_POST['s2'] ?? '');
+        if (strlen($a) < 12) $m = 'En az 12 karakter olmalı.';
+        elseif ($a !== $b) $m = 'Şifreler aynı değil.';
+        else {
+            file_put_contents(__DIR__ . '/config.php', "<?php\nconst ADMIN_HASH = " . var_export(password_hash($a, PASSWORD_DEFAULT), true) . ";\n", LOCK_EX);
+            @unlink($izin); header('Location: ./'); exit;
+        }
+    }
+    echo '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Kurulum</title><body style="font:16px system-ui;background:#F6EFE0;display:grid;place-items:center;min-height:100vh;margin:0"><form method="post" style="background:#fff;padding:28px;border-radius:18px;width:min(360px,90vw)"><b>Yönetim şifresi belirle</b><p style="color:#555;font-size:14px">En az 12 karakter. Bu sayfa şifre kaydedilince kapanır.</p><input type="password" name="s1" placeholder="Şifre" style="width:100%;padding:12px;margin:6px 0;box-sizing:border-box"><input type="password" name="s2" placeholder="Şifre (tekrar)" style="width:100%;padding:12px;margin:6px 0;box-sizing:border-box"><button style="width:100%;padding:12px;background:#0D6463;color:#fff;border:0;border-radius:10px;font-weight:700">Kaydet</button>' . ($m ? '<p style="color:#b00">' . htmlspecialchars($m) . '</p>' : '') . '</form>';
+    exit;
+}
 require __DIR__ . '/config.php';
 
 const MSG_DIR = __DIR__ . '/../mesajlar/';
