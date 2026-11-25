@@ -1,0 +1,9 @@
+<FilesMatch "^(config\.php|config\.sample\.php|\.login-.*|.*\.bak)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+  Header set X-Frame-Options "DENY"
+  Header set Referrer-Policy "no-referrer"
+</IfModule>
